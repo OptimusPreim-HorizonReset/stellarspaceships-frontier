@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createTileRegistry } from '../src/core/tiles';
 import { Construction } from '../src/construction/construction';
 import { calculatePowerGeneration } from '../src/energy/powerGeneration';
+import { calculatePowerFlows } from '../src/energy/powerFlows';
 
 describe('power generation', () => {
   it('aggregates registered generation by chunk and construction', () => {
@@ -74,6 +75,37 @@ describe('power generation', () => {
       generatorCount: 0,
       totalPowerGeneration: 0,
       chunks: []
+    });
+  });
+
+  it('calculates generation and consumption in one chunk aggregation pass', () => {
+    const construction = new Construction('mixed-power-ship');
+    construction.placeTile({ x: 0, y: 0 }, 'reactor');
+    construction.placeTile({ x: 1, y: 0 }, 'thruster');
+    construction.placeTile({ x: 32, y: 0 }, 'thruster');
+    construction.placeTile({ x: 33, y: 0 }, 'battery');
+
+    expect(calculatePowerFlows(construction)).toEqual({
+      generatorCount: 1,
+      totalPowerGeneration: 1000,
+      consumerCount: 2,
+      totalPowerConsumption: 50,
+      chunks: [
+        {
+          position: { x: 0, y: 0 },
+          generatorCount: 1,
+          powerGeneration: 1000,
+          consumerCount: 1,
+          powerConsumption: 25
+        },
+        {
+          position: { x: 1, y: 0 },
+          generatorCount: 0,
+          powerGeneration: 0,
+          consumerCount: 1,
+          powerConsumption: 25
+        }
+      ]
     });
   });
 });

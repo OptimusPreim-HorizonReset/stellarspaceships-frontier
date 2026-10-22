@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P0-Grundlage umgesetzt; lokale Entwicklungsbaseline für P1 provisorisch bestanden, mobiles Zielprofil offen
+**Status:** P1-Energiebilanz und Prioritätsallocator umgesetzt; Zuordnung konkreter Verbraucher und mobile Gate-A-Freigabe offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -181,11 +181,20 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P1
 - **Abhängigkeiten:** SF-050
+- **Akzeptanzkriterien:**
+  - Verbraucherleistung datengetrieben aus der Tile-Registry lesen
+  - Verbrauch pro Chunk und Konstruktion aggregieren
+  - Zerstörte Verbraucher nicht mehr berücksichtigen
+  - Erzeugung und Verbrauch in einem Aggregationslauf auswerten
 
 ### SF-052 – Energienetzwerk
 
 - **Priorität:** P1
 - **Abhängigkeiten:** SF-051
+- **Akzeptanzkriterien:**
+  - Nettoleistung pro Chunk und Konstruktion berechnen
+  - Defizite bleiben lokal im jeweiligen Chunk
+  - Keine Energieübertragung zwischen Chunks ohne explizite Netzwerkverbindung
 
 ### SF-053 – Prioritätensystem
 
@@ -197,6 +206,11 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
   3. Waffen
   4. Industrie
   5. Komfort
+- **Akzeptanzkriterien:**
+  - Höhere Prioritäten werden vor niedrigeren versorgt
+  - Bei knapper Leistung wird die verbleibende Leistung innerhalb derselben Priorität proportional verteilt
+  - Ergebnis ist deterministisch
+  - Konkrete Zuordnung der Spielmodule zu Prioritäten wird bei deren Implementierung explizit festgelegt
 
 ## EPIC-007 – Physik
 
