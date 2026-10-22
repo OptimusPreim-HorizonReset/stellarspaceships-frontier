@@ -11,7 +11,7 @@ describe('construction serialization', () => {
     const original = new Construction('saved-ship');
     const tile = original.placeTile({ x: -1, y: 32 }, 'hull');
     tile.hp = 63;
-    original.placeTile({ x: 32, y: 32 }, 'reactor');
+    original.placeTile({ x: 32, y: 32 }, 'thruster', 'east');
 
     const restored = deserializeConstruction(
       serializeConstruction(original),
@@ -26,10 +26,10 @@ describe('construction serialization', () => {
   it('rejects unsupported save versions and unknown tile types', () => {
     expect(() =>
       deserializeConstruction(
-        '{"version":2,"id":"ship","tiles":[]}',
+        '{"version":3,"id":"ship","tiles":[]}',
         DEFAULT_TILE_REGISTRY
       )
-    ).toThrow('Unsupported construction save version: 2.');
+    ).toThrow('Unsupported construction save version: 3.');
 
     expect(() =>
       deserializeConstruction(
@@ -37,6 +37,27 @@ describe('construction serialization', () => {
         DEFAULT_TILE_REGISTRY
       )
     ).toThrow('Unknown tile type: alien.');
+  });
+
+  it('migrates version 1 saves to the default tile orientation', () => {
+    const restored = deserializeConstruction(
+      '{"version":1,"id":"old-ship","tiles":[{"x":0,"y":0,"id":1,"type":"thruster","hp":80}]}',
+      DEFAULT_TILE_REGISTRY
+    );
+    const serialized = serializeConstruction(restored);
+
+    expect(restored.getTile({ x: 0, y: 0 })?.orientation).toBe('north');
+    expect(serialized).toContain('"version":2');
+    expect(serialized).toContain('"orientation":"north"');
+  });
+
+  it('rejects invalid orientation in version 2 saves', () => {
+    expect(() =>
+      deserializeConstruction(
+        '{"version":2,"id":"ship","tiles":[{"x":0,"y":0,"id":1,"type":"thruster","hp":80,"orientation":"diagonal"}]}',
+        DEFAULT_TILE_REGISTRY
+      )
+    ).toThrow('Unknown tile orientation: diagonal.');
   });
 
   it('rejects duplicate tile IDs and occupied positions', () => {

@@ -173,11 +173,12 @@ Power Produced
 
 Bei Strommangel:
 
-1. Reaktoren
-2. Schilde
-3. Waffen
-4. Industrie
-5. Komfort
+1. Lebenserhaltung
+2. Antrieb
+3. Schilde
+4. Waffen
+5. Industrie
+6. Komfort
 
 ### Milestone 2
 
@@ -215,6 +216,8 @@ Jedes Triebwerk besitzt:
 - Leistung
 - Rotationseinfluss
 - Energiekosten
+
+Die Ausrichtung ist zunächst auf die vier Himmelsrichtungen begrenzt. Die Kraft wirkt entlang der Ausrichtung; der visuelle Renderer zeigt diese Richtung an.
 
 ### Milestone 3
 

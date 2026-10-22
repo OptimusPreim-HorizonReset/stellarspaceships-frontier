@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie, Masse, Schwerpunkt und Trägheitsmoment umgesetzt; SF-063 Thrustersystem als Nächstes; mobiles Gate-A-Profil offen
+**Status:** SF-050–SF-063 Energie- und Physik-Kern umgesetzt; mobile Gate-A-Freigabe und Zuordnung weiterer Verbraucher offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -202,15 +202,17 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 - **Abhängigkeiten:** SF-052
 - **Reihenfolge:**
   1. Lebenserhaltung
-  2. Schilde
-  3. Waffen
-  4. Industrie
-  5. Komfort
+  2. Antrieb
+  3. Schilde
+  4. Waffen
+  5. Industrie
+  6. Komfort
 - **Akzeptanzkriterien:**
   - Höhere Prioritäten werden vor niedrigeren versorgt
   - Bei knapper Leistung wird die verbleibende Leistung innerhalb derselben Priorität proportional verteilt
   - Ergebnis ist deterministisch
-  - Konkrete Zuordnung der Spielmodule zu Prioritäten wird bei deren Implementierung explizit festgelegt
+  - Antriebsverbraucher erhalten die Priorität `propulsion`
+  - Konkrete Zuordnung weiterer Spielmodule zu Prioritäten wird bei deren Implementierung explizit festgelegt
 
 ## EPIC-007 – Physik
 
@@ -248,6 +250,13 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 - **Abhängigkeiten:**
   - SF-053
   - SF-062
+- **Akzeptanzkriterien:**
+  - Thruster können in vier Himmelsrichtungen ausgerichtet werden
+  - Registry-Leistung und Chunk-Powerbudget bestimmen die angewendete Kraft
+  - Kraftvektor und Drehmoment um den Schwerpunkt berechnen
+  - Rigid-Body-Zustand mit Zeitschritt integrieren
+  - Layout, Masseigenschaften und Powerbudget bei Änderungen aktualisieren und pro Zeitschritt wiederverwenden
+  - Save-Version 1 ohne Orientierung verlustfrei nach Norden migrieren
 
 ## GATE-B – Freigabe für P2
 

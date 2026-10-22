@@ -3,7 +3,11 @@ import {
   runGateABenchmark,
   type GateABenchmarkReport
 } from '../benchmark/runGateABenchmark';
-import { isTileType } from '../core/tiles';
+import {
+  isTileOrientation,
+  isTileType,
+  type TileOrientation
+} from '../core/tiles';
 import { calculatePowerBalance } from '../energy/powerBalance';
 import { createDemoConstruction } from '../game/createDemoConstruction';
 import {
@@ -16,7 +20,8 @@ import {
   serializeConstruction
 } from '../save/serialization';
 
-const SAVE_KEY = 'stellar-frontier:construction:v1';
+const SAVE_KEY = 'stellar-frontier:construction:v2';
+const LEGACY_SAVE_KEY = 'stellar-frontier:construction:v1';
 
 function requireElement<T extends Element>(
   element: T | null,
@@ -36,6 +41,10 @@ const canvas = requireElement(
 const tileTypeSelect = requireElement(
   document.querySelector<HTMLSelectElement>('#tile-type'),
   '#tile-type'
+);
+const tileOrientationSelect = requireElement(
+  document.querySelector<HTMLSelectElement>('#tile-orientation'),
+  '#tile-orientation'
 );
 const placeModeButton = requireElement(
   document.querySelector<HTMLButtonElement>('#place-mode'),
@@ -116,6 +125,7 @@ const benchmarkReportElement = requireElement(
 const renderer = new CanvasWorldRenderer(canvas);
 const constructionControls: Array<HTMLButtonElement | HTMLSelectElement> = [
   tileTypeSelect,
+  tileOrientationSelect,
   placeModeButton,
   eraseModeButton,
   saveButton,
@@ -181,6 +191,13 @@ function setConstructionControlsEnabled(enabled: boolean): void {
   for (const control of constructionControls) {
     control.disabled = !enabled;
   }
+
+  updateOrientationControl();
+}
+
+function updateOrientationControl(): void {
+  tileOrientationSelect.disabled =
+    benchmarkRunning || tileTypeSelect.value !== 'thruster';
 }
 
 function disableBenchmarkDownload(): void {
@@ -237,7 +254,20 @@ function handleCanvasPointerDown(event: PointerEvent): void {
       return;
     }
 
-    const placed = construction.placeTile(position, selectedType);
+    let orientation: TileOrientation = 'north';
+
+    if (selectedType === 'thruster') {
+      const selectedOrientation: string = tileOrientationSelect.value;
+
+      if (!isTileOrientation(selectedOrientation)) {
+        statusElement.textContent = 'Die Thruster-Richtung ist ungültig.';
+        return;
+      }
+
+      orientation = selectedOrientation;
+    }
+
+    const placed = construction.placeTile(position, selectedType, orientation);
     statusElement.textContent = `${placed.type} bei (${position.x}, ${position.y}) platziert.`;
   }
 
@@ -248,6 +278,7 @@ canvas.addEventListener('pointerdown', handleCanvasPointerDown);
 canvas.addEventListener('contextmenu', (event) => event.preventDefault());
 placeModeButton.addEventListener('click', () => setEditMode('place'));
 eraseModeButton.addEventListener('click', () => setEditMode('erase'));
+tileTypeSelect.addEventListener('change', updateOrientationControl);
 window.addEventListener('resize', () => renderer.render(construction));
 
 saveButton.addEventListener('click', () => {
@@ -261,7 +292,9 @@ saveButton.addEventListener('click', () => {
 
 loadButton.addEventListener('click', () => {
   try {
-    const savedConstruction = localStorage.getItem(SAVE_KEY);
+    const savedConstruction =
+      localStorage.getItem(SAVE_KEY) ??
+      localStorage.getItem(LEGACY_SAVE_KEY);
 
     if (savedConstruction === null) {
       statusElement.textContent = 'Es ist noch keine Konstruktion gespeichert.';
@@ -350,4 +383,5 @@ downloadBenchmarkLink.addEventListener('click', (event) => {
 window.addEventListener('pagehide', disableBenchmarkDownload, { once: true });
 
 setEditMode('place');
+updateOrientationControl();
 refreshWorld();

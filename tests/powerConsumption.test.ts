@@ -13,6 +13,8 @@ describe('power consumption', () => {
         mass: 40,
         powerGeneration: 0,
         powerConsumption: 40,
+        powerPriority: 'propulsion',
+        thrustForce: 100,
         storageCapacity: 0,
         buildCost: {}
       }

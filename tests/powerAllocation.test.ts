@@ -60,6 +60,39 @@ describe('chunk power priority allocation', () => {
     expect(report.unusedPower).toBe(80);
   });
 
+  it('prioritizes propulsion before shields after life support', () => {
+    const report = allocateChunkPower(60, [
+      { consumerId: 'shield', priority: 'shields', requestedPower: 50 },
+      { consumerId: 'thruster', priority: 'propulsion', requestedPower: 30 },
+      {
+        consumerId: 'life-support',
+        priority: 'lifeSupport',
+        requestedPower: 20
+      }
+    ]);
+
+    expect(report.allocations).toEqual([
+      {
+        consumerId: 'life-support',
+        priority: 'lifeSupport',
+        requestedPower: 20,
+        allocatedPower: 20
+      },
+      {
+        consumerId: 'thruster',
+        priority: 'propulsion',
+        requestedPower: 30,
+        allocatedPower: 30
+      },
+      {
+        consumerId: 'shield',
+        priority: 'shields',
+        requestedPower: 50,
+        allocatedPower: 10
+      }
+    ]);
+  });
+
   it('rejects invalid supply, duplicate consumers, and invalid requests', () => {
     expect(() => allocateChunkPower(-1, [])).toThrow(
       'Available power must be a non-negative finite number.'

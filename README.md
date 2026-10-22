@@ -23,6 +23,9 @@ Die App stellt zunächst ein interaktives Tile- und Chunk-Labor bereit. Tile set
 - **32 × 32 Tiles pro Chunk:** verbindliche Speicher- und Lookup-Einheit.
 - **Konstruktionen und Tilesimulation:** der P0-Kern bleibt unabhängig von Rendering und UI testbar.
 - **Vierer-Nachbarschaft:** Konstruktionen gelten über Kantenverbindungen als zusammenhängend; diagonaler Kontakt verbindet Tiles nicht.
+- **Thruster:** Vier Himmelsrichtungen; Nord ist negative Y-Richtung. Save-Version 1 wird beim Laden mit Nord als Standardausrichtung migriert.
+- **Trägheit:** Tiles werden für die P1-Näherung als gleichmäßig verteilte Einheitsquadrate modelliert.
+- **Flugphysik:** Semi-implizite 2D-Integration; Thrusterleistung wird pro Chunk budgetiert und als Kraft/Drehmoment angewendet. Layout, Masseigenschaften und Powerbudget werden bei Änderungen aufgebaut und pro Zeitschritt wiederverwendet.
 - **Tilewerte:** Die Registry enthält vorläufige Prototypwerte, keine final abgestimmte Spielbalance.
 - **Noch offen:** Zielhardware, finale FPS-Schwelle, Welt-/Sektorgröße, aktiver Radius und Größe logischer Module.
 
@@ -32,9 +35,9 @@ Die App stellt zunächst ein interaktives Tile- und Chunk-Labor bereit. Tile set
 src/
   core/           Konfiguration, Koordinaten und Tile-Daten
   construction/   Konstruktionen und Fragmentierung
-  energy/         Aggregierte Energieerzeugung pro Chunk
+  energy/         Chunk-Energieflüsse, Budgets und Prioritätsallocator
   game/           Beispielkonstruktion für das Labor
-  physics/        Masse und weitere Physikberechnungen
+  physics/        Masse, Schwerpunkt, Trägheit und Thruster
   rendering/      Canvas-Renderer
   save/           Versionierte Persistenz
   ui/             Browser-Labor
@@ -54,4 +57,4 @@ Bei Abweichungen gilt der Backlog als Quelle für Task-IDs und Akzeptanzkriterie
 
 ## Status
 
-Die Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und den automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe erfüllen die provisorische Desktop-Entwicklungsbaseline; die finale mobile Gate-A-Freigabe bleibt offen. P1-Energiebilanz, Prioritätsallocator, Gesamtmasse, Schwerpunkt und Trägheitsmoment sind implementiert; die konkrete Verbraucher-Prioritätszuordnung bleibt offen. Als Nächstes folgt das Thrustersystem. Details und Messwerte stehen in [SKALIERUNG.md](./SKALIERUNG.md).
+Die Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und den automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe erfüllen die provisorische Desktop-Entwicklungsbaseline; die finale mobile Gate-A-Freigabe bleibt offen. Der P1-Kern umfasst Chunk-Energieflüsse, priorisierte Leistungszuteilung, Masse, Schwerpunkt, Trägheit und orientierbare Thruster mit Rigid-Body-Schritt. Konkrete Zuordnungen weiterer Verbraucher und mobile Hardwarevalidierung bleiben offen. Details und Messwerte stehen in [SKALIERUNG.md](./SKALIERUNG.md).

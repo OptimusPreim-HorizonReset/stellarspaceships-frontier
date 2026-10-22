@@ -43,6 +43,7 @@ describe('power generation', () => {
         mass: 100,
         powerGeneration: 375,
         powerConsumption: 0,
+        thrustForce: 0,
         storageCapacity: 0,
         buildCost: {}
       }

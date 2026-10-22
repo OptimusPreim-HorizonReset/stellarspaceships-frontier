@@ -6,8 +6,10 @@ import {
 import type { ChunkPosition, TilePosition } from '../core/coordinates';
 import {
   DEFAULT_TILE_REGISTRY,
+  isTileOrientation,
   type Tile,
   type TileRegistry,
+  type TileOrientation,
   type TileType
 } from '../core/tiles';
 import { Chunk } from '../world/chunk';
@@ -103,7 +105,11 @@ export class Construction {
     return chunk.getTile(localPositionForTile(position));
   }
 
-  placeTile(position: TilePosition, type: TileType): Tile {
+  placeTile(
+    position: TilePosition,
+    type: TileType,
+    orientation: TileOrientation = 'north'
+  ): Tile {
     const definition = this.tileRegistry.get(type);
 
     if (definition === undefined) {
@@ -114,9 +120,14 @@ export class Construction {
       throw new RangeError('No additional tile IDs are available.');
     }
 
+    if (!isTileOrientation(orientation)) {
+      throw new TypeError(`Invalid tile orientation: ${String(orientation)}.`);
+    }
+
     const tile: Tile = {
       id: this.nextTileId,
       type,
+      orientation,
       hp: definition.maxHp,
       armor: definition.armor,
       mass: definition.mass
@@ -143,6 +154,10 @@ export class Construction {
       throw new TypeError(`Duplicate tile ID: ${tile.id}.`);
     }
 
+    if (!isTileOrientation(tile.orientation)) {
+      throw new TypeError(`Invalid tile orientation: ${String(tile.orientation)}.`);
+    }
+
     if (
       !Number.isFinite(tile.hp) ||
       tile.hp <= 0 ||
@@ -156,6 +171,7 @@ export class Construction {
     const importedTile: Tile = {
       id: tile.id,
       type: tile.type,
+      orientation: tile.orientation,
       hp: tile.hp,
       armor: definition.armor,
       mass: definition.mass

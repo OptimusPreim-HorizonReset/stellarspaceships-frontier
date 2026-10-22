@@ -2,6 +2,7 @@ import { SAVE_FORMAT_VERSION } from '../core/config';
 import type { TilePosition } from '../core/coordinates';
 import {
   isTileType,
+  isTileOrientation,
   type Tile,
   type TileRegistry
 } from '../core/tiles';
@@ -13,6 +14,7 @@ interface SavedTile {
   readonly id: number;
   readonly type: string;
   readonly hp: number;
+  readonly orientation: unknown;
 }
 
 interface SavedConstruction {
@@ -48,7 +50,7 @@ function parseSavedConstruction(value: unknown): SavedConstruction {
 
   const version = requireSafeInteger(value.version, 'Save version');
 
-  if (version !== SAVE_FORMAT_VERSION) {
+  if (version !== 1 && version !== SAVE_FORMAT_VERSION) {
     throw new RangeError(`Unsupported construction save version: ${version}.`);
   }
 
@@ -63,7 +65,7 @@ function parseSavedConstruction(value: unknown): SavedConstruction {
       throw new TypeError(`Tile entry ${index} must be a JSON object.`);
     }
 
-    const { x, y, id: tileId, type, hp } = entry;
+    const { x, y, id: tileId, type, hp, orientation } = entry;
 
     if (typeof type !== 'string') {
       throw new TypeError(`Tile type at index ${index} must be a string.`);
@@ -78,7 +80,8 @@ function parseSavedConstruction(value: unknown): SavedConstruction {
       y: requireSafeInteger(y, `Tile ${index} y coordinate`),
       id: requireSafeInteger(tileId, `Tile ${index} ID`),
       type,
-      hp
+      hp,
+      orientation
     };
   });
 
@@ -94,7 +97,8 @@ export function serializeConstruction(construction: Construction): string {
       y: position.y,
       id: tile.id,
       type: tile.type,
-      hp: tile.hp
+      hp: tile.hp,
+      orientation: tile.orientation
     }))
   };
 
@@ -120,10 +124,20 @@ export function deserializeConstruction(
       throw new TypeError(`Tile type is not registered: ${savedTile.type}.`);
     }
 
+    const orientation =
+      save.version === 1 ? 'north' : savedTile.orientation;
+
+    if (!isTileOrientation(orientation)) {
+      throw new TypeError(
+        `Unknown tile orientation: ${String(savedTile.orientation)}.`
+      );
+    }
+
     const position: TilePosition = { x: savedTile.x, y: savedTile.y };
     const tile: Tile = {
       id: savedTile.id,
       type: savedTile.type,
+      orientation,
       hp: savedTile.hp,
       armor: definition.armor,
       mass: definition.mass

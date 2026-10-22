@@ -1,3 +1,6 @@
+import { isPowerPriority } from './power';
+import type { PowerPriority } from './power';
+
 export const TILE_TYPES = [
   'hull',
   'armor',
@@ -8,6 +11,15 @@ export const TILE_TYPES = [
 ] as const;
 
 export type TileType = (typeof TILE_TYPES)[number];
+
+export const TILE_ORIENTATIONS = [
+  'north',
+  'east',
+  'south',
+  'west'
+] as const;
+
+export type TileOrientation = (typeof TILE_ORIENTATIONS)[number];
 
 export const RESOURCE_TYPES = [
   'ore',
@@ -35,6 +47,8 @@ export interface TileDefinition {
   readonly mass: number;
   readonly powerGeneration: number;
   readonly powerConsumption: number;
+  readonly powerPriority?: PowerPriority;
+  readonly thrustForce: number;
   readonly storageCapacity: number;
   readonly buildCost: ResourceCost;
 }
@@ -42,6 +56,7 @@ export interface TileDefinition {
 export interface Tile {
   readonly id: number;
   readonly type: TileType;
+  readonly orientation: TileOrientation;
   hp: number;
   readonly armor: number;
   readonly mass: number;
@@ -50,9 +65,14 @@ export interface Tile {
 export type TileRegistry = ReadonlyMap<TileType, TileDefinition>;
 
 const tileTypeSet = new Set<string>(TILE_TYPES);
+const tileOrientationSet = new Set<string>(TILE_ORIENTATIONS);
 
 export function isTileType(value: unknown): value is TileType {
   return typeof value === 'string' && tileTypeSet.has(value);
+}
+
+export function isTileOrientation(value: unknown): value is TileOrientation {
+  return typeof value === 'string' && tileOrientationSet.has(value);
 }
 
 export function createTileRegistry(
@@ -75,6 +95,7 @@ export function createTileRegistry(
       definition.mass,
       definition.powerGeneration,
       definition.powerConsumption,
+      definition.thrustForce,
       definition.storageCapacity
     ];
 
@@ -84,6 +105,24 @@ export function createTileRegistry(
       numericValues.slice(1).some((value) => value < 0)
     ) {
       throw new RangeError(`Invalid numeric values for ${definition.type}.`);
+    }
+
+    if (
+      definition.powerPriority !== undefined &&
+      !isPowerPriority(definition.powerPriority)
+    ) {
+      throw new TypeError(
+        `Invalid power priority for ${definition.type}.`
+      );
+    }
+
+    if (
+      definition.powerConsumption > 0 &&
+      definition.powerPriority === undefined
+    ) {
+      throw new TypeError(
+        `Power consumer ${definition.type} must declare a priority.`
+      );
     }
 
     for (const [resource, amount] of Object.entries(definition.buildCost)) {
@@ -117,6 +156,7 @@ export const DEFAULT_TILE_REGISTRY = createTileRegistry([
     mass: 10,
     powerGeneration: 0,
     powerConsumption: 0,
+    thrustForce: 0,
     storageCapacity: 0,
     buildCost: { ore: 1 }
   },
@@ -127,6 +167,7 @@ export const DEFAULT_TILE_REGISTRY = createTileRegistry([
     mass: 20,
     powerGeneration: 0,
     powerConsumption: 0,
+    thrustForce: 0,
     storageCapacity: 0,
     buildCost: { ore: 3 }
   },
@@ -137,6 +178,7 @@ export const DEFAULT_TILE_REGISTRY = createTileRegistry([
     mass: 100,
     powerGeneration: 1000,
     powerConsumption: 0,
+    thrustForce: 0,
     storageCapacity: 0,
     buildCost: { ore: 10, electronics: 2 }
   },
@@ -147,6 +189,7 @@ export const DEFAULT_TILE_REGISTRY = createTileRegistry([
     mass: 50,
     powerGeneration: 0,
     powerConsumption: 0,
+    thrustForce: 0,
     storageCapacity: 500,
     buildCost: { ore: 5, electronics: 1 }
   },
@@ -157,6 +200,8 @@ export const DEFAULT_TILE_REGISTRY = createTileRegistry([
     mass: 40,
     powerGeneration: 0,
     powerConsumption: 25,
+    powerPriority: 'propulsion',
+    thrustForce: 100,
     storageCapacity: 0,
     buildCost: { ore: 4, electronics: 1 }
   },
@@ -167,6 +212,7 @@ export const DEFAULT_TILE_REGISTRY = createTileRegistry([
     mass: 80,
     powerGeneration: 0,
     powerConsumption: 0,
+    thrustForce: 0,
     storageCapacity: 1000,
     buildCost: { ore: 2 }
   }

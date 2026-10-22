@@ -1,6 +1,6 @@
 import { CHUNK_SIZE } from '../core/config';
 import type { Construction } from '../construction/construction';
-import type { TileType } from '../core/tiles';
+import type { TileOrientation, TileType } from '../core/tiles';
 
 export const TILE_PIXEL_SIZE = 20;
 
@@ -11,6 +11,13 @@ const TILE_COLORS: Record<TileType, string> = {
   battery: '#77d3c1',
   thruster: '#9c84ef',
   storage: '#d17c9d'
+};
+
+const THRUSTER_ORIENTATION_RADIANS: Record<TileOrientation, number> = {
+  north: 0,
+  east: Math.PI / 2,
+  south: Math.PI,
+  west: -Math.PI / 2
 };
 
 export class CanvasWorldRenderer {
@@ -90,6 +97,26 @@ export class CanvasWorldRenderer {
         TILE_PIXEL_SIZE - 4,
         TILE_PIXEL_SIZE - 4
       );
+
+      if (tile.type === 'thruster') {
+        this.context.save();
+        this.context.translate(
+          x + TILE_PIXEL_SIZE / 2,
+          y + TILE_PIXEL_SIZE / 2
+        );
+        this.context.rotate(
+          THRUSTER_ORIENTATION_RADIANS[tile.orientation]
+        );
+        this.context.fillStyle = '#f5f1ff';
+        this.context.beginPath();
+        this.context.moveTo(0, -5);
+        this.context.lineTo(4, 4);
+        this.context.lineTo(0, 2);
+        this.context.lineTo(-4, 4);
+        this.context.closePath();
+        this.context.fill();
+        this.context.restore();
+      }
     }
   }
 }

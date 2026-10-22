@@ -67,10 +67,6 @@ export function allocateChunkPower(
       throw new TypeError(`Unknown power priority: ${String(demand.priority)}.`);
     }
 
-    if (!isPowerPriority(demand.priority)) {
-      throw new TypeError(`Unknown power priority: ${String(demand.priority)}.`);
-    }
-
     if (
       !Number.isFinite(demand.requestedPower) ||
       demand.requestedPower < 0

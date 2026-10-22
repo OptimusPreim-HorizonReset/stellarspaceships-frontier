@@ -14,6 +14,7 @@ describe('Chunk', () => {
     const tile = {
       id: 1,
       type: 'hull' as const,
+      orientation: 'north' as const,
       hp: definition.maxHp,
       armor: definition.armor,
       mass: definition.mass
