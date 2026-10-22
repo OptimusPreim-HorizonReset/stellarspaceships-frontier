@@ -60,6 +60,8 @@ Wird das Gate nicht bestanden:
 - Optimieren
 - Keine neuen Features entwickeln
 
+Die dokumentierte lokale Produktionsmessung erfüllt vorläufig die Desktop-Entwicklungsbaseline für P1. Das finale mobile Zielgerät und die Freigabe für einen Release bleiben offen.
+
 ## P1 – Kernsimulation
 
 Jetzt entsteht das eigentliche Spiel.

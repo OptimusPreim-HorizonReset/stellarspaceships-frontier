@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P0-Grundlage umgesetzt; Gate A noch offen
+**Status:** P0-Grundlage umgesetzt; lokale Entwicklungsbaseline für P1 provisorisch bestanden, mobiles Zielprofil offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -146,6 +146,8 @@ Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und A
 
 P1 wird erst nach Bestehen freigegeben.
 
+Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Desktop-Entwicklungsbaseline. Sie erfüllt das in [SKALIERUNG.md](./SKALIERUNG.md) festgelegte Wiederholungsprofil; das finale mobile Zielgerät ist damit nicht freigegeben.
+
 ## EPIC-005 – Editor
 
 ### SF-040 – Baumodus
@@ -169,6 +171,11 @@ P1 wird erst nach Bestehen freigegeben.
 
 - **Priorität:** P1
 - **Abhängigkeiten:** GATE-A
+- **Akzeptanzkriterien:**
+  - Generatorleistung datengetrieben aus der Tile-Registry lesen
+  - Summen pro Chunk und Konstruktion berechnen
+  - Zerstörte Generatoren liefern keine Leistung
+  - Aggregation nur bei Bedarf neu berechnen, nicht als Tile-Simulation pro Frame
 
 ### SF-051 – Energieverbrauch
 

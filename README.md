@@ -32,6 +32,7 @@ Die App stellt zunächst ein interaktives Tile- und Chunk-Labor bereit. Tile set
 src/
   core/           Konfiguration, Koordinaten und Tile-Daten
   construction/   Konstruktionen und Fragmentierung
+  energy/         Aggregierte Energieerzeugung pro Chunk
   game/           Beispielkonstruktion für das Labor
   rendering/      Canvas-Renderer
   save/           Versionierte Persistenz
@@ -52,4 +53,4 @@ Bei Abweichungen gilt der Backlog als Quelle für Task-IDs und Akzeptanzkriterie
 
 ## Status
 
-Die erste P0-Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und einen automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe lagen bei durchschnittlich 59,38–60,04 FPS; Gate A ist **noch nicht bestanden**, bis Zielhardware und Messbedingungen festgelegt und dort bestätigt sind. Details stehen in [SKALIERUNG.md](./SKALIERUNG.md).
+Die P0-Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und einen automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe erfüllen die provisorische Desktop-Entwicklungsbaseline; die finale mobile Gate-A-Freigabe bleibt offen. P1 beginnt mit datengetriebener Energieerzeugung. Details und Messwerte stehen in [SKALIERUNG.md](./SKALIERUNG.md).

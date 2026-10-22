@@ -6,6 +6,7 @@ Dieses Dokument konkretisiert die Leistungstests aus [BACKLOG.md](./BACKLOG.md).
 
 - Funktionale Tests und Lasttests getrennt ausführen und ausweisen.
 - Zielhardware, Betriebssystem, Buildmodus und Messdauer für jedes Ergebnis dokumentieren.
+- Für die provisorische Desktop-Entwicklungsbaseline mindestens sechs Produktionsläufe auswerten: Median der durchschnittlichen FPS ≥ 60 und mindestens fünf von sechs Läufen ≥ 60 FPS.
 - Framerate, CPU und RAM erfassen; bei Bedarf zusätzlich Chunk-Aktivität, Physik, Kollision und Speichern/Laden.
 - Die Browsermessung in einem Produktionsbuild mit sichtbarem Tab ausführen; der Dev-Server ist kein Gate-Nachweis.
 - Keine Freigabe erteilen, wenn ein Benchmark fehlt oder seine Messbedingungen nicht angegeben sind.
@@ -22,7 +23,7 @@ Die Messung prüft 10.000 Tiles in 100 Chunks, den Save/Load-Roundtrip und 30 Au
 
 ## Vorläufige lokale Referenzmessung
 
-Produktionspreview im integrierten VS-Code-Browser, Viewport 476 × 339 CSS-Pixel, DPR 1,5. Die 10.000 Tiles lagen in 100 Chunks; bei diesem Viewport waren 76 Tiles und ein Chunk pro Frame sichtbar. Sechs Läufe mit demselben Profil:
+Provisorische Desktop-Entwicklungsbaseline: Produktionspreview im integrierten VS-Code-Browser, Viewport 476 × 339 CSS-Pixel, DPR 1,5. Die 10.000 Tiles lagen in 100 Chunks; bei diesem Viewport waren 76 Tiles und ein Chunk pro Frame sichtbar. Sechs Läufe mit demselben Profil:
 
 | Lauf | Durchschnitt | p95-Frameintervall | Intervalle > 16,67 ms | Render Ø / p95 | Serialize / Deserialize |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -34,6 +35,8 @@ Produktionspreview im integrierten VS-Code-Browser, Viewport 476 × 339 CSS-Pixe
 | 6 | 59,38 FPS | 19,6 ms | 99 / 180 | 0,85 / 3,3 ms | 17,1 / 46,9 ms |
 
 Chunk-basiertes Sichtbereichs-Culling reduzierte die durchschnittliche Renderdauer gegenüber dem vorherigen Vollscan in der lokalen Einzelmessung von 6,07 ms auf 0,17–0,85 ms. Über die sechs Läufe lagen die durchschnittlichen FPS bei 59,38–60,04; der p95-Frameintervall bei 16,8–19,6 ms. Der Zähler für Intervalle über 16,67 ms ist ein strikter Vergleich mit dem theoretischen 60-FPS-Budget und kein eigenständiger Nachweis sichtbarer Frame-Drops.
+
+Der Median der sechs FPS-Werte ist 60,04; fünf von sechs Läufen erreichen mindestens 60 FPS. Damit ist die provisorische Desktop-Entwicklungsbaseline für P1 erfüllt. Der mobile Release-Gate bleibt offen.
 
 Ein Chromium-Heap-Snapshot des letzten Laufs lag bei 6,46 MB vor dem Profil, 10,76 MB nach Save/Load und 10,52 MB nach Rendering. Das ist eine JS-Heap-Momentaufnahme und kein Prozess- oder System-RAM-Wert.
 

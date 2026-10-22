@@ -189,25 +189,25 @@ export class Construction {
   }
 
   getTiles(): PlacedTile[] {
-    const placedTiles: PlacedTile[] = [];
+    return Array.from(this.iterateTiles()).sort(
+      (left, right) =>
+        left.position.y - right.position.y ||
+        left.position.x - right.position.x
+    );
+  }
 
+  *iterateTiles(): IterableIterator<PlacedTile> {
     for (const chunk of this.chunks.values()) {
       for (const entry of chunk.entries()) {
-        placedTiles.push({
+        yield {
           position: {
             x: chunk.position.x * chunk.size + entry.position.x,
             y: chunk.position.y * chunk.size + entry.position.y
           },
           tile: entry.tile
-        });
+        };
       }
     }
-
-    return placedTiles.sort(
-      (left, right) =>
-        left.position.y - right.position.y ||
-        left.position.x - right.position.x
-    );
   }
 
   getTilesInBounds(bounds: TileBounds): PlacedTile[] {

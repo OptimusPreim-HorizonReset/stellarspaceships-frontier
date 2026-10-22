@@ -4,6 +4,7 @@ import {
   type GateABenchmarkReport
 } from '../benchmark/runGateABenchmark';
 import { isTileType } from '../core/tiles';
+import { calculatePowerGeneration } from '../energy/powerGeneration';
 import { createDemoConstruction } from '../game/createDemoConstruction';
 import {
   CanvasWorldRenderer,
@@ -67,6 +68,10 @@ const componentCountElement = requireElement(
   document.querySelector<HTMLElement>('#component-count'),
   '#component-count'
 );
+const powerGenerationElement = requireElement(
+  document.querySelector<HTMLElement>('#power-generation'),
+  '#power-generation'
+);
 const statusElement = requireElement(
   document.querySelector<HTMLElement>('#status'),
   '#status'
@@ -112,6 +117,10 @@ function refreshWorld(): void {
   chunkCountElement.textContent = construction.chunkCount.toLocaleString('de-DE');
   componentCountElement.textContent =
     connectedComponentCount.toLocaleString('de-DE');
+  powerGenerationElement.textContent =
+    calculatePowerGeneration(construction).totalPowerGeneration.toLocaleString(
+      'de-DE'
+    );
 }
 
 function showError(error: unknown): string {
