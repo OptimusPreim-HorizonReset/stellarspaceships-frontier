@@ -1,0 +1,466 @@
+# Stellar Frontier – Development Backlog
+
+**Version:** 0.1  
+**Status:** Draft
+
+## Prioritätsskala
+
+| Priorität | Bedeutung |
+| --- | --- |
+| P0 | Architekturkritisch |
+| P1 | Kernsimulation |
+| P2 | MVP-Gameplay |
+| P3 | Open World |
+| P4 | Endgame und Content |
+
+## EPIC-001 – Projektgrundgerüst
+
+### SF-001 – Repositorystruktur anlegen
+
+- **Priorität:** P0
+- **Abhängigkeiten:** Keine
+- **Akzeptanzkriterien:**
+  - Standardisierte Verzeichnisstruktur
+  - Trennung von Core, World, Combat und UI
+
+### SF-002 – Buildpipeline einrichten
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-001
+- **Akzeptanzkriterien:**
+  - Build erfolgreich
+  - Linter konfiguriert
+  - Testframework integriert
+
+### SF-003 – Globales Konfigurationssystem
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-001
+- **Akzeptanzkriterien:**
+  - WorldSize konfigurierbar
+  - ChunkSize konfigurierbar
+  - ActiveRadius konfigurierbar
+
+## EPIC-002 – Tilesystem
+
+### SF-010 – Tile-Datenmodell implementieren
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-002
+- **Akzeptanzkriterien:**
+  - HP
+  - Armor
+  - Mass
+  - ResourceCost
+
+### SF-011 – Tile Registry erstellen
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-010
+- **Akzeptanzkriterien:**
+  - Hull
+  - Armor
+  - Reactor
+  - Battery
+  - Thruster
+  - Laden über eine Datenstruktur
+
+### SF-012 – Tile-Platzierung implementieren
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-011
+- **Akzeptanzkriterien:**
+  - Platzieren
+  - Entfernen
+  - Ersetzen
+
+## EPIC-003 – Chunking
+
+### SF-020 – Chunk-Datenstruktur
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-012
+- **Akzeptanzkriterien:**
+  - 32 × 32 Tiles pro Chunk
+
+### SF-021 – Chunk-Lookup-System
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-020
+- **Akzeptanzkriterien:**
+  - Weltkoordinate → Chunk
+  - Tilekoordinate → Chunk
+
+### SF-022 – Chunk-Grenzübergänge
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-021
+- **Akzeptanzkriterien:**
+  - Korrekte Nachbarchunks
+  - Übergänge getestet
+
+## EPIC-004 – Konstruktionen
+
+### SF-030 – Construction Entity
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-022
+- **Akzeptanzkriterien:**
+  - Chunksammlung
+  - Eindeutige ID
+  - Serialisierbar
+
+### SF-031 – Flood-Fill-Zusammenhangsprüfung
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-030
+- **Akzeptanzkriterien:**
+  - Verbundene Tiles erkennen
+  - Isolierte Segmente erkennen
+
+### SF-032 – Fragmentierungssystem
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-031
+- **Akzeptanzkriterien:**
+  - Neue Konstruktionen entstehen
+  - Fragmente erhalten eigene IDs
+
+## GATE-A – Freigabe für P1
+
+**Voraussetzungen:** SF-001 bis SF-032.
+
+**Benchmarks:**
+
+- 10.000 Tiles
+- 100 Chunks
+- Speichern und Laden
+- 60 FPS auf Zielhardware
+
+P1 wird erst nach Bestehen freigegeben.
+
+## EPIC-005 – Editor
+
+### SF-040 – Baumodus
+
+- **Priorität:** P1
+- **Abhängigkeiten:** GATE-A
+
+### SF-041 – Mehrfachplatzierung
+
+- **Priorität:** P1
+- **Abhängigkeiten:** SF-040
+
+### SF-042 – Blueprint-Speicherung
+
+- **Priorität:** P1
+- **Abhängigkeiten:** SF-040
+
+## EPIC-006 – Energiesystem
+
+### SF-050 – Energieerzeugung
+
+- **Priorität:** P1
+- **Abhängigkeiten:** GATE-A
+
+### SF-051 – Energieverbrauch
+
+- **Priorität:** P1
+- **Abhängigkeiten:** SF-050
+
+### SF-052 – Energienetzwerk
+
+- **Priorität:** P1
+- **Abhängigkeiten:** SF-051
+
+### SF-053 – Prioritätensystem
+
+- **Priorität:** P1
+- **Abhängigkeiten:** SF-052
+- **Reihenfolge:**
+  1. Lebenserhaltung
+  2. Schilde
+  3. Waffen
+  4. Industrie
+  5. Komfort
+
+## EPIC-007 – Physik
+
+### SF-060 – Massenberechnung
+
+- **Priorität:** P1
+- **Abhängigkeiten:** SF-030
+
+### SF-061 – Schwerpunktberechnung
+
+- **Priorität:** P1
+- **Abhängigkeiten:** SF-060
+
+### SF-062 – Trägheitsberechnung
+
+- **Priorität:** P1
+- **Abhängigkeiten:** SF-061
+
+### SF-063 – Thrustersystem
+
+- **Priorität:** P1
+- **Abhängigkeiten:**
+  - SF-053
+  - SF-062
+
+## GATE-B – Freigabe für P2
+
+**Voraussetzungen:** SF-040 bis SF-063.
+
+**Benchmarks:**
+
+- 1000-Tile-Schiff
+- Schwerpunkt korrekt
+- Energie korrekt
+- Flugmodell stabil
+
+## EPIC-008 – Kampf
+
+### SF-070 – Projektilsystem
+
+- **Priorität:** P2
+- **Abhängigkeiten:** GATE-B
+
+### SF-071 – Broadphase-Kollision
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-070
+
+### SF-072 – Narrowphase-Kollision
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-071
+
+### SF-073 – Lokales Schadensmodell
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-072
+
+## EPIC-009 – Simulationsaktivierung
+
+### SF-080 – Chunk-Zustände
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-020
+- **Statuswerte:**
+  - Dormant
+  - Active
+  - Combat
+
+### SF-081 – Ereignisgesteuerte Aktivierung
+
+- **Priorität:** P2
+- **Abhängigkeiten:**
+  - SF-080
+  - SF-073
+
+### SF-082 – Zeitgesteuerte Deaktivierung
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-081
+
+## EPIC-010 – Mining
+
+### SF-090 – Asteroidenobjekte
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-073
+
+### SF-091 – Mining-Laser
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-090
+
+### SF-092 – Ressourcenloot
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-091
+
+## GATE-C – MVP
+
+**Voraussetzungen:** SF-070 bis SF-092.
+
+**MVP-Anforderungen:**
+
+- Schiff bauen
+- Schiff fliegen
+- Asteroid abbauen
+- Kampf gegen Gegner
+- Speichern und Laden
+
+## EPIC-011 – Galaxie
+
+### SF-100 – Sektor-Datenmodell
+
+- **Priorität:** P3
+- **Abhängigkeiten:** GATE-C
+
+### SF-101 – Ringbasierter Weltgenerator
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-100
+
+### SF-102 – Distanzabhängige Schwierigkeit
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-101
+
+## EPIC-012 – Streaming
+
+### SF-110 – Sektor-Ladesystem
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-101
+
+### SF-111 – Sektor-Entladung
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-110
+
+### SF-112 – Hintergrundsimulation
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-111
+
+## EPIC-013 – Stationen
+
+### SF-120 – Stationen aus Construction ableiten
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-112
+
+### SF-121 – Dockingsystem
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-120
+
+### SF-122 – Ressourcenübergabe
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-121
+
+## GATE-D – Streaming-Nachweis
+
+**Benchmarks:**
+
+- Streaming aktiv
+- Speicher stabil
+- Kein FPS-Abfall
+- Wechsel zwischen Sektoren möglich
+
+## EPIC-014 – Industrie
+
+### SF-130 – Rezeptsystem
+
+- **Priorität:** P4
+- **Abhängigkeiten:** GATE-D
+
+### SF-131 – Produktionsmodule
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-130
+
+### SF-132 – Produktionswarteschlangen
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-131
+
+## EPIC-015 – Forschung
+
+### SF-140 – Forschungssystem
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-132
+
+### SF-141 – Technologiebaum
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-140
+
+## EPIC-016 – KI
+
+### SF-150 – NPC-Schiffsgenerator
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-141
+
+### SF-151 – Navigations-KI
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-150
+
+### SF-152 – Kampf-KI
+
+- **Priorität:** P4
+- **Abhängigkeiten:**
+  - SF-151
+  - SF-073
+
+## EPIC-017 – Fraktionen
+
+### SF-160 – Fraktionssystem
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-152
+
+### SF-161 – Diplomatie
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-160
+
+### SF-162 – Wirtschaftliche Fraktionssimulation
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-161
+
+## EPIC-018 – Flotten
+
+### SF-170 – Flottenverwaltung
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-152
+
+### SF-171 – Rollenbasierte Formationen
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-170
+
+### SF-172 – Großschlachten
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-171
+
+## EPIC-019 – Endgame
+
+### SF-180 – Megastrukturen
+
+- **Priorität:** P4
+- **Abhängigkeiten:**
+  - SF-162
+  - SF-172
+
+### SF-181 – Galaktische Krisen
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-180
+
+### SF-182 – Siegbedingungen
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-181
+
+## Agentenregeln
+
+- **RULE-001:** Keine Entwicklung oberhalb der aktuellen Prioritätsstufe.
+- **RULE-002:** Jede Epic endet mit Benchmarks.
+- **RULE-003:** Tile-Simulation nur bei aktiven Ereignissen.
+- **RULE-004:** Neue Mechaniken müssen chunk-kompatibel sein.
+- **RULE-005:** Performance-Regression blockiert Merge.
+- **RULE-006:** Ein funktionierender Spielstand hat Vorrang vor neuem Content.
+- **RULE-007:** Open World erst nach funktionierendem Gameplay-Core.
+- **RULE-008:** Weltgröße darf wachsen, die aktive Simulation nicht.
