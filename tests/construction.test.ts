@@ -29,6 +29,27 @@ describe('Construction', () => {
     expect(construction.getConnectedComponents()).toHaveLength(2);
   });
 
+  it('returns only tiles inside half-open bounds across chunk edges', () => {
+    const construction = new Construction('visible-tiles');
+    construction.placeTile({ x: -1, y: 0 }, 'hull');
+    construction.placeTile({ x: 0, y: 0 }, 'hull');
+    construction.placeTile({ x: 31, y: 0 }, 'armor');
+    construction.placeTile({ x: 32, y: 0 }, 'reactor');
+    construction.placeTile({ x: 40, y: 2 }, 'storage');
+
+    const visibleTiles = construction.getTilesInBounds({
+      minX: 0,
+      minY: 0,
+      maxXExclusive: 32,
+      maxYExclusive: 1
+    });
+
+    expect(visibleTiles.map(({ position }) => position)).toEqual([
+      { x: 0, y: 0 },
+      { x: 31, y: 0 }
+    ]);
+  });
+
   it('creates separate constructions for disconnected components', () => {
     const construction = new Construction('fragmenting-ship');
     construction.placeTile({ x: -1, y: 0 }, 'hull');

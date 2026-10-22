@@ -70,7 +70,12 @@ export class CanvasWorldRenderer {
       this.context.stroke();
     }
 
-    for (const { position, tile } of construction.getTiles()) {
+    for (const { position, tile } of construction.getTilesInBounds({
+      minX: 0,
+      minY: 0,
+      maxXExclusive: columns,
+      maxYExclusive: rows
+    })) {
       const x = position.x * TILE_PIXEL_SIZE;
       const y = position.y * TILE_PIXEL_SIZE;
 

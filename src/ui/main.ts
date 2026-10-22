@@ -1,4 +1,8 @@
 import './style.css';
+import {
+  runGateABenchmark,
+  type GateABenchmarkReport
+} from '../benchmark/runGateABenchmark';
 import { isTileType } from '../core/tiles';
 import { createDemoConstruction } from '../game/createDemoConstruction';
 import {
@@ -67,13 +71,39 @@ const statusElement = requireElement(
   document.querySelector<HTMLElement>('#status'),
   '#status'
 );
+const runBenchmarkButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#run-gate-a'),
+  '#run-gate-a'
+);
+const downloadBenchmarkLink = requireElement(
+  document.querySelector<HTMLAnchorElement>('#download-benchmark'),
+  '#download-benchmark'
+);
+const benchmarkSummaryElement = requireElement(
+  document.querySelector<HTMLElement>('#benchmark-summary'),
+  '#benchmark-summary'
+);
+const benchmarkReportElement = requireElement(
+  document.querySelector<HTMLElement>('#benchmark-report'),
+  '#benchmark-report'
+);
 const renderer = new CanvasWorldRenderer(canvas);
+const constructionControls: Array<HTMLButtonElement | HTMLSelectElement> = [
+  tileTypeSelect,
+  placeModeButton,
+  eraseModeButton,
+  saveButton,
+  loadButton,
+  resetButton
+];
 
 type EditMode = 'place' | 'erase';
 
 let construction = createDemoConstruction();
 let editMode: EditMode = 'place';
 let connectedComponentCount = construction.getConnectedComponents().length;
+let benchmarkRunning = false;
+let benchmarkReportUrl: string | undefined;
 
 function refreshWorld(): void {
   connectedComponentCount = construction.getConnectedComponents().length;
@@ -99,8 +129,42 @@ function setEditMode(mode: EditMode): void {
   canvas.dataset.mode = mode;
 }
 
+function setConstructionControlsEnabled(enabled: boolean): void {
+  for (const control of constructionControls) {
+    control.disabled = !enabled;
+  }
+}
+
+function disableBenchmarkDownload(): void {
+  if (benchmarkReportUrl !== undefined) {
+    URL.revokeObjectURL(benchmarkReportUrl);
+    benchmarkReportUrl = undefined;
+  }
+
+  downloadBenchmarkLink.href = '#';
+  downloadBenchmarkLink.removeAttribute('download');
+  downloadBenchmarkLink.setAttribute('aria-disabled', 'true');
+  downloadBenchmarkLink.tabIndex = -1;
+}
+
+function enableBenchmarkDownload(report: GateABenchmarkReport): void {
+  disableBenchmarkDownload();
+
+  const reportBlob = new Blob([JSON.stringify(report, null, 2)], {
+    type: 'application/json'
+  });
+  benchmarkReportUrl = URL.createObjectURL(reportBlob);
+  downloadBenchmarkLink.href = benchmarkReportUrl;
+  downloadBenchmarkLink.download =
+    `stellar-frontier-gate-a-${new Date()
+      .toISOString()
+      .replaceAll(':', '-')}.json`;
+  downloadBenchmarkLink.removeAttribute('aria-disabled');
+  downloadBenchmarkLink.tabIndex = 0;
+}
+
 function handleCanvasPointerDown(event: PointerEvent): void {
-  if (event.button !== 0 && event.button !== 2) {
+  if (benchmarkRunning || (event.button !== 0 && event.button !== 2)) {
     return;
   }
 
@@ -169,6 +233,68 @@ resetButton.addEventListener('click', () => {
   statusElement.textContent = 'Beispielkonstruktion wiederhergestellt.';
   refreshWorld();
 });
+
+runBenchmarkButton.addEventListener('click', async () => {
+  if (benchmarkRunning) {
+    return;
+  }
+
+  benchmarkRunning = true;
+  runBenchmarkButton.disabled = true;
+  disableBenchmarkDownload();
+  setConstructionControlsEnabled(false);
+  benchmarkSummaryElement.textContent =
+    'Erzeuge das Gate-A-Lastprofil und messe 180 Frames nach dem Aufwärmen …';
+  benchmarkReportElement.textContent = 'Benchmark läuft …';
+  statusElement.textContent =
+    'Benchmark läuft. Die Konstruktionsfläche ist währenddessen gesperrt.';
+
+  try {
+    const report = await runGateABenchmark(
+      canvas,
+      renderer,
+      import.meta.env.MODE
+    );
+
+    benchmarkReportElement.textContent = JSON.stringify(report, null, 2);
+    benchmarkSummaryElement.textContent =
+      `${report.rendering.averageFps} FPS durchschnittlich · ` +
+      `p95 ${report.rendering.p95FrameIntervalMs} ms · ` +
+      `${report.rendering.framesOverBudget} Frames über dem 60-FPS-Budget.`;
+    statusElement.textContent = report.rendering.averageFpsTargetMet
+      ? 'Die lokale Messung erreicht 60 FPS; Gate A bleibt bis zur Bestätigung der Zielhardware offen.'
+      : 'Die lokale Messung unterschreitet 60 FPS; Gate A bleibt offen.';
+
+    try {
+      enableBenchmarkDownload(report);
+    } catch (error) {
+      statusElement.textContent =
+        `Messung abgeschlossen, JSON-Export fehlgeschlagen: ${showError(error)}`;
+    }
+  } catch (error) {
+    const message = showError(error);
+    benchmarkReportElement.textContent = `Benchmark fehlgeschlagen: ${message}`;
+    benchmarkSummaryElement.textContent = `Messung fehlgeschlagen: ${message}`;
+    statusElement.textContent = `Benchmark fehlgeschlagen: ${message}`;
+  } finally {
+    benchmarkRunning = false;
+    runBenchmarkButton.disabled = false;
+    setConstructionControlsEnabled(true);
+    refreshWorld();
+  }
+});
+
+downloadBenchmarkLink.addEventListener('click', (event) => {
+  if (downloadBenchmarkLink.getAttribute('aria-disabled') === 'true') {
+    event.preventDefault();
+    statusElement.textContent = 'Es liegt noch kein Benchmarkbericht vor.';
+    return;
+  }
+
+  statusElement.textContent = 'Benchmarkbericht wird heruntergeladen.';
+});
+
+window.addEventListener('pagehide', disableBenchmarkDownload, { once: true });
 
 setEditMode('place');
 refreshWorld();

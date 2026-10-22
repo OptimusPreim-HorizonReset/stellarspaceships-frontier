@@ -92,6 +92,35 @@
                 <span class="hint-icon" aria-hidden="true">i</span>
                 <p>Diagonale Berührung verbindet keine Tiles. Vierer-Nachbarschaft wird beim Aufteilen geprüft.</p>
               </div>
+              <section class="benchmark-card" aria-labelledby="benchmark-title">
+                <p class="eyebrow">PERFORMANCE CHECK</p>
+                <h3 id="benchmark-title">Gate A</h3>
+                <p class="benchmark-description">
+                  10.000 Tiles, 100 Chunks, Save/Load und ein sichtbarer Renderlauf.
+                  Für belastbare Werte den Tab geöffnet lassen.
+                </p>
+                <div class="benchmark-actions">
+                  <button id="run-gate-a" class="action-button" type="button">
+                    Lokal messen
+                  </button>
+                  <a
+                    id="download-benchmark"
+                    class="action-button action-button-muted"
+                    href="#"
+                    aria-disabled="true"
+                    tabindex="-1"
+                  >
+                    JSON exportieren
+                  </a>
+                </div>
+                <p id="benchmark-summary" class="benchmark-summary" role="status" aria-live="polite">
+                  Zielhardware ist noch nicht festgelegt.
+                </p>
+                <details class="benchmark-details">
+                  <summary>Letzten Messbericht anzeigen</summary>
+                  <pre id="benchmark-report">Noch keine Messung ausgeführt.</pre>
+                </details>
+              </section>
               <p id="status" class="status-message" role="status" aria-live="polite">
                 Labor bereit.
               </p>

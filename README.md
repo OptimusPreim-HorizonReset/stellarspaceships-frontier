@@ -14,7 +14,7 @@ npm run lint
 npm run build
 ```
 
-Die App stellt zunächst ein interaktives Tile- und Chunk-Labor bereit. Tile setzen, ersetzen, entfernen sowie Speichern und Laden lassen sich dort direkt ausprobieren.
+Die App stellt zunächst ein interaktives Tile- und Chunk-Labor bereit. Tile setzen, ersetzen, entfernen, Speichern/Laden und die lokale Gate-A-Messung lassen sich dort ausprobieren.
 
 ## Technische Ausgangslage
 
@@ -52,4 +52,4 @@ Bei Abweichungen gilt der Backlog als Quelle für Task-IDs und Akzeptanzkriterie
 
 ## Status
 
-Die erste P0-Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, ein Browser-Labor und einen automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Gate A ist **noch nicht bestanden**, bis die 60-FPS-Messung auf der Zielhardware dokumentiert ist.
+Die erste P0-Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und einen automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Vier lokale Produktionsläufe lagen bei durchschnittlich 60,03–60,04 FPS; Gate A ist **noch nicht bestanden**, bis Zielhardware und Messbedingungen festgelegt und dort bestätigt sind. Details stehen in [SKALIERUNG.md](./SKALIERUNG.md).

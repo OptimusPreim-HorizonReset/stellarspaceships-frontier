@@ -17,6 +17,13 @@ export interface PlacedTile {
   readonly tile: Tile;
 }
 
+export interface TileBounds {
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxXExclusive: number;
+  readonly maxYExclusive: number;
+}
+
 const NEIGHBOR_OFFSETS: readonly TilePosition[] = [
   { x: 1, y: 0 },
   { x: -1, y: 0 },
@@ -171,6 +178,64 @@ export class Construction {
         left.position.y - right.position.y ||
         left.position.x - right.position.x
     );
+  }
+
+  getTilesInBounds(bounds: TileBounds): PlacedTile[] {
+    const coordinates = [
+      bounds.minX,
+      bounds.minY,
+      bounds.maxXExclusive,
+      bounds.maxYExclusive
+    ];
+
+    if (!coordinates.every(Number.isSafeInteger)) {
+      throw new RangeError('Tile bounds must use safe integer coordinates.');
+    }
+
+    if (
+      bounds.maxXExclusive <= bounds.minX ||
+      bounds.maxYExclusive <= bounds.minY
+    ) {
+      return [];
+    }
+
+    const firstChunk = chunkPositionForTile({
+      x: bounds.minX,
+      y: bounds.minY
+    });
+    const lastChunk = chunkPositionForTile({
+      x: bounds.maxXExclusive - 1,
+      y: bounds.maxYExclusive - 1
+    });
+    const visibleTiles: PlacedTile[] = [];
+
+    for (let chunkY = firstChunk.y; chunkY <= lastChunk.y; chunkY += 1) {
+      for (let chunkX = firstChunk.x; chunkX <= lastChunk.x; chunkX += 1) {
+        const chunk = this.chunks.get(chunkKey({ x: chunkX, y: chunkY }));
+
+        if (chunk === undefined) {
+          continue;
+        }
+
+        for (const entry of chunk.entries()) {
+          const position = {
+            x: chunkX * chunk.size + entry.position.x,
+            y: chunkY * chunk.size + entry.position.y
+          };
+
+          if (
+            position.x >= bounds.minX &&
+            position.x < bounds.maxXExclusive &&
+            position.y >= bounds.minY &&
+            position.y < bounds.maxYExclusive
+          ) {
+            visibleTiles.push({ position, tile: entry.tile });
+          }
+        }
+      }
+    }
+
+    return visibleTiles;
   }
 
   getConnectedComponents(): TilePosition[][] {
