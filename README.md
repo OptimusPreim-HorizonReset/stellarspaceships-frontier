@@ -34,6 +34,7 @@ src/
   construction/   Konstruktionen und Fragmentierung
   energy/         Aggregierte Energieerzeugung pro Chunk
   game/           Beispielkonstruktion für das Labor
+  physics/        Masse und weitere Physikberechnungen
   rendering/      Canvas-Renderer
   save/           Versionierte Persistenz
   ui/             Browser-Labor
@@ -53,4 +54,4 @@ Bei Abweichungen gilt der Backlog als Quelle für Task-IDs und Akzeptanzkriterie
 
 ## Status
 
-Die Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und den automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe erfüllen die provisorische Desktop-Entwicklungsbaseline; die finale mobile Gate-A-Freigabe bleibt offen. P1-Erzeugung, Verbrauch, Nettoleistung und ein datengetriebener Chunk-Prioritätsallocator sind implementiert; die Zuordnung konkreter Spielmodule zu Prioritäten bleibt offen. Details und Messwerte stehen in [SKALIERUNG.md](./SKALIERUNG.md).
+Die Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und den automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe erfüllen die provisorische Desktop-Entwicklungsbaseline; die finale mobile Gate-A-Freigabe bleibt offen. P1-Energiebilanz, Prioritätsallocator, Gesamtmasse, Schwerpunkt und Trägheitsmoment sind implementiert; die konkrete Verbraucher-Prioritätszuordnung bleibt offen. Als Nächstes folgt das Thrustersystem. Details und Messwerte stehen in [SKALIERUNG.md](./SKALIERUNG.md).

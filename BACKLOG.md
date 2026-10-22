@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energiebilanz und Prioritätsallocator umgesetzt; Zuordnung konkreter Verbraucher und mobile Gate-A-Freigabe offen
+**Status:** P1-Energie, Masse, Schwerpunkt und Trägheitsmoment umgesetzt; SF-063 Thrustersystem als Nächstes; mobiles Gate-A-Profil offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -218,16 +218,29 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P1
 - **Abhängigkeiten:** SF-030
+- **Akzeptanzkriterien:**
+  - Lebende Tiles anhand ihrer Registry-Masse zusammenfassen
+  - Summen pro Chunk und Konstruktion ausgeben
+  - Zerstörte Tiles nicht zur Masse zählen
+  - Bei Änderungen neu berechnen, nicht als Tile-Simulation pro Frame
 
 ### SF-061 – Schwerpunktberechnung
 
 - **Priorität:** P1
 - **Abhängigkeiten:** SF-060
+- **Akzeptanzkriterien:**
+  - Schwerpunkt aus den Mittelpunkten lebender Tiles und deren Registry-Masse gewichten
+  - Gesamtkonstruktion und Chunksummen reproduzierbar ausgeben
+  - Leere bzw. masselose Konstruktionen ohne Schwerpunkt ausweisen
 
 ### SF-062 – Trägheitsberechnung
 
 - **Priorität:** P1
 - **Abhängigkeiten:** SF-061
+- **Akzeptanzkriterien:**
+  - Trägheitsmoment um die 2D-Drehachse durch den Schwerpunkt berechnen
+  - Tiles als gleichmäßig verteilte Einheitsquadrate behandeln
+  - Lebende Tile-Massen pro Chunk und Konstruktion aggregieren
 
 ### SF-063 – Thrustersystem
 

@@ -10,6 +10,7 @@ import {
   CanvasWorldRenderer,
   TILE_PIXEL_SIZE
 } from '../rendering/canvasWorldRenderer';
+import { calculateMomentOfInertia } from '../physics/momentOfInertia';
 import {
   deserializeConstruction,
   serializeConstruction
@@ -80,6 +81,18 @@ const netPowerElement = requireElement(
   document.querySelector<HTMLElement>('#net-power'),
   '#net-power'
 );
+const totalMassElement = requireElement(
+  document.querySelector<HTMLElement>('#total-mass'),
+  '#total-mass'
+);
+const centerOfMassElement = requireElement(
+  document.querySelector<HTMLElement>('#center-of-mass'),
+  '#center-of-mass'
+);
+const momentOfInertiaElement = requireElement(
+  document.querySelector<HTMLElement>('#moment-of-inertia'),
+  '#moment-of-inertia'
+);
 const statusElement = requireElement(
   document.querySelector<HTMLElement>('#status'),
   '#status'
@@ -138,6 +151,15 @@ function refreshWorld(): void {
     powerBalance.totalNetPower.toLocaleString(
       'de-DE'
     );
+  const physicalProperties = calculateMomentOfInertia(construction);
+  totalMassElement.textContent =
+    physicalProperties.totalMass.toLocaleString('de-DE');
+  centerOfMassElement.textContent =
+    physicalProperties.centerOfMass === null
+      ? '—'
+      : `${physicalProperties.centerOfMass.x.toFixed(2)}, ${physicalProperties.centerOfMass.y.toFixed(2)}`;
+  momentOfInertiaElement.textContent =
+    physicalProperties.momentOfInertia.toLocaleString('de-DE');
 }
 
 function showError(error: unknown): string {
