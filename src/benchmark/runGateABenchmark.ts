@@ -14,6 +14,13 @@ interface FrameSamples {
   readonly renderDurationsMs: readonly number[];
 }
 
+interface BrowserHeapSnapshot {
+  readonly supported: boolean;
+  readonly usedBytes: number | null;
+  readonly totalBytes: number | null;
+  readonly limitBytes: number | null;
+}
+
 export interface GateABenchmarkReport {
   readonly schemaVersion: 1;
   readonly generatedAt: string;
@@ -32,6 +39,7 @@ export interface GateABenchmarkReport {
     readonly tileCount: number;
     readonly chunkCount: number;
     readonly visibleTilesPerFrame: number;
+    readonly visibleChunksPerFrame: number;
     readonly serializedBytes: number;
   };
   readonly persistence: {
@@ -50,11 +58,76 @@ export interface GateABenchmarkReport {
     readonly p95RenderMs: number;
     readonly averageFpsTargetMet: boolean;
   };
+  readonly profiling: {
+    readonly cpu: {
+      readonly systemCpuPercentAvailable: false;
+      readonly systemCpuPercent: null;
+      readonly averageJavaScriptRenderMs: number;
+      readonly p95JavaScriptRenderMs: number;
+    };
+    readonly memory: {
+      readonly processRamUsageAvailable: false;
+      readonly browserHeapApiAvailable: boolean;
+      readonly usedJSHeapBytesBefore: number | null;
+      readonly usedJSHeapBytesAfterRoundTrip: number | null;
+      readonly usedJSHeapBytesAfterRender: number | null;
+      readonly totalJSHeapBytesAfterRender: number | null;
+      readonly jsHeapSizeLimitBytes: number | null;
+    };
+    readonly chunks: {
+      readonly totalChunks: number;
+      readonly renderedChunksPerFrame: number;
+      readonly simulationStatesAvailable: false;
+    };
+    readonly physics: {
+      readonly status: 'not-implemented';
+    };
+    readonly collision: {
+      readonly status: 'not-implemented';
+    };
+  };
   readonly gateAApproved: false;
 }
 
 function rounded(value: number): number {
   return Number(value.toFixed(2));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function nonNegativeNumber(value: unknown): number | null {
+  return typeof value === 'number' &&
+    Number.isFinite(value) &&
+    value >= 0
+    ? value
+    : null;
+}
+
+function readBrowserHeapSnapshot(): BrowserHeapSnapshot {
+  const memory: unknown = Reflect.get(performance, 'memory');
+
+  if (!isRecord(memory)) {
+    return {
+      supported: false,
+      usedBytes: null,
+      totalBytes: null,
+      limitBytes: null
+    };
+  }
+
+  const usedBytes = nonNegativeNumber(memory['usedJSHeapSize']);
+  const totalBytes = nonNegativeNumber(memory['totalJSHeapSize']);
+  const limitBytes = nonNegativeNumber(memory['jsHeapSizeLimit']);
+
+  return {
+    supported:
+      usedBytes !== null && totalBytes !== null && limitBytes !== null,
+    usedBytes,
+    totalBytes,
+    limitBytes
+  };
 }
 
 function percentile(values: readonly number[], fraction: number): number {
@@ -132,6 +205,7 @@ export async function runGateABenchmark(
   renderer: CanvasWorldRenderer,
   buildMode: string
 ): Promise<GateABenchmarkReport> {
+  const heapBefore = readBrowserHeapSnapshot();
   const construction = createGateAConstruction();
 
   const serializeStartedAt = performance.now();
@@ -153,6 +227,7 @@ export async function runGateABenchmark(
     throw new Error('Gate A save/load round-trip did not preserve the workload.');
   }
 
+  const heapAfterRoundTrip = readBrowserHeapSnapshot();
   const visibleColumns = Math.ceil(canvas.clientWidth / TILE_PIXEL_SIZE);
   const visibleRows = Math.ceil(canvas.clientHeight / TILE_PIXEL_SIZE);
 
@@ -160,13 +235,18 @@ export async function runGateABenchmark(
     throw new Error('Gate A requires a visible, non-zero canvas.');
   }
 
-  const visibleTilesPerFrame = construction.getTilesInBounds({
+  const visibleBounds = {
     minX: 0,
     minY: 0,
     maxXExclusive: visibleColumns,
     maxYExclusive: visibleRows
-  }).length;
+  };
+  const visibleTilesPerFrame =
+    construction.getTilesInBounds(visibleBounds).length;
+  const visibleChunksPerFrame =
+    construction.getChunkCountInBounds(visibleBounds);
   const samples = await collectFrames(renderer);
+  const heapAfterRendering = readBrowserHeapSnapshot();
   const frameMetrics = summarizeFrameIntervals(
     samples.intervalsMs,
     GATE_A_PROFILE.targetFps
@@ -194,6 +274,7 @@ export async function runGateABenchmark(
       tileCount: construction.tileCount,
       chunkCount: construction.chunkCount,
       visibleTilesPerFrame,
+      visibleChunksPerFrame,
       serializedBytes: new TextEncoder().encode(serialized).byteLength
     },
     persistence: {
@@ -213,6 +294,33 @@ export async function runGateABenchmark(
       averageRenderMs: rounded(averageRenderMs),
       p95RenderMs: rounded(p95RenderMs),
       averageFpsTargetMet: frameMetrics.meetsAverageFpsTarget
+    },
+    profiling: {
+      cpu: {
+        systemCpuPercentAvailable: false,
+        systemCpuPercent: null,
+        averageJavaScriptRenderMs: rounded(averageRenderMs),
+        p95JavaScriptRenderMs: rounded(p95RenderMs)
+      },
+      memory: {
+        processRamUsageAvailable: false,
+        browserHeapApiAvailable:
+          heapBefore.supported &&
+          heapAfterRoundTrip.supported &&
+          heapAfterRendering.supported,
+        usedJSHeapBytesBefore: heapBefore.usedBytes,
+        usedJSHeapBytesAfterRoundTrip: heapAfterRoundTrip.usedBytes,
+        usedJSHeapBytesAfterRender: heapAfterRendering.usedBytes,
+        totalJSHeapBytesAfterRender: heapAfterRendering.totalBytes,
+        jsHeapSizeLimitBytes: heapAfterRendering.limitBytes
+      },
+      chunks: {
+        totalChunks: construction.chunkCount,
+        renderedChunksPerFrame: visibleChunksPerFrame,
+        simulationStatesAvailable: false
+      },
+      physics: { status: 'not-implemented' },
+      collision: { status: 'not-implemented' }
     },
     gateAApproved: false
   };

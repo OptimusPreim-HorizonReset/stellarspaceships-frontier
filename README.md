@@ -52,4 +52,4 @@ Bei Abweichungen gilt der Backlog als Quelle für Task-IDs und Akzeptanzkriterie
 
 ## Status
 
-Die erste P0-Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und einen automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Vier lokale Produktionsläufe lagen bei durchschnittlich 60,03–60,04 FPS; Gate A ist **noch nicht bestanden**, bis Zielhardware und Messbedingungen festgelegt und dort bestätigt sind. Details stehen in [SKALIERUNG.md](./SKALIERUNG.md).
+Die erste P0-Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und einen automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe lagen bei durchschnittlich 59,38–60,04 FPS; Gate A ist **noch nicht bestanden**, bis Zielhardware und Messbedingungen festgelegt und dort bestätigt sind. Details stehen in [SKALIERUNG.md](./SKALIERUNG.md).

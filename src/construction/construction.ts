@@ -3,7 +3,7 @@ import {
   chunkPositionForTile,
   localPositionForTile
 } from '../core/coordinates';
-import type { TilePosition } from '../core/coordinates';
+import type { ChunkPosition, TilePosition } from '../core/coordinates';
 import {
   DEFAULT_TILE_REGISTRY,
   type Tile,
@@ -33,6 +33,36 @@ const NEIGHBOR_OFFSETS: readonly TilePosition[] = [
 
 function tilePositionKey(position: TilePosition): string {
   return `${position.x},${position.y}`;
+}
+
+function chunkRangeForBounds(
+  bounds: TileBounds
+): { readonly first: ChunkPosition; readonly last: ChunkPosition } | undefined {
+  const coordinates = [
+    bounds.minX,
+    bounds.minY,
+    bounds.maxXExclusive,
+    bounds.maxYExclusive
+  ];
+
+  if (!coordinates.every(Number.isSafeInteger)) {
+    throw new RangeError('Tile bounds must use safe integer coordinates.');
+  }
+
+  if (
+    bounds.maxXExclusive <= bounds.minX ||
+    bounds.maxYExclusive <= bounds.minY
+  ) {
+    return undefined;
+  }
+
+  return {
+    first: chunkPositionForTile({ x: bounds.minX, y: bounds.minY }),
+    last: chunkPositionForTile({
+      x: bounds.maxXExclusive - 1,
+      y: bounds.maxYExclusive - 1
+    })
+  };
 }
 
 function assertValidConstructionId(id: string): void {
@@ -181,36 +211,24 @@ export class Construction {
   }
 
   getTilesInBounds(bounds: TileBounds): PlacedTile[] {
-    const coordinates = [
-      bounds.minX,
-      bounds.minY,
-      bounds.maxXExclusive,
-      bounds.maxYExclusive
-    ];
+    const chunkRange = chunkRangeForBounds(bounds);
 
-    if (!coordinates.every(Number.isSafeInteger)) {
-      throw new RangeError('Tile bounds must use safe integer coordinates.');
-    }
-
-    if (
-      bounds.maxXExclusive <= bounds.minX ||
-      bounds.maxYExclusive <= bounds.minY
-    ) {
+    if (chunkRange === undefined) {
       return [];
     }
 
-    const firstChunk = chunkPositionForTile({
-      x: bounds.minX,
-      y: bounds.minY
-    });
-    const lastChunk = chunkPositionForTile({
-      x: bounds.maxXExclusive - 1,
-      y: bounds.maxYExclusive - 1
-    });
     const visibleTiles: PlacedTile[] = [];
 
-    for (let chunkY = firstChunk.y; chunkY <= lastChunk.y; chunkY += 1) {
-      for (let chunkX = firstChunk.x; chunkX <= lastChunk.x; chunkX += 1) {
+    for (
+      let chunkY = chunkRange.first.y;
+      chunkY <= chunkRange.last.y;
+      chunkY += 1
+    ) {
+      for (
+        let chunkX = chunkRange.first.x;
+        chunkX <= chunkRange.last.x;
+        chunkX += 1
+      ) {
         const chunk = this.chunks.get(chunkKey({ x: chunkX, y: chunkY }));
 
         if (chunk === undefined) {
@@ -236,6 +254,34 @@ export class Construction {
     }
 
     return visibleTiles;
+  }
+
+  getChunkCountInBounds(bounds: TileBounds): number {
+    const chunkRange = chunkRangeForBounds(bounds);
+
+    if (chunkRange === undefined) {
+      return 0;
+    }
+
+    let visibleChunkCount = 0;
+
+    for (
+      let chunkY = chunkRange.first.y;
+      chunkY <= chunkRange.last.y;
+      chunkY += 1
+    ) {
+      for (
+        let chunkX = chunkRange.first.x;
+        chunkX <= chunkRange.last.x;
+        chunkX += 1
+      ) {
+        if (this.chunks.has(chunkKey({ x: chunkX, y: chunkY }))) {
+          visibleChunkCount += 1;
+        }
+      }
+    }
+
+    return visibleChunkCount;
   }
 
   getConnectedComponents(): TilePosition[][] {

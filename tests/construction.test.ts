@@ -44,6 +44,14 @@ describe('Construction', () => {
       maxYExclusive: 1
     });
 
+    expect(
+      construction.getChunkCountInBounds({
+        minX: 0,
+        minY: 0,
+        maxXExclusive: 32,
+        maxYExclusive: 1
+      })
+    ).toBe(1);
     expect(visibleTiles.map(({ position }) => position)).toEqual([
       { x: 0, y: 0 },
       { x: 31, y: 0 }

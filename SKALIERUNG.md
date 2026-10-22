@@ -22,7 +22,7 @@ Die Messung prüft 10.000 Tiles in 100 Chunks, den Save/Load-Roundtrip und 30 Au
 
 ## Vorläufige lokale Referenzmessung
 
-Produktionspreview im integrierten VS-Code-Browser, Viewport 476 × 339 CSS-Pixel, DPR 1,5. Die 10.000 Tiles lagen in 100 Chunks; bei diesem Viewport waren 76 Tiles pro Frame sichtbar. Vier Läufe mit demselben Profil:
+Produktionspreview im integrierten VS-Code-Browser, Viewport 476 × 339 CSS-Pixel, DPR 1,5. Die 10.000 Tiles lagen in 100 Chunks; bei diesem Viewport waren 76 Tiles und ein Chunk pro Frame sichtbar. Sechs Läufe mit demselben Profil:
 
 | Lauf | Durchschnitt | p95-Frameintervall | Intervalle > 16,67 ms | Render Ø / p95 | Serialize / Deserialize |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -30,8 +30,12 @@ Produktionspreview im integrierten VS-Code-Browser, Viewport 476 × 339 CSS-Pixe
 | 2 | 60,04 FPS | 16,8 ms | 93 / 180 | 0,31 / 0,7 ms | 13,3 / 30,3 ms |
 | 3 | 60,04 FPS | 17,0 ms | 89 / 180 | 0,40 / 1,0 ms | 12,8 / 44,7 ms |
 | 4 | 60,03 FPS | 16,9 ms | 95 / 180 | 0,17 / 0,3 ms | 15,3 / 20,5 ms |
+| 5 | 60,04 FPS | 16,8 ms | 95 / 180 | 0,43 / 1,6 ms | 20,6 / 49,3 ms |
+| 6 | 59,38 FPS | 19,6 ms | 99 / 180 | 0,85 / 3,3 ms | 17,1 / 46,9 ms |
 
-Chunk-basiertes Sichtbereichs-Culling reduzierte die durchschnittliche Renderdauer gegenüber dem vorherigen Vollscan in der lokalen Einzelmessung von 6,07 ms auf 0,31–0,43 ms. Der Zähler für Intervalle über 16,67 ms ist ein strikter Vergleich mit dem theoretischen 60-FPS-Budget und kein eigenständiger Nachweis sichtbarer Frame-Drops.
+Chunk-basiertes Sichtbereichs-Culling reduzierte die durchschnittliche Renderdauer gegenüber dem vorherigen Vollscan in der lokalen Einzelmessung von 6,07 ms auf 0,17–0,85 ms. Über die sechs Läufe lagen die durchschnittlichen FPS bei 59,38–60,04; der p95-Frameintervall bei 16,8–19,6 ms. Der Zähler für Intervalle über 16,67 ms ist ein strikter Vergleich mit dem theoretischen 60-FPS-Budget und kein eigenständiger Nachweis sichtbarer Frame-Drops.
+
+Ein Chromium-Heap-Snapshot des letzten Laufs lag bei 6,46 MB vor dem Profil, 10,76 MB nach Save/Load und 10,52 MB nach Rendering. Das ist eine JS-Heap-Momentaufnahme und kein Prozess- oder System-RAM-Wert.
 
 Dies ist nur eine lokale Referenz: Die offizielle Zielhardware wurde nicht festgelegt, CPU-/RAM-Profiling ist noch offen und Gate A bleibt **nicht freigegeben**.
 
@@ -47,16 +51,14 @@ Dies ist nur eine lokale Referenz: Die offizielle Zielhardware wurde nicht festg
 
 ## Profiling-Bericht
 
-SF-194 erfasst mindestens:
+Der JSON-Bericht erfasst für die vorhandenen P0-Systeme:
 
-- CPU-Verbrauch
-- RAM-Verbrauch
-- Chunk-Aktivität
-- Physik
-- Kollision
-- Speichern und Laden
+- JavaScript-Renderzeit als CPU-Zeit pro Frame
+- Browser-JS-Heap vor/nach Save/Load und Rendern, wenn `performance.memory` verfügbar ist
+- gesamte Chunks und sichtbare/rendered Chunks pro Frame
+- Serialize- und Deserialize-Dauer
 
-Die Messergebnisse werden für jedes Gate mit identischen Bedingungen wiederholt. Eine nicht gemessene Zielgröße wird als **offen** dokumentiert, nicht als bestanden.
+Systemweite CPU-Auslastung und Prozess-RAM sind im Browser nicht verfügbar und bleiben explizit als nicht gemessen markiert. Simulationszustände für Chunks sowie Physik- und Kollisionsprofile werden als nicht implementiert ausgewiesen, bis die jeweiligen Systeme existieren. SF-194 bleibt offen, bis die erforderlichen Systemmetriken erfasst und die Berichte nach jedem Gate unter gleichen Bedingungen verglichen werden können.
 
 ## Scope der aktuellen Grundlage
 

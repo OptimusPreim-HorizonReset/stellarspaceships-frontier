@@ -257,8 +257,13 @@ runBenchmarkButton.addEventListener('click', async () => {
     );
 
     benchmarkReportElement.textContent = JSON.stringify(report, null, 2);
+    const visibleChunkCount =
+      report.profiling.chunks.renderedChunksPerFrame;
+    const visibleChunkLabel = visibleChunkCount === 1 ? 'Chunk' : 'Chunks';
     benchmarkSummaryElement.textContent =
-      `${report.rendering.averageFps} FPS durchschnittlich · ` +
+      `${report.rendering.averageFps} FPS Ø · ` +
+      `${report.workload.visibleTilesPerFrame} sichtbare Tiles / ` +
+      `${visibleChunkCount} ${visibleChunkLabel} pro Frame · ` +
       `p95 ${report.rendering.p95FrameIntervalMs} ms · ` +
       `${report.rendering.framesOverBudget} Frames über dem 60-FPS-Budget.`;
     statusElement.textContent = report.rendering.averageFpsTargetMet

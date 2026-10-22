@@ -505,8 +505,9 @@ Die Benchmarks erg채nzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 - **Priorit채t:** P0
 - **Abh채ngigkeiten:** SF-002
 - **Akzeptanzkriterien:**
-  - CPU, RAM, Chunk-Aktivit채t, Physik, Kollision und Speichersystem erfassen
-  - Ergebnisse nach jedem Gate vergleichbar festhalten
+  - CPU, RAM, Chunk-Aktivit채t, Physik, Kollision und Speichersystem erfassen oder ausdr체cklich als nicht verf체gbar/nicht implementiert kennzeichnen
+  - Nicht verf체gbare Messwerte niemals als bestanden darstellen
+  - Ergebnisse nach jedem Gate unter identischen Bedingungen vergleichbar festhalten
 
 ## Agentenregeln
 
