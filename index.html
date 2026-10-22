@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Das technische Tile- und Chunk-Labor für Stellar Frontier."
+    />
+    <meta name="theme-color" content="#0a0d14" />
+    <title>Stellar Frontier – World Lab</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Stellar Frontier Startseite">
+          <span class="brand-mark" aria-hidden="true">SF</span>
+          <span>
+            <strong>Stellar Frontier</strong>
+            <small>ARCHITECTURE LAB · P0</small>
+          </span>
+        </a>
+        <span class="build-tag">TECH DEMO 0.2</span>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow">CHUNK-BASED CONSTRUCTION</p>
+          <h1 id="page-title">World Lab</h1>
+          <p>
+            Die erste technische Spielwiese: Tiles platzieren, Chunk-Grenzen
+            prüfen und Konstruktionen speichern.
+          </p>
+        </section>
+
+        <section class="lab-panel" aria-label="Konstruktionslabor">
+          <div class="toolbar">
+            <label class="control-group" for="tile-type">
+              <span>Tile-Typ</span>
+              <select id="tile-type">
+                <option value="hull">Hull</option>
+                <option value="armor">Armor</option>
+                <option value="reactor">Reactor</option>
+                <option value="battery">Battery</option>
+                <option value="thruster">Thruster</option>
+                <option value="storage">Storage</option>
+              </select>
+            </label>
+
+            <div class="mode-controls" role="group" aria-label="Bearbeitungsmodus">
+              <button id="place-mode" class="mode-button is-selected" type="button" aria-pressed="true">
+                Platzieren
+              </button>
+              <button id="erase-mode" class="mode-button" type="button" aria-pressed="false">
+                Entfernen
+              </button>
+            </div>
+
+            <div class="toolbar-actions">
+              <button id="save-world" class="action-button" type="button">Speichern</button>
+              <button id="load-world" class="action-button" type="button">Laden</button>
+              <button id="reset-world" class="action-button action-button-muted" type="button">Zurücksetzen</button>
+            </div>
+          </div>
+
+          <div class="world-layout">
+            <div class="canvas-wrap">
+              <canvas
+                id="world-canvas"
+                aria-label="Tile-Konstruktionsfläche. Klicken zum Platzieren oder Entfernen."
+                role="img"
+              ></canvas>
+              <div class="canvas-legend">
+                <span><i class="legend-swatch swatch-chunk"></i>Chunk-Grenze · 32 × 32</span>
+                <span><i class="legend-swatch swatch-hull"></i>Hull</span>
+                <span><i class="legend-swatch swatch-reactor"></i>Reactor</span>
+                <span class="mouse-hint">Rechtsklick entfernt ebenfalls</span>
+              </div>
+            </div>
+
+            <aside class="inspector" aria-label="Konstruktionsdaten">
+              <div class="inspector-heading">
+                <p class="eyebrow">LIVE INSPECTOR</p>
+                <h2>Übersicht</h2>
+              </div>
+              <dl class="stats-list">
+                <div><dt>Tiles</dt><dd id="tile-count">0</dd></div>
+                <div><dt>Chunks</dt><dd id="chunk-count">0</dd></div>
+                <div><dt>Zusammenhänge</dt><dd id="component-count">0</dd></div>
+              </dl>
+              <div class="hint-card">
+                <span class="hint-icon" aria-hidden="true">i</span>
+                <p>Diagonale Berührung verbindet keine Tiles. Vierer-Nachbarschaft wird beim Aufteilen geprüft.</p>
+              </div>
+              <p id="status" class="status-message" role="status" aria-live="polite">
+                Labor bereit.
+              </p>
+            </aside>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <span>Stellar Frontier · Browserbasierte P0-Grundlage</span>
+          <span>32 × 32 Tiles pro Chunk</span>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

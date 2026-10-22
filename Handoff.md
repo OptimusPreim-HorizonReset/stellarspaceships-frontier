@@ -147,7 +147,7 @@ Außerhalb des aktiven Bereichs findet keine Tile-Simulation statt.
 Dies ist der wichtigste Optimierungspunkt: Einzelne Tiles dürfen niemals permanent simuliert werden.
 
 1. **Tile** – kleinste Einheit
-2. **Module** – 32 × 32 oder 64 × 64 Tiles
+2. **Module** – logische Gruppierung; Größe noch festzulegen und nicht mit einem Chunk gleichzusetzen
 3. **Konstruktion** – Schiff, Station oder Basis
 4. **Objekt** – Weltobjekt im Sektor
 

@@ -75,7 +75,7 @@ class Chunk {
 Serialisierung testen. Folgende Größe muss ohne Framedrop gespeichert werden können:
 
 ```text
-5000 Tiles
+10.000 Tiles
 100 Chunks
 ```
 
@@ -83,9 +83,11 @@ Serialisierung testen. Folgende Größe muss ohne Framedrop gespeichert werden k
 
 Erfolg, wenn:
 
-- Schiff mit 5000 Tiles erzeugbar
-- Speichern und Laden möglich
+- Konstruktion mit 10.000 Tiles in mindestens 100 Chunks erzeugbar
+- Speichern und Laden dieser Konstruktion möglich
 - 60 FPS auf Zielhardware
+
+Die verbindliche Gate-A-Schwelle und der Benchmarkablauf stehen in [BACKLOG.md](./BACKLOG.md) und [SKALIERUNG.md](./SKALIERUNG.md).
 
 ## Phase 1 – Konstruktionen
 

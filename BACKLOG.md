@@ -1,7 +1,9 @@
 # Stellar Frontier – Development Backlog
 
-**Version:** 0.1  
-**Status:** Draft
+**Version:** 0.2
+**Status:** P0-Grundlage umgesetzt; Gate A noch offen
+
+Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
 ## Prioritätsskala
 
@@ -20,8 +22,13 @@
 - **Priorität:** P0
 - **Abhängigkeiten:** Keine
 - **Akzeptanzkriterien:**
-  - Standardisierte Verzeichnisstruktur
-  - Trennung von Core, World, Combat und UI
+  - `src/core` für gemeinsame Typen, Konfiguration und Koordinaten
+  - `src/world` für Chunks und Weltzugriff
+  - `src/construction` für Konstruktionen und Fragmentierung
+  - `src/save` für versionierte Persistenz
+  - `src/rendering` und `src/ui` getrennt halten
+  - `tests` für automatisierte Tests
+  - Feature-Verzeichnisse wie `src/combat` erst mit der jeweiligen Implementierung anlegen
 
 ### SF-002 – Buildpipeline einrichten
 
@@ -37,9 +44,9 @@
 - **Priorität:** P0
 - **Abhängigkeiten:** SF-001
 - **Akzeptanzkriterien:**
-  - WorldSize konfigurierbar
-  - ChunkSize konfigurierbar
-  - ActiveRadius konfigurierbar
+  - `CHUNK_SIZE` zentral auf 32 Tiles festgelegt
+  - Ungeklärte Weltgröße und aktiver Radius nicht mit vorläufigen Werten vortäuschen
+  - Weitere Konstanten erst nach einer dokumentierten Architekturentscheidung ergänzen
 
 ## EPIC-002 – Tilesystem
 
@@ -229,7 +236,9 @@ P1 wird erst nach Bestehen freigegeben.
 ### SF-071 – Broadphase-Kollision
 
 - **Priorität:** P2
-- **Abhängigkeiten:** SF-070
+- **Abhängigkeiten:**
+  - SF-020
+  - SF-070
 
 ### SF-072 – Narrowphase-Kollision
 
@@ -453,6 +462,51 @@ P1 wird erst nach Bestehen freigegeben.
 
 - **Priorität:** P4
 - **Abhängigkeiten:** SF-181
+
+## EPIC-020 – Skalierung und Profiling
+
+Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und dürfen nicht als bestanden markiert werden, bevor sie auf der festgelegten Zielhardware gemessen wurden.
+
+### SF-190 – Gate-A-Skalierungstest
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-032
+- **Akzeptanzkriterien:**
+  - 10.000 Tiles in mindestens 100 Chunks erzeugen
+  - Konstruktion speichern und verlustfrei laden
+  - Framerate auf der Zielhardware messen und dokumentieren
+
+### SF-191 – 3000-Tile-Schiff testen
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-073
+- **Akzeptanzkriterien:**
+  - 3000 Tiles unter aktivierter Kampf- und Schadenssimulation testen
+  - Framerate und Speicherverbrauch dokumentieren
+
+### SF-192 – Stationslast testen
+
+- **Priorität:** P3
+- **Abhängigkeiten:** SF-120
+- **Akzeptanzkriterien:**
+  - Zehn Stationen mit jeweils 10.000 Tiles testen
+  - Framerate und Speicherverbrauch dokumentieren
+
+### SF-193 – NPC-Flottenlast testen
+
+- **Priorität:** P4
+- **Abhängigkeiten:** SF-152
+- **Akzeptanzkriterien:**
+  - 100 NPC-Schiffe gleichzeitig simulieren
+  - Framerate und CPU-Verbrauch dokumentieren
+
+### SF-194 – Profiling-Bericht erstellen
+
+- **Priorität:** P0
+- **Abhängigkeiten:** SF-002
+- **Akzeptanzkriterien:**
+  - CPU, RAM, Chunk-Aktivität, Physik, Kollision und Speichersystem erfassen
+  - Ergebnisse nach jedem Gate vergleichbar festhalten
 
 ## Agentenregeln
 

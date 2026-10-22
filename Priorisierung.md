@@ -4,6 +4,8 @@ Das Entscheidende für einen Agenten ist nicht die Task-Liste selbst, sondern de
 
 Die Planung ist deshalb in die Prioritäten P0 bis P4 gegliedert.
 
+> Verbindliche Task-IDs, Abhängigkeiten und Akzeptanzkriterien stehen in [BACKLOG.md](./BACKLOG.md). Dieses Dokument beschreibt die Reihenfolge; bei Widersprüchen gilt der Backlog.
+
 ## P0 – Architekturkritisch
 
 Ohne diese Tasks darf kein Gameplay entwickelt werden.
@@ -195,22 +197,27 @@ Erst jetzt lohnt sich Content.
 
 **Abhängigkeit:** P3 vollständig.
 
-### Epic 15 – KI
+### Epic 15 – Forschung
+
+**Abhängigkeit:** Industrie.
+
+### Epic 16 – KI
 
 **Abhängigkeiten:**
 
 - Industrie
 - Kampf
 - Open World
+- Forschung
 
-### Epic 11 – Fraktionen
+### Epic 17 – Fraktionen
 
 **Abhängigkeiten:**
 
 - KI
 - Galaxie
 
-### Epic – Flotten
+### Epic 18 – Flotten
 
 **Abhängigkeiten:**
 
@@ -218,13 +225,13 @@ Erst jetzt lohnt sich Content.
 - Physik
 - Kampf
 
-### Forschung
-
-**Abhängigkeit:** Industrie.
-
-### Endgame
+### Epic 19 – Endgame
 
 **Abhängigkeit:** Alles andere.
+
+### Epic 20 – Skalierung und Profiling
+
+Die Lastprofile sind in [BACKLOG.md](./BACKLOG.md) unter SF-190 bis SF-194 verbindlich beschrieben. Die Details zur Messung stehen in [SKALIERUNG.md](./SKALIERUNG.md). Skalierungstests laufen ergänzend zu den jeweiligen Gates, nicht erst am Ende des Projekts.
 
 ## Tatsächlicher kritischer Pfad
 
