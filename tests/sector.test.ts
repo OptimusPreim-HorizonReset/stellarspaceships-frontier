@@ -8,8 +8,16 @@ import {
 describe('sector data model', () => {
   it('creates an immutable sector at the world boundary', () => {
     const objects = [
-      { id: 'asteroid-1', type: 'asteroid' },
-      { id: 'station-1', type: 'station' }
+      {
+        id: 'asteroid-1',
+        type: 'asteroid',
+        localPosition: { x: 0.25, y: 0.5 }
+      },
+      {
+        id: 'station-1',
+        type: 'station',
+        localPosition: { x: 0.75, y: 0.25 }
+      }
     ];
     const sector = createSector({
       position: {
@@ -22,15 +30,27 @@ describe('sector data model', () => {
       ownerId: null
     });
 
-    objects[0] = { id: 'changed', type: 'changed' };
+    objects[0] = {
+      id: 'changed',
+      type: 'changed',
+      localPosition: { x: 0.5, y: 0.5 }
+    };
 
     expect(sector).toEqual({
       position: { x: 4095, y: 4095 },
       seed: MAX_SECTOR_SEED,
       difficulty: 3.5,
       objects: [
-        { id: 'asteroid-1', type: 'asteroid' },
-        { id: 'station-1', type: 'station' }
+        {
+          id: 'asteroid-1',
+          type: 'asteroid',
+          localPosition: { x: 0.25, y: 0.5 }
+        },
+        {
+          id: 'station-1',
+          type: 'station',
+          localPosition: { x: 0.75, y: 0.25 }
+        }
       ],
       ownerId: null
     });
@@ -67,8 +87,16 @@ describe('sector data model', () => {
       createSector({
         ...validDefinition,
         objects: [
-          { id: 'asteroid-1', type: 'asteroid' },
-          { id: 'asteroid-1', type: 'station' }
+          {
+            id: 'asteroid-1',
+            type: 'asteroid',
+            localPosition: { x: 0.1, y: 0.2 }
+          },
+          {
+            id: 'asteroid-1',
+            type: 'station',
+            localPosition: { x: 0.3, y: 0.4 }
+          }
         ]
       })
     ).toThrow('Duplicate sector object ID: asteroid-1.');

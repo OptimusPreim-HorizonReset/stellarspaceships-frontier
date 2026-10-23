@@ -9,6 +9,12 @@ export interface SectorPosition {
 export interface SectorObjectReference {
   readonly id: string;
   readonly type: string;
+  readonly localPosition: SectorLocalPosition;
+}
+
+export interface SectorLocalPosition {
+  readonly x: number;
+  readonly y: number;
 }
 
 export interface SectorDefinition {
@@ -27,7 +33,7 @@ export interface Sector {
   readonly ownerId: string | null;
 }
 
-function assertSectorPosition(position: SectorPosition): void {
+export function assertValidSectorPosition(position: SectorPosition): void {
   if (
     !Number.isSafeInteger(position.x) ||
     !Number.isSafeInteger(position.y) ||
@@ -55,9 +61,17 @@ function assertObjectReferences(
       typeof object.id !== 'string' ||
       object.id.trim().length === 0 ||
       typeof object.type !== 'string' ||
-      object.type.trim().length === 0
+      object.type.trim().length === 0 ||
+      !Number.isFinite(object.localPosition.x) ||
+      !Number.isFinite(object.localPosition.y) ||
+      object.localPosition.x < 0 ||
+      object.localPosition.x >= 1 ||
+      object.localPosition.y < 0 ||
+      object.localPosition.y >= 1
     ) {
-      throw new TypeError('Sector object ID and type must not be empty.');
+      throw new TypeError(
+        'Sector object ID, type, and normalized local position must be valid.'
+      );
     }
 
     if (ids.has(object.id)) {
@@ -65,14 +79,18 @@ function assertObjectReferences(
     }
 
     ids.add(object.id);
-    return Object.freeze({ id: object.id, type: object.type });
+    return Object.freeze({
+      id: object.id,
+      type: object.type,
+      localPosition: Object.freeze({ ...object.localPosition })
+    });
   });
 
   return Object.freeze(references);
 }
 
 export function createSector(definition: SectorDefinition): Sector {
-  assertSectorPosition(definition.position);
+  assertValidSectorPosition(definition.position);
 
   if (
     !Number.isSafeInteger(definition.seed) ||

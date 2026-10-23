@@ -399,6 +399,13 @@ Eingabedaten defensiv und friert den resultierenden Datensatz ein. Schwierigkeit
 bleibt ein nichtnegativer Skalar; die Distanzformel wird erst in SF-102
 festgelegt.
 
+### Ringbasierter Weltgenerator
+
+Der Generator leitet den Sektor-Seed deterministisch aus Welt-Seed und
+Koordinaten ab. Ein vom Aufrufer geliefertes Ringprofil bestimmt die zulässige
+Asteroidenanzahl; IDs und normalisierte lokale Objektpositionen stammen aus
+dem Sektor-Seed. Die Difficulty bleibt bis SF-102 auf null.
+
 ### Ringsystem
 
 **Berechnung:**
