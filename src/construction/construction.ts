@@ -111,6 +111,10 @@ export class Construction {
     return this.chunks.get(chunkKey(position))?.state;
   }
 
+  *iterateChunks(): IterableIterator<Chunk> {
+    yield* this.chunks.values();
+  }
+
   setChunkState(position: ChunkPosition, state: ChunkState): void {
     if (!isChunkState(state)) {
       throw new TypeError(`Invalid chunk state: ${String(state)}.`);

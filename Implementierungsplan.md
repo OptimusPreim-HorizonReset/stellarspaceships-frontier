@@ -267,7 +267,12 @@ Chunks besitzen die flüchtigen Zustände `dormant`, `active` und `combat`.
 Neue sowie geladene Chunks beginnen in `dormant`; eine Fragmentierung übernimmt
 den Zustand des jeweiligen Quell-Chunks. Nähe-Ereignisse stufen nach `active`
 hoch, gültige Projektiltreffer nach `combat`. Ereignisse dürfen einen höheren
-Zustand nicht herabsetzen; zeitgesteuerte Deaktivierung übernimmt SF-082.
+Zustand nicht herabsetzen und setzen den Inaktivitätstimer zurück.
+
+Zeitgesteuerte Deaktivierung nutzt positive, vom Simulationsaufrufer gelieferte
+Timeouts für `combat` und `active`. Sie verarbeitet ausschließlich
+Simulationszeit, stuft `combat` zunächst nach `active` und anschließend nach
+`dormant` zurück und überträgt überschüssige Zeit großer Schritte deterministisch.
 
 ### Lokaler Schaden
 
