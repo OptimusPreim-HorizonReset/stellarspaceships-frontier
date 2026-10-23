@@ -15,6 +15,8 @@ import { chunkPositionForTile } from '../core/coordinates';
 import type { TilePosition } from '../core/coordinates';
 import type { Asteroid } from './asteroid';
 import type { LocalDamageResult } from '../combat/damage';
+import { createAsteroidResourceDrop } from './resourceLoot';
+import type { AsteroidResourceDrop } from './resourceLoot';
 
 export interface MiningLaserProfile {
   readonly range: number;
@@ -49,6 +51,7 @@ export type MiningLaserResult =
       readonly tilePosition: TilePosition;
       readonly worldPosition: Vector2;
       readonly damage: LocalDamageResult;
+      readonly resourceDrop: AsteroidResourceDrop | undefined;
     };
 
 function assertValidProfile(profile: MiningLaserProfile): void {
@@ -263,6 +266,7 @@ export function fireMiningLaser(
     tilePosition,
     impact.projectile.damage
   );
+  const resourceDrop = createAsteroidResourceDrop(asteroid, damageResult);
 
   if (
     damageResult.status !== 'miss' &&
@@ -283,6 +287,7 @@ export function fireMiningLaser(
     allocatedPower: command.allocatedPower,
     tilePosition,
     worldPosition: rotateToWorld(impact.position, asteroid),
-    damage: damageResult
+    damage: damageResult,
+    resourceDrop
   };
 }

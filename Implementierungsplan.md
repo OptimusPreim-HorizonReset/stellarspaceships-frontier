@@ -349,6 +349,11 @@ Resource Drop
 Einsammeln
 ```
 
+Ein zerstörtes `rock`-Tile gibt seine gespeicherte Ablagerung atomar frei.
+Die Drop-ID aus Asteroid und Tile verhindert doppelte Drops; das Inventar
+dedupliziert zusätzlich wiederholte Einsammelereignisse und summiert Mengen
+pro Ressourcentyp.
+
 ### Milestone 5
 
 - Mining Loop

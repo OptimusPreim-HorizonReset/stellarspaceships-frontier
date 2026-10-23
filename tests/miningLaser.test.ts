@@ -107,7 +107,7 @@ describe('mining laser', () => {
     );
   });
 
-  it('destroys the first tile and leaves its resource deposit available', () => {
+  it('destroys the first tile and creates its resource drop', () => {
     const asteroid = createAsteroid();
     const tile = asteroid.construction.getTile({ x: 0, y: 0 });
 
@@ -131,11 +131,15 @@ describe('mining laser', () => {
       status: 'destroyed',
       destroyedTile: { id: tile.id, hp: 0 }
     });
-    expect(asteroid.construction.getTile({ x: 0, y: 0 })).toBeUndefined();
-    expect(asteroid.getResourceDeposit(tile.id)).toEqual({
+    expect(result.resourceDrop).toEqual({
+      id: `${asteroid.id}:tile:${tile.id}`,
+      asteroidId: asteroid.id,
+      sourceTileId: tile.id,
       resourceType: 'ore',
       amount: 3
     });
+    expect(asteroid.construction.getTile({ x: 0, y: 0 })).toBeUndefined();
+    expect(asteroid.getResourceDeposit(tile.id)).toBeUndefined();
   });
 
   it('rejects invalid profiles and commands', () => {

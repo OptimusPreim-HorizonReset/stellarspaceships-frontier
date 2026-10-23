@@ -124,4 +124,18 @@ export class Asteroid {
   getResourceDeposit(tileId: number): AsteroidResourceDeposit | undefined {
     return this.resourceDeposits.get(tileId);
   }
+
+  claimResourceDeposit(tileId: number): AsteroidResourceDeposit | undefined {
+    if (!Number.isSafeInteger(tileId) || tileId <= 0) {
+      throw new RangeError('Asteroid tile ID must be a positive safe integer.');
+    }
+
+    const deposit = this.resourceDeposits.get(tileId);
+
+    if (deposit !== undefined) {
+      this.resourceDeposits.delete(tileId);
+    }
+
+    return deposit;
+  }
 }
