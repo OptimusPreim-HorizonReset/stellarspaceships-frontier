@@ -1,7 +1,11 @@
 import type { Construction } from '../construction/construction';
-import type { TilePosition } from '../core/coordinates';
+import {
+  chunkPositionForTile,
+  type TilePosition
+} from '../core/coordinates';
 import type { Tile } from '../core/tiles';
 import type { ProjectileImpact } from './narrowphase';
+import { activateChunkForEvent } from '../world/chunkActivity';
 
 export interface ProjectileTileTarget {
   readonly id: string;
@@ -40,11 +44,26 @@ export type LocalDamageResult =
         throw new TypeError('Projectile impact does not match the tile target.');
       }
 
-      return applyLocalDamage(
+      const result = applyLocalDamage(
         target.construction,
         target.position,
         impact.projectile.damage
       );
+
+      if (
+        result.status !== 'miss' &&
+        target.construction.getChunkState(
+          chunkPositionForTile(target.position)
+        ) !== undefined
+      ) {
+        activateChunkForEvent(
+          target.construction,
+          chunkPositionForTile(target.position),
+          'combat'
+        );
+      }
+
+      return result;
     }
 
     export function applyLocalDamage(

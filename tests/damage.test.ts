@@ -135,5 +135,6 @@ describe('local tile damage', () => {
       remainingHitPoints: 75
     });
     expect(tile.hp).toBe(75);
+    expect(construction.getChunkState({ x: 0, y: 0 })).toBe('combat');
   });
 });

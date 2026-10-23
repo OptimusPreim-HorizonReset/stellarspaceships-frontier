@@ -265,8 +265,9 @@ Projektile noch Ziele; SF-073 übernimmt den lokalen Schaden.
 
 Chunks besitzen die flüchtigen Zustände `dormant`, `active` und `combat`.
 Neue sowie geladene Chunks beginnen in `dormant`; eine Fragmentierung übernimmt
-den Zustand des jeweiligen Quell-Chunks. Ereignisbasierte Aktivierung und
-zeitgesteuerte Deaktivierung werden getrennt in SF-081 und SF-082 umgesetzt.
+den Zustand des jeweiligen Quell-Chunks. Nähe-Ereignisse stufen nach `active`
+hoch, gültige Projektiltreffer nach `combat`. Ereignisse dürfen einen höheren
+Zustand nicht herabsetzen; zeitgesteuerte Deaktivierung übernimmt SF-082.
 
 ### Lokaler Schaden
 
