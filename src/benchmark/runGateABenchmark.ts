@@ -2,24 +2,18 @@ import {
   createGateAConstruction,
   GATE_A_PROFILE
 } from './gateAProfile';
+import {
+  collectBrowserFrames,
+  percentile,
+  readBrowserHeapSnapshot
+} from './browserProfile';
+import type { BrowserFrameSamples } from './browserProfile';
 import { summarizeFrameIntervals } from './frameMetrics';
 import { deserializeConstruction, serializeConstruction } from '../save/serialization';
 import {
   CanvasWorldRenderer,
   TILE_PIXEL_SIZE
 } from '../rendering/canvasWorldRenderer';
-
-interface FrameSamples {
-  readonly intervalsMs: readonly number[];
-  readonly renderDurationsMs: readonly number[];
-}
-
-interface BrowserHeapSnapshot {
-  readonly supported: boolean;
-  readonly usedBytes: number | null;
-  readonly totalBytes: number | null;
-  readonly limitBytes: number | null;
-}
 
 export interface GateABenchmarkReport {
   readonly schemaVersion: 1;
@@ -93,111 +87,16 @@ function rounded(value: number): number {
   return Number(value.toFixed(2));
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
-function nonNegativeNumber(value: unknown): number | null {
-  return typeof value === 'number' &&
-    Number.isFinite(value) &&
-    value >= 0
-    ? value
-    : null;
-}
-
-function readBrowserHeapSnapshot(): BrowserHeapSnapshot {
-  const memory: unknown = Reflect.get(performance, 'memory');
-
-  if (!isRecord(memory)) {
-    return {
-      supported: false,
-      usedBytes: null,
-      totalBytes: null,
-      limitBytes: null
-    };
-  }
-
-  const usedBytes = nonNegativeNumber(memory['usedJSHeapSize']);
-  const totalBytes = nonNegativeNumber(memory['totalJSHeapSize']);
-  const limitBytes = nonNegativeNumber(memory['jsHeapSizeLimit']);
-
-  return {
-    supported:
-      usedBytes !== null && totalBytes !== null && limitBytes !== null,
-    usedBytes,
-    totalBytes,
-    limitBytes
-  };
-}
-
-function percentile(values: readonly number[], fraction: number): number {
-  const sortedValues = [...values].sort((left, right) => left - right);
-  const index = Math.ceil(sortedValues.length * fraction) - 1;
-  const value = sortedValues[index];
-
-  if (value === undefined) {
-    throw new RangeError('Unable to calculate a percentile from empty samples.');
-  }
-
-  return value;
-}
-
 function collectFrames(
   renderer: CanvasWorldRenderer
-): Promise<FrameSamples> {
+): Promise<BrowserFrameSamples> {
   const construction = createGateAConstruction();
-  const intervalsMs: number[] = [];
-  const renderDurationsMs: number[] = [];
-
-  return new Promise((resolve, reject) => {
-    let previousTimestamp: number | undefined;
-    let warmupFramesRemaining = GATE_A_PROFILE.warmupFrames;
-    let animationFrameId = 0;
-
-    const timeoutId = window.setTimeout(() => {
-      window.cancelAnimationFrame(animationFrameId);
-      reject(
-        new Error(
-          'Benchmark timed out. Keep the browser tab visible and try again.'
-        )
-      );
-    }, GATE_A_PROFILE.timeoutMs);
-
-    const onFrame = (timestamp: number): void => {
-      const renderStartedAt = performance.now();
-
-      try {
-        renderer.render(construction);
-      } catch (error) {
-        window.clearTimeout(timeoutId);
-        reject(error);
-        return;
-      }
-
-      const renderDurationMs = performance.now() - renderStartedAt;
-
-      if (previousTimestamp !== undefined) {
-        if (warmupFramesRemaining > 0) {
-          warmupFramesRemaining -= 1;
-        } else {
-          intervalsMs.push(timestamp - previousTimestamp);
-          renderDurationsMs.push(renderDurationMs);
-        }
-      }
-
-      previousTimestamp = timestamp;
-
-      if (intervalsMs.length >= GATE_A_PROFILE.measuredFrames) {
-        window.clearTimeout(timeoutId);
-        resolve({ intervalsMs, renderDurationsMs });
-        return;
-      }
-
-      animationFrameId = window.requestAnimationFrame(onFrame);
-    };
-
-    animationFrameId = window.requestAnimationFrame(onFrame);
-  });
+  return collectBrowserFrames(
+    () => renderer.render(construction),
+    GATE_A_PROFILE.warmupFrames,
+    GATE_A_PROFILE.measuredFrames,
+    GATE_A_PROFILE.timeoutMs
+  );
 }
 
 export async function runGateABenchmark(
@@ -252,9 +151,9 @@ export async function runGateABenchmark(
     GATE_A_PROFILE.targetFps
   );
   const averageRenderMs =
-    samples.renderDurationsMs.reduce((sum, duration) => sum + duration, 0) /
-    samples.renderDurationsMs.length;
-  const p95RenderMs = percentile(samples.renderDurationsMs, 0.95);
+    samples.workDurationsMs.reduce((sum, duration) => sum + duration, 0) /
+    samples.workDurationsMs.length;
+  const p95RenderMs = percentile(samples.workDurationsMs, 0.95);
 
   return {
     schemaVersion: 1,

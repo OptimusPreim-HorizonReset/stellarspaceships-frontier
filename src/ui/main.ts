@@ -8,6 +8,10 @@ import {
   runGateABenchmark,
   type GateABenchmarkReport
 } from '../benchmark/runGateABenchmark';
+import {
+  runGateCScaleBenchmark,
+  type GateCScaleBenchmarkReport
+} from '../benchmark/runGateCScaleBenchmark';
 import type { TilePosition } from '../core/coordinates';
 import {
   isTileOrientation,
@@ -138,6 +142,10 @@ const statusElement = requireElement(
 const runBenchmarkButton = requireElement(
   document.querySelector<HTMLButtonElement>('#run-gate-a'),
   '#run-gate-a'
+);
+const runGateCScaleButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#run-gate-c-scale'),
+  '#run-gate-c-scale'
 );
 const downloadBenchmarkLink = requireElement(
   document.querySelector<HTMLAnchorElement>('#download-benchmark'),
@@ -437,7 +445,10 @@ function enableBlueprintDownload(): void {
   statusElement.textContent = 'Blueprint ist bereit. JSON herunterladen auswählen.';
 }
 
-function enableBenchmarkDownload(report: GateABenchmarkReport): void {
+function enableBenchmarkDownload(
+  report: GateABenchmarkReport | GateCScaleBenchmarkReport,
+  filePrefix: string
+): void {
   disableBenchmarkDownload();
 
   const reportBlob = new Blob([JSON.stringify(report, null, 2)], {
@@ -446,7 +457,7 @@ function enableBenchmarkDownload(report: GateABenchmarkReport): void {
   benchmarkReportUrl = URL.createObjectURL(reportBlob);
   downloadBenchmarkLink.href = benchmarkReportUrl;
   downloadBenchmarkLink.download =
-    `stellar-frontier-gate-a-${new Date()
+    `stellar-frontier-${filePrefix}-${new Date()
       .toISOString()
       .replaceAll(':', '-')}.json`;
   downloadBenchmarkLink.removeAttribute('aria-disabled');
@@ -737,6 +748,7 @@ runBenchmarkButton.addEventListener('click', async () => {
 
   benchmarkRunning = true;
   runBenchmarkButton.disabled = true;
+  runGateCScaleButton.disabled = true;
   disableBenchmarkDownload();
   setConstructionControlsEnabled(false);
   benchmarkSummaryElement.textContent =
@@ -767,7 +779,7 @@ runBenchmarkButton.addEventListener('click', async () => {
       : 'Die lokale Messung unterschreitet 60 FPS; Gate A bleibt offen.';
 
     try {
-      enableBenchmarkDownload(report);
+      enableBenchmarkDownload(report, 'gate-a');
     } catch (error) {
       statusElement.textContent =
         `Messung abgeschlossen, JSON-Export fehlgeschlagen: ${showError(error)}`;
@@ -780,6 +792,62 @@ runBenchmarkButton.addEventListener('click', async () => {
   } finally {
     benchmarkRunning = false;
     runBenchmarkButton.disabled = false;
+    runGateCScaleButton.disabled = false;
+    setConstructionControlsEnabled(true);
+    refreshWorld();
+  }
+});
+
+runGateCScaleButton.addEventListener('click', async () => {
+  if (benchmarkRunning) {
+    return;
+  }
+
+  benchmarkRunning = true;
+  runBenchmarkButton.disabled = true;
+  runGateCScaleButton.disabled = true;
+  disableBenchmarkDownload();
+  setConstructionControlsEnabled(false);
+  benchmarkSummaryElement.textContent =
+    'SF-191: Aufwärmen und 180 Frames mit 3.000 Tiles, Projektilen, Kollision und Schaden …';
+  benchmarkReportElement.textContent = 'Kampfprofil läuft …';
+  statusElement.textContent =
+    'SF-191 läuft. Das Profil verwendet den Produktionsrenderer im sichtbaren Tab.';
+
+  try {
+    const report = await runGateCScaleBenchmark(
+      canvas,
+      renderer,
+      import.meta.env.MODE
+    );
+    benchmarkReportElement.textContent = JSON.stringify(report, null, 2);
+    const heapDelta =
+      report.memory.jsHeapDeltaBytes === null
+        ? 'JS-Heap nicht verfügbar'
+        : `${(report.memory.jsHeapDeltaBytes / 1_048_576).toFixed(2)} MB JS-Heap Δ`;
+    benchmarkSummaryElement.textContent =
+      `${report.rendering.averageFps} FPS Ø · ` +
+      `${report.combat.impacts} Treffer · ` +
+      `${report.combat.destroyedTiles} Tiles zerstört · ` +
+      `p95 ${report.rendering.p95FrameIntervalMs} ms · ${heapDelta}.`;
+    statusElement.textContent =
+      'SF-191 lokal abgeschlossen; Zielhardware und mobiles Gate A bleiben offen.';
+
+    try {
+      enableBenchmarkDownload(report, 'sf-191');
+    } catch (error) {
+      statusElement.textContent =
+        `SF-191 abgeschlossen, JSON-Export fehlgeschlagen: ${showError(error)}`;
+    }
+  } catch (error) {
+    const message = showError(error);
+    benchmarkReportElement.textContent = `SF-191 fehlgeschlagen: ${message}`;
+    benchmarkSummaryElement.textContent = `SF-191 fehlgeschlagen: ${message}`;
+    statusElement.textContent = `SF-191 fehlgeschlagen: ${message}`;
+  } finally {
+    benchmarkRunning = false;
+    runBenchmarkButton.disabled = false;
+    runGateCScaleButton.disabled = false;
     setConstructionControlsEnabled(true);
     refreshWorld();
   }

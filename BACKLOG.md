@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor und SF-070 bis SF-093 für Kampf, Chunk-Aktivierung, Mining sowie Gate-C-Missionsintegration umgesetzt; lokaler Gate-C-Playthrough bestanden, mobiles Gate-A-Profil bleibt offen
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093 und SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -600,6 +600,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P2
 - **Abhängigkeiten:** SF-073
+- **Status:** Sechs lokale Produktionsläufe dokumentiert; Zielhardware nicht bestätigt
 - **Akzeptanzkriterien:**
   - 3000 Tiles unter aktivierter Kampf- und Schadenssimulation testen
   - Framerate und Speicherverbrauch dokumentieren

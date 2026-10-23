@@ -52,6 +52,25 @@ Dies ist nur eine lokale Referenz: Die offizielle Zielhardware wurde nicht festg
 | SF-192 | Zehn Stationen mit je 10.000 Tiles | Stationen und Open-World-Last prüfen |
 | SF-193 | 100 NPC-Schiffe gleichzeitig | Skalierung der NPC-Simulation prüfen |
 
+### SF-191 – lokale Produktionsmessung
+
+Gemessen am 23.10.2026 im Produktionspreview des integrierten VS-Code-Browsers: Windows-User-Agent `Windows NT 10.0`, VS Code Insiders 1.144.0-insider, Electron 43.7.7, Chromium 150.0.7871.250, 8 logische Prozessoren, Viewport 476 × 339 CSS-Pixel, DPR 1,5 (714 × 509 Canvas-Pixel). Das Zielgerät ist nicht bestätigt.
+
+Jeder Lauf enthielt 30 Aufwärm- und 180 Messframes. Pro Frame wurden Rendering, ein Projektilschritt, Broadphase, Narrowphase und lokaler Schaden ausgeführt. Das Profil startete mit 3.000 Tiles in vier Chunks; pro Lauf wurden 211 Projektile simuliert, 211 Treffer und Schadensereignisse verarbeitet und 50 Tiles zerstört. Es entstanden 12.599 Broadphase-Kandidaten; 408 Tiles und ein Chunk waren pro Frame sichtbar.
+
+| Lauf | FPS Ø | p95-Intervall | Intervalle > 16,67 ms | Frame-Arbeit Ø / p95 | JS-Heap-Delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 60,03 | 16,8 ms | 98 / 180 | 4,66 / 7,20 ms | +7,12 MB |
+| 2 | 60,04 | 16,9 ms | 88 / 180 | 3,55 / 4,70 ms | +4,75 MB |
+| 3 | 60,04 | 16,9 ms | 94 / 180 | 2,65 / 2,90 ms | +0,24 MB |
+| 4 | 60,04 | 16,9 ms | 93 / 180 | 2,66 / 3,10 ms | +0,22 MB |
+| 5 | 60,04 | 16,9 ms | 98 / 180 | 2,64 / 3,10 ms | +0,23 MB |
+| 6 | 60,04 | 16,9 ms | 95 / 180 | 3,48 / 4,40 ms | −1,00 MB |
+
+Der Median der durchschnittlichen FPS beträgt 60,04; alle sechs Läufe lagen bei mindestens 60 FPS. Der strikte Zähler für Intervalle über dem theoretischen 16,67-ms-Budget ist wegen Browser-VSync-/Scheduling-Schwankungen kein eigenständiger Nachweis sichtbarer Frame-Drops. Der Browser-JS-Heap-Delta hatte einen Median von etwa +0,23 MB und eine Spannweite von −1,00 bis +7,12 MB; der negative Lauf ist mit Garbage Collection vereinbar. Das sind Heap-Momentaufnahmen, kein Peak und kein Prozess-/System-RAM. Prozess-RAM und systemweite CPU-Auslastung sind im Browser nicht verfügbar.
+
+SF-191 ist damit lokal gemessen, aber nicht für Release oder Zielhardware freigegeben. Die JSON-Berichte bleiben einzeln im World Lab exportierbar; `gateApproved` und `targetHardwareConfirmed` bleiben `false`.
+
 Der Gate-B-Funktionstest in `tests/gateB.integration.test.ts` simuliert ein 1000-Tile-Schiff über 600 feste 1/60-Sekunden-Zeitschritte. Er prüft Energie, Masse, Thrusterkräfte und endliche Zustandswerte; er ersetzt keinen FPS-Benchmark auf Zielhardware.
 
 ## Profiling-Bericht
