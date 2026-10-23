@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor-Grundlagen und versionierter Blueprint-Import/-Export umgesetzt; SF-070-Projektilsimulation, SF-071-Broadphase und SF-072-Narrowphase umgesetzt; lokaler Schaden und mobiles Gate-A-Profil offen
+**Status:** P1-Energie-/Physikkern, Editor-Grundlagen und versionierter Blueprint-Import/-Export umgesetzt; SF-070 bis SF-073 als Kampfgrundlage umgesetzt; mobiles Gate-A-Profil offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -317,6 +317,12 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P2
 - **Abhängigkeiten:** SF-072
+- **Akzeptanzkriterien:**
+  - Projektilschaden direkt auf die HP des getroffenen Tiles anwenden
+  - Fehlende Trefferziele melden, ohne die Konstruktion zu verändern
+  - Zerstörte Tiles aus Chunk und Konstruktion entfernen und Zähler aktualisieren
+  - Verbleibende Komponenten mit der bestehenden Fragmentierungs-API ermitteln
+  - Rüstungsmitigation und Sekundärschäden getrennt behandeln, solange keine Formel festgelegt ist
 
 ## EPIC-009 – Simulationsaktivierung
 

@@ -271,6 +271,14 @@ Chunk.active = true;
 
 ### Lokaler Schaden
 
+Die Schadensmenge des Projektilprofils wird in Version 1 direkt von den
+Trefferpunkten des adressierten Tiles abgezogen. Fehlende Tiles ergeben einen
+expliziten Fehlschlag ohne Zustandsänderung. Bei null Trefferpunkten wird das
+Tile aus seinem Chunk entfernt; die bestehende Fragmentierungs-API berechnet
+anschließend verbleibende Komponenten, die die Weltlogik atomar übernehmen
+muss. Eine Rüstungsmitigation ist ohne festgelegte Formel nicht enthalten;
+Explosion, Feuer und Kurzschluss bleiben Sekundärschäden für spätere Schritte.
+
 **Ablauf:**
 
 ```text
