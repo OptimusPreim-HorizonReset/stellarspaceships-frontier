@@ -58,6 +58,20 @@ describe('Construction', () => {
     ]);
   });
 
+  it('gets and sets runtime state for existing chunks only', () => {
+    const construction = new Construction('active-chunks');
+    construction.placeTile({ x: 32, y: -1 }, 'hull');
+
+    expect(construction.getChunkState({ x: 1, y: -1 })).toBe('dormant');
+    expect(construction.getChunkState({ x: 0, y: 0 })).toBeUndefined();
+
+    construction.setChunkState({ x: 1, y: -1 }, 'combat');
+    expect(construction.getChunkState({ x: 1, y: -1 })).toBe('combat');
+    expect(() =>
+      construction.setChunkState({ x: 0, y: 0 }, 'active')
+    ).toThrow('Chunk does not exist at (0, 0).');
+  });
+
   it('creates separate constructions for disconnected components', () => {
     const construction = new Construction('fragmenting-ship');
     construction.placeTile({ x: -1, y: 0 }, 'hull');
@@ -76,6 +90,21 @@ describe('Construction', () => {
     expect(fragments.reduce((total, fragment) => total + fragment.tileCount, 0))
       .toBe(construction.tileCount);
     expect(construction.tileCount).toBe(3);
+  });
+
+  it('preserves runtime chunk states when splitting fragments', () => {
+    const construction = new Construction('stateful-ship');
+    construction.placeTile({ x: 0, y: 0 }, 'hull');
+    construction.placeTile({ x: 33, y: 0 }, 'reactor');
+    construction.setChunkState({ x: 0, y: 0 }, 'active');
+    construction.setChunkState({ x: 1, y: 0 }, 'combat');
+
+    const fragments = construction.splitDisconnected(
+      (sourceId, index) => `${sourceId}-${index + 1}`
+    );
+
+    expect(fragments[0]?.getChunkState({ x: 0, y: 0 })).toBe('active');
+    expect(fragments[1]?.getChunkState({ x: 1, y: 0 })).toBe('combat');
   });
 
   it('rejects duplicate fragment IDs', () => {

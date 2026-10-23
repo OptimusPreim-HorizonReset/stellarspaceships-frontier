@@ -2,6 +2,16 @@ import { CHUNK_SIZE } from '../core/config';
 import type { ChunkPosition, TilePosition } from '../core/coordinates';
 import type { Tile } from '../core/tiles';
 
+export const CHUNK_STATES = ['dormant', 'active', 'combat'] as const;
+
+export type ChunkState = (typeof CHUNK_STATES)[number];
+
+const chunkStateSet = new Set<string>(CHUNK_STATES);
+
+export function isChunkState(value: unknown): value is ChunkState {
+  return typeof value === 'string' && chunkStateSet.has(value);
+}
+
 export interface LocalTileEntry {
   readonly position: TilePosition;
   readonly tile: Tile;
@@ -10,6 +20,7 @@ export interface LocalTileEntry {
 export class Chunk {
   private readonly cells: Array<Tile | undefined>;
   private occupiedCells = 0;
+  private activityState: ChunkState = 'dormant';
 
   constructor(
     readonly position: ChunkPosition,
@@ -31,6 +42,18 @@ export class Chunk {
 
   get tileCount(): number {
     return this.occupiedCells;
+  }
+
+  get state(): ChunkState {
+    return this.activityState;
+  }
+
+  setState(state: ChunkState): void {
+    if (!isChunkState(state)) {
+      throw new TypeError(`Invalid chunk state: ${String(state)}.`);
+    }
+
+    this.activityState = state;
   }
 
   getTile(position: TilePosition): Tile | undefined {

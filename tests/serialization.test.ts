@@ -12,6 +12,7 @@ describe('construction serialization', () => {
     const tile = original.placeTile({ x: -1, y: 32 }, 'hull');
     tile.hp = 63;
     original.placeTile({ x: 32, y: 32 }, 'thruster', 'east');
+    original.setChunkState({ x: -1, y: 1 }, 'combat');
 
     const restored = deserializeConstruction(
       serializeConstruction(original),
@@ -21,6 +22,7 @@ describe('construction serialization', () => {
     expect(restored.id).toBe(original.id);
     expect(restored.getTiles()).toEqual(original.getTiles());
     expect(restored.chunkCount).toBe(original.chunkCount);
+    expect(restored.getChunkState({ x: -1, y: 1 })).toBe('dormant');
   });
 
   it('rejects unsupported save versions and unknown tile types', () => {

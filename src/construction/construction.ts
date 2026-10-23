@@ -13,6 +13,8 @@ import {
   type TileType
 } from '../core/tiles';
 import { Chunk } from '../world/chunk';
+import { isChunkState } from '../world/chunk';
+import type { ChunkState } from '../world/chunk';
 
 export interface PlacedTile {
   readonly position: TilePosition;
@@ -103,6 +105,26 @@ export class Construction {
     }
 
     return chunk.getTile(localPositionForTile(position));
+  }
+
+  getChunkState(position: ChunkPosition): ChunkState | undefined {
+    return this.chunks.get(chunkKey(position))?.state;
+  }
+
+  setChunkState(position: ChunkPosition, state: ChunkState): void {
+    if (!isChunkState(state)) {
+      throw new TypeError(`Invalid chunk state: ${String(state)}.`);
+    }
+
+    const chunk = this.chunks.get(chunkKey(position));
+
+    if (chunk === undefined) {
+      throw new RangeError(
+        `Chunk does not exist at (${position.x}, ${position.y}).`
+      );
+    }
+
+    chunk.setState(state);
   }
 
   placeTile(
@@ -386,7 +408,22 @@ export class Construction {
           throw new Error('Tile disappeared while splitting construction.');
         }
 
+        const sourceChunkPosition = chunkPositionForTile(position);
+        const sourceChunkId = chunkKey(sourceChunkPosition);
+        const sourceChunk = this.chunks.get(sourceChunkId);
+
+        if (sourceChunk === undefined) {
+          throw new Error('Source chunk disappeared while splitting construction.');
+        }
+
         fragment.importTile(position, tile);
+        const fragmentChunk = fragment.chunks.get(sourceChunkId);
+
+        if (fragmentChunk === undefined) {
+          throw new Error('Fragment chunk was not created while splitting.');
+        }
+
+        fragmentChunk.setState(sourceChunk.state);
       }
 
       return fragment;

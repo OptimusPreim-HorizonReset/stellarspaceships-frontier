@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor-Grundlagen und versionierter Blueprint-Import/-Export umgesetzt; SF-070 bis SF-073 als Kampfgrundlage umgesetzt; mobiles Gate-A-Profil offen
+**Status:** P1-Energie-/Physikkern, Editor-Grundlagen, SF-070 bis SF-073 als Kampfgrundlage und SF-080-Chunk-Zustände umgesetzt; Ereignisaktivierung, Deaktivierung und mobiles Gate-A-Profil offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -334,6 +334,11 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
   - Dormant
   - Active
   - Combat
+- **Akzeptanzkriterien:**
+  - Neue Chunks beginnen im flüchtigen Zustand `dormant`
+  - Zustände über die Konstruktion abfragen und für existierende Chunks ändern
+  - Fragmentierung übernimmt den Laufzeitzustand der jeweiligen Quell-Chunks
+  - Speichern und Laden setzen den nicht-persistierten Laufzeitzustand zurück auf `dormant`
 
 ### SF-081 – Ereignisgesteuerte Aktivierung
 

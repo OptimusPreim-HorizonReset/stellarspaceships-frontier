@@ -1,8 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { Chunk } from '../src/world/chunk';
+import {
+  CHUNK_STATES,
+  Chunk,
+  isChunkState
+} from '../src/world/chunk';
 import { DEFAULT_TILE_REGISTRY } from '../src/core/tiles';
 
 describe('Chunk', () => {
+  it('tracks valid simulation states and defaults to dormant', () => {
+    const chunk = new Chunk({ x: 0, y: 0 });
+
+    expect(CHUNK_STATES).toEqual(['dormant', 'active', 'combat']);
+    expect(chunk.state).toBe('dormant');
+    expect(isChunkState('combat')).toBe(true);
+    expect(isChunkState('sleeping')).toBe(false);
+
+    chunk.setState('active');
+    expect(chunk.state).toBe('active');
+    chunk.setState('combat');
+    expect(chunk.state).toBe('combat');
+  });
+
   it('stores and removes tiles at local boundary coordinates', () => {
     const chunk = new Chunk({ x: 0, y: 0 });
     const definition = DEFAULT_TILE_REGISTRY.get('hull');
