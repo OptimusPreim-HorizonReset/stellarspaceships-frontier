@@ -8,6 +8,11 @@ import {
 } from './sector';
 import type { Sector, SectorPosition } from './sector';
 
+export interface SectorNeighborhoodUpdate {
+  readonly activeSectors: readonly Sector[];
+  readonly unloadedSectors: readonly Sector[];
+}
+
 export class SectorLoader {
   private readonly loadedSectors = new Map<string, Sector>();
   private readonly generationProfile: SectorGenerationProfile;
@@ -59,6 +64,28 @@ export class SectorLoader {
     }
 
     return Object.freeze(loaded);
+  }
+
+  updateNeighborhood(center: SectorPosition): SectorNeighborhoodUpdate {
+    const activeSectors = this.loadNeighborhood(center);
+    const activeKeys = new Set(
+      activeSectors.map((sector) => sectorKey(sector.position))
+    );
+    const unloadedSectors: Sector[] = [];
+
+    for (const sector of this.getLoadedSectors()) {
+      const key = sectorKey(sector.position);
+
+      if (!activeKeys.has(key)) {
+        this.loadedSectors.delete(key);
+        unloadedSectors.push(sector);
+      }
+    }
+
+    return {
+      activeSectors,
+      unloadedSectors: Object.freeze(unloadedSectors)
+    };
   }
 
   private loadSector(position: SectorPosition): Sector {

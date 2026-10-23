@@ -427,7 +427,9 @@ sich dabei nicht.
 Der Sektorlader materialisiert auf Anfrage das Zentrum und die gültigen
 Sektoren seiner 3×3-Nachbarschaft. Generierte Sektoren bleiben im lokalen Cache;
 weitere Bereiche werden erst beim nächsten Request geladen. Grenzen der
-4096×4096-Karte werden abgeschnitten, Entladung übernimmt SF-111.
+4096×4096-Karte werden abgeschnitten. Beim Nachbarschaftswechsel lädt SF-111
+zuerst alle neuen Sektoren, entfernt danach veraltete Einträge und gibt diese
+für Persistenz oder Hintergrundsimulation an den Aufrufer zurück.
 
 ### Milestone 6
 

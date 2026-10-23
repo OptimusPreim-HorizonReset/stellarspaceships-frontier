@@ -32,4 +32,24 @@ describe('sector loader', () => {
       loader.loadNeighborhood({ x: 4096, y: 0 })
     ).toThrow('Sector coordinates must be safe integers within 0..4095.');
   });
+
+  it('loads the new neighborhood and returns stale sectors for persistence', () => {
+    const loader = new SectorLoader(42, profile, 0.01);
+
+    loader.loadNeighborhood({ x: 2000, y: 2000 });
+    const update = loader.updateNeighborhood({ x: 2001, y: 2000 });
+
+    expect(update.activeSectors).toHaveLength(9);
+    expect(update.unloadedSectors).toHaveLength(3);
+    expect(loader.loadedSectorCount).toBe(9);
+    expect(loader.getSector({ x: 1999, y: 1999 })).toBeUndefined();
+    expect(loader.getSector({ x: 2002, y: 1999 })).toBeDefined();
+    expect(
+      update.unloadedSectors.map((sector) => sector.position)
+    ).toEqual([
+      { x: 1999, y: 1999 },
+      { x: 1999, y: 2000 },
+      { x: 1999, y: 2001 }
+    ]);
+  });
 });
