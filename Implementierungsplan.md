@@ -417,6 +417,11 @@ difficulty =
   distance * modifier
 ```
 
+SF-102 berechnet den Mittelpunkt als `(4095 / 2, 4095 / 2)` und verlangt den
+Difficulty-Modifier als explizite Policy-Eingabe. Die Schwierigkeit bleibt ein
+deterministischer, nichtnegativer Skalar; Seed, Objekte und Ownership ändern
+sich dabei nicht.
+
 ### Streaming
 
 Der Spieler bewegt sich; nur Nachbarsektoren werden geladen.

@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100-Sektormodell, SF-101-Ringgenerator und SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102 sowie SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -449,6 +449,11 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P3
 - **Abhängigkeiten:** SF-101
+- **Akzeptanzkriterien:**
+  - Distanz vom Mittelpunkt des 4096×4096-Rasters berechnen
+  - Difficulty als Distanz mal expliziten, endlichen Modifier ableiten
+  - Modifier null und Randsektoren deterministisch behandeln
+  - Sektor-Seed, Objekte und Ownership bei der Aktualisierung erhalten
 
 ## EPIC-012 – Streaming
 
