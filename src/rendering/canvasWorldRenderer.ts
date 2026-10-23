@@ -10,7 +10,8 @@ const TILE_COLORS: Record<TileType, string> = {
   reactor: '#f3a64a',
   battery: '#77d3c1',
   thruster: '#9c84ef',
-  storage: '#d17c9d'
+  storage: '#d17c9d',
+  rock: '#8b7658'
 };
 
 const THRUSTER_ORIENTATION_RADIANS: Record<TileOrientation, number> = {

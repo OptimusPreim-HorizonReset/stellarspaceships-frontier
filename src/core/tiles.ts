@@ -7,7 +7,8 @@ export const TILE_TYPES = [
   'reactor',
   'battery',
   'thruster',
-  'storage'
+  'storage',
+  'rock'
 ] as const;
 
 export type TileType = (typeof TILE_TYPES)[number];
@@ -39,6 +40,12 @@ export const RESOURCE_TYPES = [
 
 export type ResourceType = (typeof RESOURCE_TYPES)[number];
 export type ResourceCost = Readonly<Partial<Record<ResourceType, number>>>;
+
+const resourceTypeSet = new Set<string>(RESOURCE_TYPES);
+
+export function isResourceType(value: unknown): value is ResourceType {
+  return typeof value === 'string' && resourceTypeSet.has(value);
+}
 
 export interface TileDefinition {
   readonly type: TileType;
@@ -215,5 +222,16 @@ export const DEFAULT_TILE_REGISTRY = createTileRegistry([
     thrustForce: 0,
     storageCapacity: 1000,
     buildCost: { ore: 2 }
+  },
+  {
+    type: 'rock',
+    maxHp: 100,
+    armor: 0,
+    mass: 10,
+    powerGeneration: 0,
+    powerConsumption: 0,
+    thrustForce: 0,
+    storageCapacity: 0,
+    buildCost: {}
   }
 ]);

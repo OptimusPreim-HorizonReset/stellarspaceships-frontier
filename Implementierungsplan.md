@@ -325,7 +325,10 @@ Von einer Sandbox zu einem Spiel wechseln.
 
 ### Asteroiden
 
-Asteroiden bestehen selbst aus Tiles.
+Asteroiden sind Weltobjekte mit rigid-body Zustand und einer bestehenden
+chunkbasierten Konstruktion aus `rock`-Tiles. Jeder Tile-Eintrag enthält eine
+validierte Ressourcenart und -menge für die spätere Loot-Stufe; Trefferpunkte
+und Positionen bleiben Teil der Tile-Konstruktion.
 
 ### Mining Laser
 
