@@ -240,6 +240,18 @@ select {
   color: #a7b3c4;
 }
 
+.toolbar-actions a.action-button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.toolbar-actions [aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .world-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 250px;

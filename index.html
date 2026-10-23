@@ -55,6 +55,14 @@
                 <option value="west">West</option>
               </select>
             </label>
+            <label class="control-group" for="placement-shape">
+              <span>Platzierungsform</span>
+              <select id="placement-shape">
+                <option value="single">Einzeln</option>
+                <option value="line">Linie</option>
+                <option value="rectangle">Rechteck</option>
+              </select>
+            </label>
 
             <div class="mode-controls" role="group" aria-label="Bearbeitungsmodus">
               <button id="place-mode" class="mode-button is-selected" type="button" aria-pressed="true">
@@ -68,6 +76,16 @@
             <div class="toolbar-actions">
               <button id="save-world" class="action-button" type="button">Speichern</button>
               <button id="load-world" class="action-button" type="button">Laden</button>
+              <button id="export-blueprint" class="action-button" type="button">Blueprint bereitstellen</button>
+              <button id="import-blueprint" class="action-button action-button-muted" type="button">Blueprint importieren</button>
+              <a
+                id="download-blueprint"
+                class="action-button action-button-muted"
+                href="#"
+                aria-disabled="true"
+                tabindex="-1"
+              >JSON herunterladen</a>
+              <input id="blueprint-file" type="file" accept=".json,application/json" hidden />
               <button id="reset-world" class="action-button action-button-muted" type="button">Zurücksetzen</button>
             </div>
           </div>

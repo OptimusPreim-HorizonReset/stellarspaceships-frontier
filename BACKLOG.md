@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** SF-050–SF-063 Energie- und Physik-Kern umgesetzt; mobile Gate-A-Freigabe und Zuordnung weiterer Verbraucher offen
+**Status:** P1-Energie-/Physikkern, Editor-Grundlagen und versionierter Blueprint-Import/-Export umgesetzt; mobiles Gate-A-Profil offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -159,11 +159,20 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P1
 - **Abhängigkeiten:** SF-040
+- **Akzeptanzkriterien:**
+  - Linien als viererverbundene Pfade zwischen Endpunkten platzieren
+  - Gefüllte, inklusive Rechtecke per Pointer-Drag platzieren
+  - Shape-Berechnung unabhängig testbar halten
 
 ### SF-042 – Blueprint-Speicherung
 
 - **Priorität:** P1
 - **Abhängigkeiten:** SF-040
+- **Akzeptanzkriterien:**
+  - Konstruktionen als versionierte JSON-Datei exportieren
+  - Blueprint-Datei importieren und validieren
+  - IDs, Tile-HP, Koordinaten und Thruster-Ausrichtung erhalten
+  - Version-1-Dateien mit Standardausrichtung migrieren
 
 ## EPIC-006 – Energiesystem
 

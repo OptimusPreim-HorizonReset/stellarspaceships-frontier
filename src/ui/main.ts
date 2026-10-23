@@ -1,11 +1,18 @@
 import './style.css';
 import {
+  getPlacementPositions,
+  isPlacementShape
+} from '../editor/placementPatterns';
+import type { PlacementShape } from '../editor/placementPatterns';
+import {
   runGateABenchmark,
   type GateABenchmarkReport
 } from '../benchmark/runGateABenchmark';
+import type { TilePosition } from '../core/coordinates';
 import {
   isTileOrientation,
   isTileType,
+  type TileType,
   type TileOrientation
 } from '../core/tiles';
 import { calculatePowerBalance } from '../energy/powerBalance';
@@ -46,6 +53,10 @@ const tileOrientationSelect = requireElement(
   document.querySelector<HTMLSelectElement>('#tile-orientation'),
   '#tile-orientation'
 );
+const placementShapeSelect = requireElement(
+  document.querySelector<HTMLSelectElement>('#placement-shape'),
+  '#placement-shape'
+);
 const placeModeButton = requireElement(
   document.querySelector<HTMLButtonElement>('#place-mode'),
   '#place-mode'
@@ -61,6 +72,22 @@ const saveButton = requireElement(
 const loadButton = requireElement(
   document.querySelector<HTMLButtonElement>('#load-world'),
   '#load-world'
+);
+const exportBlueprintButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#export-blueprint'),
+  '#export-blueprint'
+);
+const downloadBlueprintLink = requireElement(
+  document.querySelector<HTMLAnchorElement>('#download-blueprint'),
+  '#download-blueprint'
+);
+const importBlueprintButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#import-blueprint'),
+  '#import-blueprint'
+);
+const blueprintFileInput = requireElement(
+  document.querySelector<HTMLInputElement>('#blueprint-file'),
+  '#blueprint-file'
 );
 const resetButton = requireElement(
   document.querySelector<HTMLButtonElement>('#reset-world'),
@@ -123,13 +150,19 @@ const benchmarkReportElement = requireElement(
   '#benchmark-report'
 );
 const renderer = new CanvasWorldRenderer(canvas);
-const constructionControls: Array<HTMLButtonElement | HTMLSelectElement> = [
+const constructionControls: Array<
+  HTMLButtonElement | HTMLInputElement | HTMLSelectElement
+> = [
   tileTypeSelect,
   tileOrientationSelect,
+  placementShapeSelect,
   placeModeButton,
   eraseModeButton,
   saveButton,
   loadButton,
+  exportBlueprintButton,
+  importBlueprintButton,
+  blueprintFileInput,
   resetButton
 ];
 
@@ -140,8 +173,23 @@ let editMode: EditMode = 'place';
 let connectedComponentCount = construction.getConnectedComponents().length;
 let benchmarkRunning = false;
 let benchmarkReportUrl: string | undefined;
+let blueprintDownloadUrl: string | undefined;
+let dragPlacement:
+  | {
+      readonly pointerId: number;
+      readonly start: TilePosition;
+      readonly settings: PlacementSettings;
+    }
+  | undefined;
+
+interface PlacementSettings {
+  readonly type: TileType;
+  readonly orientation: TileOrientation;
+  readonly shape: PlacementShape;
+}
 
 function refreshWorld(): void {
+  disableBlueprintDownload();
   connectedComponentCount = construction.getConnectedComponents().length;
   renderer.render(construction);
   tileCountElement.textContent = construction.tileCount.toLocaleString('de-DE');
@@ -192,12 +240,67 @@ function setConstructionControlsEnabled(enabled: boolean): void {
     control.disabled = !enabled;
   }
 
+  if (!enabled) {
+    disableBlueprintDownload();
+  }
+
   updateOrientationControl();
 }
 
 function updateOrientationControl(): void {
   tileOrientationSelect.disabled =
     benchmarkRunning || tileTypeSelect.value !== 'thruster';
+}
+
+function readPlacementSettings(): PlacementSettings | undefined {
+  const selectedType: string = tileTypeSelect.value;
+  const selectedShape: string = placementShapeSelect.value;
+
+  if (!isTileType(selectedType)) {
+    statusElement.textContent = 'Der ausgewählte Tile-Typ ist ungültig.';
+    return undefined;
+  }
+
+  if (!isPlacementShape(selectedShape)) {
+    statusElement.textContent = 'Die Platzierungsform ist ungültig.';
+    return undefined;
+  }
+
+  let orientation: TileOrientation = 'north';
+
+  if (selectedType === 'thruster') {
+    const selectedOrientation: string = tileOrientationSelect.value;
+
+    if (!isTileOrientation(selectedOrientation)) {
+      statusElement.textContent = 'Die Thruster-Richtung ist ungültig.';
+      return undefined;
+    }
+
+    orientation = selectedOrientation;
+  }
+
+  return {
+    type: selectedType,
+    orientation,
+    shape: selectedShape
+  };
+}
+
+function canvasPositionAt(event: PointerEvent): TilePosition {
+  const bounds = canvas.getBoundingClientRect();
+  const columns = Math.max(1, Math.ceil(canvas.clientWidth / TILE_PIXEL_SIZE));
+  const rows = Math.max(1, Math.ceil(canvas.clientHeight / TILE_PIXEL_SIZE));
+  const x = Math.floor(
+    (event.clientX - bounds.left - canvas.clientLeft) / TILE_PIXEL_SIZE
+  );
+  const y = Math.floor(
+    (event.clientY - bounds.top - canvas.clientTop) / TILE_PIXEL_SIZE
+  );
+
+  return {
+    x: Math.min(columns - 1, Math.max(0, x)),
+    y: Math.min(rows - 1, Math.max(0, y))
+  };
 }
 
 function disableBenchmarkDownload(): void {
@@ -210,6 +313,37 @@ function disableBenchmarkDownload(): void {
   downloadBenchmarkLink.removeAttribute('download');
   downloadBenchmarkLink.setAttribute('aria-disabled', 'true');
   downloadBenchmarkLink.tabIndex = -1;
+}
+
+function disableBlueprintDownload(): void {
+  if (blueprintDownloadUrl !== undefined) {
+    URL.revokeObjectURL(blueprintDownloadUrl);
+    blueprintDownloadUrl = undefined;
+  }
+
+  downloadBlueprintLink.href = '#';
+  downloadBlueprintLink.removeAttribute('download');
+  downloadBlueprintLink.setAttribute('aria-disabled', 'true');
+  downloadBlueprintLink.tabIndex = -1;
+}
+
+function enableBlueprintDownload(): void {
+  disableBlueprintDownload();
+
+  const safeConstructionId = construction.id.replace(
+    /[^A-Za-z0-9_-]+/g,
+    '-'
+  );
+  const blueprintBlob = new Blob([serializeConstruction(construction)], {
+    type: 'application/json'
+  });
+  blueprintDownloadUrl = URL.createObjectURL(blueprintBlob);
+  downloadBlueprintLink.href = blueprintDownloadUrl;
+  downloadBlueprintLink.download =
+    `stellar-frontier-${safeConstructionId}.json`;
+  downloadBlueprintLink.removeAttribute('aria-disabled');
+  downloadBlueprintLink.tabIndex = 0;
+  statusElement.textContent = 'Blueprint ist bereit. JSON herunterladen auswählen.';
 }
 
 function enableBenchmarkDownload(report: GateABenchmarkReport): void {
@@ -233,52 +367,95 @@ function handleCanvasPointerDown(event: PointerEvent): void {
     return;
   }
 
-  const bounds = canvas.getBoundingClientRect();
-  const position = {
-    x: Math.floor((event.clientX - bounds.left) / TILE_PIXEL_SIZE),
-    y: Math.floor((event.clientY - bounds.top) / TILE_PIXEL_SIZE)
-  };
+  const position = canvasPositionAt(event);
   const shouldErase = editMode === 'erase' || event.button === 2;
 
   if (shouldErase) {
+    dragPlacement = undefined;
     const removed = construction.removeTile(position);
     statusElement.textContent =
       removed === undefined
         ? 'An dieser Position liegt kein Tile.'
         : `${removed.type} entfernt.`;
-  } else {
-    const selectedType: string = tileTypeSelect.value;
-
-    if (!isTileType(selectedType)) {
-      statusElement.textContent = 'Der ausgewählte Tile-Typ ist ungültig.';
-      return;
-    }
-
-    let orientation: TileOrientation = 'north';
-
-    if (selectedType === 'thruster') {
-      const selectedOrientation: string = tileOrientationSelect.value;
-
-      if (!isTileOrientation(selectedOrientation)) {
-        statusElement.textContent = 'Die Thruster-Richtung ist ungültig.';
-        return;
-      }
-
-      orientation = selectedOrientation;
-    }
-
-    const placed = construction.placeTile(position, selectedType, orientation);
-    statusElement.textContent = `${placed.type} bei (${position.x}, ${position.y}) platziert.`;
+    refreshWorld();
+    return;
   }
 
+  const settings = readPlacementSettings();
+
+  if (settings === undefined) {
+    return;
+  }
+
+  if (settings.shape === 'single') {
+    const placed = construction.placeTile(
+      position,
+      settings.type,
+      settings.orientation
+    );
+    statusElement.textContent = `${placed.type} bei (${position.x}, ${position.y}) platziert.`;
+    refreshWorld();
+    return;
+  }
+
+  dragPlacement = {
+    pointerId: event.pointerId,
+    start: position,
+    settings
+  };
+  canvas.setPointerCapture(event.pointerId);
+  statusElement.textContent = 'Ziehe bis zum Endpunkt der Mehrfachplatzierung.';
+}
+
+function handleCanvasPointerUp(event: PointerEvent): void {
+  if (benchmarkRunning || dragPlacement?.pointerId !== event.pointerId) {
+    return;
+  }
+
+  const placement = dragPlacement;
+  dragPlacement = undefined;
+
+  if (placement === undefined) {
+    return;
+  }
+
+  const positions = getPlacementPositions(
+    placement.start,
+    canvasPositionAt(event),
+    placement.settings.shape
+  );
+
+  for (const position of positions) {
+    construction.placeTile(
+      position,
+      placement.settings.type,
+      placement.settings.orientation
+    );
+  }
+
+  statusElement.textContent =
+    `${positions.length.toLocaleString('de-DE')} Tiles als ` +
+    `${placement.settings.shape === 'line' ? 'Linie' : 'Rechteck'} platziert.`;
   refreshWorld();
 }
 
 canvas.addEventListener('pointerdown', handleCanvasPointerDown);
+canvas.addEventListener('pointerup', handleCanvasPointerUp);
+canvas.addEventListener('pointercancel', (event) => {
+  if (dragPlacement?.pointerId === event.pointerId) {
+    dragPlacement = undefined;
+    statusElement.textContent = 'Mehrfachplatzierung abgebrochen.';
+  }
+});
 canvas.addEventListener('contextmenu', (event) => event.preventDefault());
 placeModeButton.addEventListener('click', () => setEditMode('place'));
 eraseModeButton.addEventListener('click', () => setEditMode('erase'));
 tileTypeSelect.addEventListener('change', updateOrientationControl);
+placementShapeSelect.addEventListener('change', () => {
+  if (!isPlacementShape(placementShapeSelect.value)) {
+    statusElement.textContent = 'Die Platzierungsform ist ungültig.';
+  }
+});
 window.addEventListener('resize', () => renderer.render(construction));
 
 saveButton.addEventListener('click', () => {
@@ -306,6 +483,42 @@ loadButton.addEventListener('click', () => {
     refreshWorld();
   } catch (error) {
     statusElement.textContent = `Laden fehlgeschlagen: ${showError(error)}`;
+  }
+});
+
+exportBlueprintButton.addEventListener('click', () => {
+  try {
+    enableBlueprintDownload();
+  } catch (error) {
+    statusElement.textContent =
+      `Blueprint-Export fehlgeschlagen: ${showError(error)}`;
+  }
+});
+
+importBlueprintButton.addEventListener('click', () => {
+  blueprintFileInput.click();
+});
+
+blueprintFileInput.addEventListener('change', async () => {
+  const blueprintFile = blueprintFileInput.files?.item(0);
+
+  if (blueprintFile === null || blueprintFile === undefined) {
+    return;
+  }
+
+  try {
+    const serialized = await blueprintFile.text();
+    construction = deserializeConstruction(
+      serialized,
+      construction.tileRegistry
+    );
+    statusElement.textContent = `Blueprint "${blueprintFile.name}" geladen.`;
+    refreshWorld();
+  } catch (error) {
+    statusElement.textContent =
+      `Blueprint-Import fehlgeschlagen: ${showError(error)}`;
+  } finally {
+    blueprintFileInput.value = '';
   }
 });
 
@@ -380,7 +593,18 @@ downloadBenchmarkLink.addEventListener('click', (event) => {
   statusElement.textContent = 'Benchmarkbericht wird heruntergeladen.';
 });
 
+downloadBlueprintLink.addEventListener('click', (event) => {
+  if (downloadBlueprintLink.getAttribute('aria-disabled') === 'true') {
+    event.preventDefault();
+    statusElement.textContent = 'Bitte stelle zuerst einen Blueprint bereit.';
+    return;
+  }
+
+  statusElement.textContent = 'Blueprint wird heruntergeladen.';
+});
+
 window.addEventListener('pagehide', disableBenchmarkDownload, { once: true });
+window.addEventListener('pagehide', disableBlueprintDownload, { once: true });
 
 setEditMode('place');
 updateOrientationControl();

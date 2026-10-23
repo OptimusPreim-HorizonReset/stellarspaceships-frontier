@@ -35,6 +35,7 @@ Die App stellt zunächst ein interaktives Tile- und Chunk-Labor bereit. Tile set
 src/
   core/           Konfiguration, Koordinaten und Tile-Daten
   construction/   Konstruktionen und Fragmentierung
+  editor/         Wiederverwendbare Platzierungsmuster
   energy/         Chunk-Energieflüsse, Budgets und Prioritätsallocator
   game/           Beispielkonstruktion für das Labor
   physics/        Masse, Schwerpunkt, Trägheit und Thruster
@@ -57,4 +58,4 @@ Bei Abweichungen gilt der Backlog als Quelle für Task-IDs und Akzeptanzkriterie
 
 ## Status
 
-Die Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und den automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe erfüllen die provisorische Desktop-Entwicklungsbaseline; die finale mobile Gate-A-Freigabe bleibt offen. Der P1-Kern umfasst Chunk-Energieflüsse, priorisierte Leistungszuteilung, Masse, Schwerpunkt, Trägheit und orientierbare Thruster mit Rigid-Body-Schritt. Konkrete Zuordnungen weiterer Verbraucher und mobile Hardwarevalidierung bleiben offen. Details und Messwerte stehen in [SKALIERUNG.md](./SKALIERUNG.md).
+Die Grundlage umfasst Konfiguration, Tile-Registry, 32 × 32-Chunks, Konstruktionen, Fragmentierung, versioniertes Speichern/Laden, sichtbereichsbegrenztes Rendering und den automatisierten 10.000-Tile-/100-Chunk-Roundtrip-Test. Sechs lokale Produktionsläufe erfüllen die provisorische Desktop-Entwicklungsbaseline; die finale mobile Gate-A-Freigabe bleibt offen. P1 umfasst Energieflüsse/Prioritäten, Masse, Schwerpunkt, Trägheit, orientierbare Thruster mit Rigid-Body-Schritt sowie Linien-/Rechteckplatzierung. Versionierte Blueprint-Importe und -Exporte nutzen JSON; Version 1 wird beim Laden zu Version 2 mit Nordausrichtung migriert. Ein Gate-B-Funktionstest deckt 1.000 Tiles und 600 Zeitschritte ab. Mobile Hardwarevalidierung und weitere Verbraucherzuordnungen bleiben offen. Details und Messwerte stehen in [SKALIERUNG.md](./SKALIERUNG.md).

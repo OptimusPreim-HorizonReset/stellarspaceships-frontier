@@ -52,6 +52,8 @@ Dies ist nur eine lokale Referenz: Die offizielle Zielhardware wurde nicht festg
 | SF-192 | Zehn Stationen mit je 10.000 Tiles | Stationen und Open-World-Last prüfen |
 | SF-193 | 100 NPC-Schiffe gleichzeitig | Skalierung der NPC-Simulation prüfen |
 
+Der Gate-B-Funktionstest in `tests/gateB.integration.test.ts` simuliert ein 1000-Tile-Schiff über 600 feste 1/60-Sekunden-Zeitschritte. Er prüft Energie, Masse, Thrusterkräfte und endliche Zustandswerte; er ersetzt keinen FPS-Benchmark auf Zielhardware.
+
 ## Profiling-Bericht
 
 Der JSON-Bericht erfasst für die vorhandenen P0-Systeme:
