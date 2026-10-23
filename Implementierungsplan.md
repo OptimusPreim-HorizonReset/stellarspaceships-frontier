@@ -431,6 +431,11 @@ weitere Bereiche werden erst beim nächsten Request geladen. Grenzen der
 zuerst alle neuen Sektoren, entfernt danach veraltete Einträge und gibt diese
 für Persistenz oder Hintergrundsimulation an den Aufrufer zurück.
 
+SF-112 führt entladene Sektoren nur mit expliziter Simulationszeit weiter.
+Elapsed time wird in begrenzte Teilschritte zerlegt und Sektoren werden stabil
+nach Koordinaten verarbeitet. Der Step-Callback darf Objekte aktualisieren,
+aber weder Sektorposition noch deterministischen Seed ändern.
+
 ### Milestone 6
 
 - Galaxie vorhanden
