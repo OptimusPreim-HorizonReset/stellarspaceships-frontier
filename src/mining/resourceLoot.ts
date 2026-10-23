@@ -29,6 +29,21 @@ export type ResourceCollectionResult =
       readonly dropId: string;
     };
 
+export type ResourceTransferResult =
+  | {
+      readonly status: 'transferred';
+      readonly resourceType: ResourceType;
+      readonly amount: number;
+      readonly sourceRemaining: number;
+      readonly destinationTotal: number;
+    }
+  | {
+      readonly status: 'insufficient-resources';
+      readonly resourceType: ResourceType;
+      readonly requestedAmount: number;
+      readonly availableAmount: number;
+    };
+
 export function createAsteroidResourceDrop(
   asteroid: Asteroid,
   damageResult: LocalDamageResult
@@ -152,6 +167,61 @@ export class ResourceInventory {
     }
 
     return this.amounts.get(resourceType) ?? 0;
+  }
+
+  transferTo(
+    destination: ResourceInventory,
+    resourceType: ResourceType,
+    amount: number
+  ): ResourceTransferResult {
+    if (destination === this) {
+      throw new TypeError('Resources cannot be transferred to the same inventory.');
+    }
+
+    if (!isResourceType(resourceType)) {
+      throw new TypeError(`Unknown resource type: ${String(resourceType)}.`);
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new RangeError('Transfer amount must be finite and positive.');
+    }
+
+    const availableAmount = this.amounts.get(resourceType) ?? 0;
+
+    if (amount > availableAmount) {
+      return {
+        status: 'insufficient-resources',
+        resourceType,
+        requestedAmount: amount,
+        availableAmount
+      };
+    }
+
+    const sourceRemaining = availableAmount - amount;
+    const destinationTotal =
+      (destination.amounts.get(resourceType) ?? 0) + amount;
+
+    if (!Number.isFinite(destinationTotal)) {
+      throw new RangeError(
+        `Inventory amount overflow for resource ${resourceType}.`
+      );
+    }
+
+    if (sourceRemaining === 0) {
+      this.amounts.delete(resourceType);
+    } else {
+      this.amounts.set(resourceType, sourceRemaining);
+    }
+
+    destination.amounts.set(resourceType, destinationTotal);
+
+    return {
+      status: 'transferred',
+      resourceType,
+      amount,
+      sourceRemaining,
+      destinationTotal
+    };
   }
 
   getContents(): ResourceCost {

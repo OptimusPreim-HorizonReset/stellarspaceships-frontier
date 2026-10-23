@@ -1,5 +1,6 @@
 import type { Construction } from '../construction/construction';
 import type { Vector2 } from '../physics/rigidBody';
+import { ResourceInventory } from '../mining/resourceLoot';
 
 export const STATION_TYPES = [
   'mining',
@@ -19,6 +20,7 @@ export interface StationDefinition {
   readonly position: Vector2;
   readonly rotation: number;
   readonly ownerId: string | null;
+  readonly inventory?: ResourceInventory;
 }
 
 export function isStationType(value: unknown): value is StationType {
@@ -32,6 +34,7 @@ export class Station {
   readonly position: Vector2;
   readonly rotation: number;
   readonly ownerId: string | null;
+  readonly inventory: ResourceInventory;
 
   constructor(definition: StationDefinition) {
     if (definition.id.trim().length === 0) {
@@ -73,5 +76,6 @@ export class Station {
     this.position = Object.freeze({ ...definition.position });
     this.rotation = definition.rotation;
     this.ownerId = definition.ownerId;
+    this.inventory = definition.inventory ?? new ResourceInventory();
   }
 }

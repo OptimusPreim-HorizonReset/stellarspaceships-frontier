@@ -97,4 +97,33 @@ describe('asteroid resource loot', () => {
     expect(inventory.getAmount('ore')).toBe(3);
     expect(inventory.getContents()).toEqual({ ore: 3 });
   });
+
+  it('transfers resources atomically and reports insufficient inventory', () => {
+    const source = new ResourceInventory();
+    const destination = new ResourceInventory();
+    const drop = {
+      id: 'ship-1:drop-1',
+      asteroidId: 'asteroid-1',
+      sourceTileId: 1,
+      resourceType: 'ore' as const,
+      amount: 5
+    };
+    source.collect(drop);
+
+    expect(source.transferTo(destination, 'ore', 3)).toEqual({
+      status: 'transferred',
+      resourceType: 'ore',
+      amount: 3,
+      sourceRemaining: 2,
+      destinationTotal: 3
+    });
+    expect(source.transferTo(destination, 'ore', 4)).toEqual({
+      status: 'insufficient-resources',
+      resourceType: 'ore',
+      requestedAmount: 4,
+      availableAmount: 2
+    });
+    expect(source.getAmount('ore')).toBe(2);
+    expect(destination.getAmount('ore')).toBe(3);
+  });
 });

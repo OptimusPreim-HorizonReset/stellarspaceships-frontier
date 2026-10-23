@@ -461,7 +461,9 @@ Stationen nutzen dasselbe Tilesystem wie Schiffe. Ein Station-Objekt hält Rolle
 Welttransform und Ownership und referenziert die Construction; Tiles und Chunks
 werden nicht dupliziert. SF-121 koppelt ein Schiff über Capture-Radius,
 Relativgeschwindigkeit und eindeutige Ports an den Stations-Transform; SF-122
-übernimmt anschließend den Ressourcentransfer.
+übernimmt anschließend den Ressourcentransfer. Stationen besitzen ein eigenes
+Inventar; Transfer ist nur über eine aktive Verbindung zur passenden Station
+zulässig und aktualisiert beide Inventare atomar.
 
 ### Milestone 7
 
