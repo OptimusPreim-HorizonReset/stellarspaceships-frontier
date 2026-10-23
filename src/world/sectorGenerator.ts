@@ -42,7 +42,7 @@ function nextRandom(seed: number): {
   };
 }
 
-function deriveSectorSeed(
+export function deriveSectorSeed(
   worldSeed: number,
   position: SectorPosition
 ): number {

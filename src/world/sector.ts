@@ -48,6 +48,11 @@ export function assertValidSectorPosition(position: SectorPosition): void {
   }
 }
 
+export function sectorKey(position: SectorPosition): string {
+  assertValidSectorPosition(position);
+  return `${position.x},${position.y}`;
+}
+
 function assertObjectReferences(
   objects: readonly SectorObjectReference[]
 ): readonly SectorObjectReference[] {

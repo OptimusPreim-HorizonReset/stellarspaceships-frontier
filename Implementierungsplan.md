@@ -424,7 +424,10 @@ sich dabei nicht.
 
 ### Streaming
 
-Der Spieler bewegt sich; nur Nachbarsektoren werden geladen.
+Der Sektorlader materialisiert auf Anfrage das Zentrum und die gültigen
+Sektoren seiner 3×3-Nachbarschaft. Generierte Sektoren bleiben im lokalen Cache;
+weitere Bereiche werden erst beim nächsten Request geladen. Grenzen der
+4096×4096-Karte werden abgeschnitten, Entladung übernimmt SF-111.
 
 ### Milestone 6
 
