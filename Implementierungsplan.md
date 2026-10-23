@@ -457,7 +457,9 @@ Stationäre Konstruktionen ermöglichen.
 
 ### Stationslogik
 
-Stationen nutzen dasselbe Tilesystem wie Schiffe. Es gibt keine Sonderbehandlung.
+Stationen nutzen dasselbe Tilesystem wie Schiffe. Ein Station-Objekt hält Rolle,
+Welttransform und Ownership und referenziert die Construction; Tiles und Chunks
+werden nicht dupliziert. Docking und Lagertransfer bleiben SF-121 und SF-122.
 
 ### Milestone 7
 

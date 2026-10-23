@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112 und SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 und SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -494,6 +494,11 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P3
 - **Abhängigkeiten:** SF-112
+- **Akzeptanzkriterien:**
+  - Station als typisiertes Weltobjekt aus einer vorhandenen Construction erzeugen
+  - Mining, Factory, Research und Defense als Stationsrollen unterstützen
+  - Weltposition, Rotation und Ownership unabhängig von den Tiles halten
+  - Leere Konstruktionen, ID-Mismatches und ungültige Transformwerte ablehnen
 
 ### SF-121 – Dockingsystem
 
