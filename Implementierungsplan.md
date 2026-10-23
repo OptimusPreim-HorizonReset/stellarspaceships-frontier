@@ -244,6 +244,14 @@ letzten Endpunkt für dieselbe Kollisionsrunde zurück.
 Trefferprüfung, Broadphase, Narrowphase und Tile-Schaden bleiben getrennte
 Folgeschritte in SF-071 bis SF-073.
 
+### Kollisions-Broadphase
+
+Welt-AABBs werden in einem 32er-Raster über die Chunk-Koordinaten indiziert.
+Die Projektilabfrage verwendet das gesweepte Rechteck zwischen vorheriger und
+aktueller Position, erweitert um den Kollisionsradius. Selbsttreffer werden
+ausgeschlossen; Kandidaten werden dedupliziert und stabil sortiert. Diese Stufe
+prüft keine exakten Formen und verändert keine Tile-HP.
+
 ### Chunks aktivieren
 
 Bei einem Treffer:
