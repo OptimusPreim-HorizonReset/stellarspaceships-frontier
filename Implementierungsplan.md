@@ -387,11 +387,17 @@ Implementieren:
 Jeder Sektor enthält:
 
 ```typescript
-Seed
-Difficulty
-Objects
-Ownership
+position: { x, y }       // 0 bis 4095
+seed: uint32
+difficulty: number       // endlich, nichtnegativ
+objects: { id, type }[]
+ownerId: string | null
 ```
+
+Das Sektormodell validiert Grenzen und eindeutige Objekt-IDs, kopiert
+Eingabedaten defensiv und friert den resultierenden Datensatz ein. Schwierigkeit
+bleibt ein nichtnegativer Skalar; die Distanzformel wird erst in SF-102
+festgelegt.
 
 ### Ringsystem
 

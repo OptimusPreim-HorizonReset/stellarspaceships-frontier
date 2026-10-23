@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093 und SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100-Sektormodell und SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -428,6 +428,12 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P3
 - **Abhängigkeiten:** GATE-C
+- **Akzeptanzkriterien:**
+  - Sektorkoordinaten im begrenzten 4096×4096-Raster validieren
+  - Deterministischen unsigned-32-Bit-Seed und nichtnegative Difficulty speichern
+  - Objekt-Referenzen mit eindeutigen IDs und Typen abbilden
+  - Unbeanspruchte Sektoren mit `ownerId: null` unterstützen
+  - Daten und Objektlisten beim Erzeugen defensiv kopieren und unveränderlich ausgeben
 
 ### SF-101 – Ringbasierter Weltgenerator
 
