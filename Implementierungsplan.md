@@ -328,11 +328,18 @@ Von einer Sandbox zu einem Spiel wechseln.
 Asteroiden sind Weltobjekte mit rigid-body Zustand und einer bestehenden
 chunkbasierten Konstruktion aus `rock`-Tiles. Jeder Tile-Eintrag enthält eine
 validierte Ressourcenart und -menge für die spätere Loot-Stufe; Trefferpunkte
-und Positionen bleiben Teil der Tile-Konstruktion.
+und Positionen bleiben Teil der Tile-Konstruktion. Die Weltposition ist der
+Ursprung des lokalen Tile-Rasters; die Rotation transformiert dieses Raster in
+Weltkoordinaten.
 
 ### Mining Laser
 
-**Mechanik:**
+Das Laserprofil definiert Reichweite, Schadensrate und Leistungsbedarf. Der
+Aufruf liefert Weltursprung, Richtung, Zeitschritt und vom Allocator zugeteilte
+Leistung. Der Strahl wird in das lokale Asteroidenraster transformiert; die
+Chunk-Abfrage liefert Kandidaten, aus denen der nächstgelegene Tile-Treffer
+bestimmt wird. Teilenergie skaliert den Schaden proportional; ein Treffer
+verwendet das lokale Schadensmodell und aktiviert den betroffenen Chunk.
 
 ```text
 Asteroid-Tile zerstören

@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor-Grundlagen, SF-070 bis SF-073 als Kampfgrundlage, SF-080 bis SF-082 für Chunk-Aktivierung und SF-090 als Asteroidenmodell umgesetzt; Mining-Laser, Loot und mobiles Gate-A-Profil offen
+**Status:** P1-Energie-/Physikkern, Editor-Grundlagen, SF-070 bis SF-073 als Kampfgrundlage, SF-080 bis SF-082 für Chunk-Aktivierung sowie SF-090/SF-091 für Asteroiden und Mining-Laser umgesetzt; Loot und mobiles Gate-A-Profil offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -380,6 +380,12 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P2
 - **Abhängigkeiten:** SF-090
+- **Akzeptanzkriterien:**
+  - Laserprofil mit Reichweite, Schadensrate und Leistungsbedarf validieren
+  - Weltstrahl in lokale Asteroidenkoordinaten transformieren und Chunk-Abfrage nutzen
+  - Nächstes getroffenes Tile auswählen und Teilenergie proportional auf Schaden anwenden
+  - Treffer über das lokale Schadensmodell verarbeiten und Chunk aktivieren
+  - Fehlende Leistung und Fehlschüsse ohne Tile-Änderung melden
 
 ### SF-092 – Ressourcenloot
 
