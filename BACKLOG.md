@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 und SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120/SF-121 und SF-191-Lastprofil umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -504,6 +504,12 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P3
 - **Abhängigkeiten:** SF-120
+- **Akzeptanzkriterien:**
+  - Dockingport über Stations-ID, lokale Position und lokale Rotation beschreiben
+  - Capture-Radius und maximale Relativgeschwindigkeit als Policy validieren
+  - Pro Port höchstens ein Schiff andocken und die Verbindung eindeutig nachverfolgen
+  - Gedocktes Schiff dem Stations-Transform folgen lassen
+  - Beim Abdocken den Port freigeben und explizite Release-Geschwindigkeit übernehmen
 
 ### SF-122 – Ressourcenübergabe
 

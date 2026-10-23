@@ -459,7 +459,9 @@ Stationäre Konstruktionen ermöglichen.
 
 Stationen nutzen dasselbe Tilesystem wie Schiffe. Ein Station-Objekt hält Rolle,
 Welttransform und Ownership und referenziert die Construction; Tiles und Chunks
-werden nicht dupliziert. Docking und Lagertransfer bleiben SF-121 und SF-122.
+werden nicht dupliziert. SF-121 koppelt ein Schiff über Capture-Radius,
+Relativgeschwindigkeit und eindeutige Ports an den Stations-Transform; SF-122
+übernimmt anschließend den Ressourcentransfer.
 
 ### Milestone 7
 
