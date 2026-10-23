@@ -252,6 +252,15 @@ aktueller Position, erweitert um den Kollisionsradius. Selbsttreffer werden
 ausgeschlossen; Kandidaten werden dedupliziert und stabil sortiert. Diese Stufe
 prüft keine exakten Formen und verändert keine Tile-HP.
 
+### Kollisions-Narrowphase
+
+Für jeden Broadphase-Kandidaten prüft die Narrowphase das kontinuierliche
+Kreisprojektil gegen die Ziel-AABB. Sie gibt den frühesten Trefferzeitpunkt
+innerhalb des Zeitschritts, die Projektilmitte und den nächstgelegenen
+Kontaktpunkt zurück. Eckkontakte werden kreisförmig statt über eine
+übermäßig große, erweiterte AABB geprüft. Trefferprüfung verändert weder
+Projektile noch Ziele; SF-073 übernimmt den lokalen Schaden.
+
 ### Chunks aktivieren
 
 Bei einem Treffer:

@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor-Grundlagen und versionierter Blueprint-Import/-Export umgesetzt; SF-070-Projektilsimulation und SF-071-Broadphase umgesetzt; Narrowphase, Schaden und mobiles Gate-A-Profil offen
+**Status:** P1-Energie-/Physikkern, Editor-Grundlagen und versionierter Blueprint-Import/-Export umgesetzt; SF-070-Projektilsimulation, SF-071-Broadphase und SF-072-Narrowphase umgesetzt; lokaler Schaden und mobiles Gate-A-Profil offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -307,6 +307,11 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P2
 - **Abhängigkeiten:** SF-071
+- **Akzeptanzkriterien:**
+  - Gesweepte Kreis-Projektile gegen Welt-AABBs kontinuierlich prüfen
+  - Frühesten Trefferzeitpunkt, Projektilposition und Kontaktpunkt liefern
+  - Startüberlappungen, Nullradius und Eckkontakte korrekt behandeln
+  - Treffer deterministisch ordnen, ohne Projektile oder Ziele zu verändern
 
 ### SF-073 – Lokales Schadensmodell
 
