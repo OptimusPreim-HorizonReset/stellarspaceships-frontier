@@ -233,11 +233,16 @@ Das Schadensmodell ist ein Kernfeature.
 
 ### Projektilsystem
 
-Implementieren:
+Laser, Kanone und Rakete erhalten datengetriebene Profile mit Geschwindigkeit,
+Schaden, Kollisionsradius und Lebensdauer.
 
-- Laser
-- Kanone
-- Rakete
+Beim Erzeugen werden die normierte Schussrichtung und die Geschwindigkeit des
+feuernden Schiffs kombiniert. Die deterministische Zeitschrittsimulation hält
+vorherige und aktuelle Position fest und gibt abgelaufene Projektile mit ihrem
+letzten Endpunkt für dieselbe Kollisionsrunde zurück.
+
+Trefferprüfung, Broadphase, Narrowphase und Tile-Schaden bleiben getrennte
+Folgeschritte in SF-071 bis SF-073.
 
 ### Chunks aktivieren
 

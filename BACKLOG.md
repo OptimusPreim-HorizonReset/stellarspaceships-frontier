@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor-Grundlagen und versionierter Blueprint-Import/-Export umgesetzt; mobiles Gate-A-Profil offen
+**Status:** P1-Energie-/Physikkern, Editor-Grundlagen und versionierter Blueprint-Import/-Export umgesetzt; SF-070-Projektilsimulation umgesetzt; Kollision, Schaden und mobiles Gate-A-Profil offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -284,6 +284,12 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P2
 - **Abhängigkeiten:** GATE-B
+- **Akzeptanzkriterien:**
+  - Datengetriebene Profile für Laser, Kanone und Rakete unterstützen
+  - Projektil mit eindeutiger ID, Besitzer, Startposition und geerbter Schiffsbewegung erzeugen
+  - Bewegungen deterministisch pro Zeitschritt aktualisieren und Lebensdauer berücksichtigen
+  - Vorherige und aktuelle Position sowie Schadens- und Radiusdaten für Kollisionstasks bereitstellen
+  - Trefferprüfung und Tile-Schaden SF-071 bis SF-073 überlassen
 
 ### SF-071 – Broadphase-Kollision
 
