@@ -17,6 +17,7 @@ import {
 } from '../core/tiles';
 import { calculatePowerBalance } from '../energy/powerBalance';
 import { createDemoConstruction } from '../game/createDemoConstruction';
+import { GateCSession } from '../game/gateCSession';
 import {
   CanvasWorldRenderer,
   TILE_PIXEL_SIZE
@@ -29,6 +30,7 @@ import {
 
 const SAVE_KEY = 'stellar-frontier:construction:v2';
 const LEGACY_SAVE_KEY = 'stellar-frontier:construction:v1';
+const MISSION_SAVE_KEY = 'stellar-frontier:gate-c-session:v1';
 
 function requireElement<T extends Element>(
   element: T | null,
@@ -149,6 +151,58 @@ const benchmarkReportElement = requireElement(
   document.querySelector<HTMLElement>('#benchmark-report'),
   '#benchmark-report'
 );
+const missionFlightDirectionSelect = requireElement(
+  document.querySelector<HTMLSelectElement>('#mission-flight-direction'),
+  '#mission-flight-direction'
+);
+const missionFlightStepButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#mission-flight-step'),
+  '#mission-flight-step'
+);
+const missionFireCannonButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#mission-fire-cannon'),
+  '#mission-fire-cannon'
+);
+const missionFireMiningLaserButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#mission-fire-mining-laser'),
+  '#mission-fire-mining-laser'
+);
+const missionCollectResourcesButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#mission-collect-resources'),
+  '#mission-collect-resources'
+);
+const missionResetButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#mission-reset'),
+  '#mission-reset'
+);
+const missionShipPositionElement = requireElement(
+  document.querySelector<HTMLElement>('#mission-ship-position'),
+  '#mission-ship-position'
+);
+const missionShipVelocityElement = requireElement(
+  document.querySelector<HTMLElement>('#mission-ship-velocity'),
+  '#mission-ship-velocity'
+);
+const missionEnemyHitPointsElement = requireElement(
+  document.querySelector<HTMLElement>('#mission-enemy-hp'),
+  '#mission-enemy-hp'
+);
+const missionAsteroidTileCountElement = requireElement(
+  document.querySelector<HTMLElement>('#mission-asteroid-tiles'),
+  '#mission-asteroid-tiles'
+);
+const missionInventoryElement = requireElement(
+  document.querySelector<HTMLElement>('#mission-inventory'),
+  '#mission-inventory'
+);
+const missionDropCountElement = requireElement(
+  document.querySelector<HTMLElement>('#mission-drop-count'),
+  '#mission-drop-count'
+);
+const missionStatusElement = requireElement(
+  document.querySelector<HTMLElement>('#mission-status'),
+  '#mission-status'
+);
 const renderer = new CanvasWorldRenderer(canvas);
 const constructionControls: Array<
   HTMLButtonElement | HTMLInputElement | HTMLSelectElement
@@ -163,12 +217,19 @@ const constructionControls: Array<
   exportBlueprintButton,
   importBlueprintButton,
   blueprintFileInput,
-  resetButton
+  resetButton,
+  missionFlightDirectionSelect,
+  missionFlightStepButton,
+  missionFireCannonButton,
+  missionFireMiningLaserButton,
+  missionCollectResourcesButton,
+  missionResetButton
 ];
 
 type EditMode = 'place' | 'erase';
 
 let construction = createDemoConstruction();
+let mission = new GateCSession(construction);
 let editMode: EditMode = 'place';
 let connectedComponentCount = construction.getConnectedComponents().length;
 let benchmarkRunning = false;
@@ -218,6 +279,36 @@ function refreshWorld(): void {
       : `${physicalProperties.centerOfMass.x.toFixed(2)}, ${physicalProperties.centerOfMass.y.toFixed(2)}`;
   momentOfInertiaElement.textContent =
     physicalProperties.momentOfInertia.toLocaleString('de-DE');
+  mission.setPlayerConstruction(construction);
+  updateMissionInspector();
+}
+
+function updateMissionInspector(): void {
+  const state = mission.playerState;
+  const inventory = Object.entries(mission.inventory.getContents())
+    .filter((entry): entry is [string, number] => entry[1] !== undefined)
+    .map(
+      ([resourceType, amount]) =>
+        `${resourceType}: ${amount.toLocaleString('de-DE')}`
+    );
+  const pendingDropCount = mission.pendingResourceDropCount;
+
+  missionShipPositionElement.textContent =
+    `${state.position.x.toFixed(2)}, ${state.position.y.toFixed(2)}`;
+  missionShipVelocityElement.textContent = Math.hypot(
+    state.velocity.x,
+    state.velocity.y
+  ).toFixed(2);
+  missionEnemyHitPointsElement.textContent =
+    mission.enemyHitPoints.toLocaleString('de-DE');
+  missionAsteroidTileCountElement.textContent =
+    mission.asteroid.construction.tileCount.toLocaleString('de-DE');
+  missionInventoryElement.textContent =
+    inventory.length === 0 ? 'Leer' : inventory.join(' · ');
+  missionDropCountElement.textContent =
+    pendingDropCount.toLocaleString('de-DE');
+  missionCollectResourcesButton.disabled =
+    benchmarkRunning || pendingDropCount === 0;
 }
 
 function showError(error: unknown): string {
@@ -460,15 +551,26 @@ window.addEventListener('resize', () => renderer.render(construction));
 
 saveButton.addEventListener('click', () => {
   try {
-    localStorage.setItem(SAVE_KEY, serializeConstruction(construction));
-    statusElement.textContent = 'Konstruktion lokal gespeichert.';
+    localStorage.setItem(MISSION_SAVE_KEY, mission.serialize());
+    statusElement.textContent = 'Mission lokal gespeichert.';
   } catch (error) {
-    statusElement.textContent = `Speichern fehlgeschlagen: ${showError(error)}`;
+    statusElement.textContent =
+      `Missionsspeicherung fehlgeschlagen: ${showError(error)}`;
   }
 });
 
 loadButton.addEventListener('click', () => {
   try {
+    const savedMission = localStorage.getItem(MISSION_SAVE_KEY);
+
+    if (savedMission !== null) {
+      mission = GateCSession.deserialize(savedMission);
+      construction = mission.playerConstruction;
+      statusElement.textContent = 'Mission geladen.';
+      refreshWorld();
+      return;
+    }
+
     const savedConstruction =
       localStorage.getItem(SAVE_KEY) ??
       localStorage.getItem(LEGACY_SAVE_KEY);
@@ -479,10 +581,13 @@ loadButton.addEventListener('click', () => {
     }
 
     construction = deserializeConstruction(savedConstruction, construction.tileRegistry);
-    statusElement.textContent = 'Konstruktion geladen.';
+    mission = new GateCSession(construction);
+    statusElement.textContent =
+      'Ältere Schiffskonstruktion geladen; Missionsszene neu gestartet.';
     refreshWorld();
   } catch (error) {
-    statusElement.textContent = `Laden fehlgeschlagen: ${showError(error)}`;
+    statusElement.textContent =
+      `Missionsladen fehlgeschlagen: ${showError(error)}`;
   }
 });
 
@@ -512,6 +617,7 @@ blueprintFileInput.addEventListener('change', async () => {
       serialized,
       construction.tileRegistry
     );
+    mission = new GateCSession(construction);
     statusElement.textContent = `Blueprint "${blueprintFile.name}" geladen.`;
     refreshWorld();
   } catch (error) {
@@ -524,8 +630,104 @@ blueprintFileInput.addEventListener('change', async () => {
 
 resetButton.addEventListener('click', () => {
   construction = createDemoConstruction();
+  mission = new GateCSession(construction);
   statusElement.textContent = 'Beispielkonstruktion wiederhergestellt.';
   refreshWorld();
+});
+
+missionFlightStepButton.addEventListener('click', () => {
+  const direction: string = missionFlightDirectionSelect.value;
+
+  if (!isTileOrientation(direction)) {
+    missionStatusElement.textContent = 'Ungültige Schubrichtung.';
+    return;
+  }
+
+  try {
+    const report = mission.stepFlight(direction, 1);
+    missionStatusElement.textContent =
+      report.thrusterForces.activeThrusterCount === 0
+        ? 'Kein Thruster in dieser Richtung; Zustand bleibt unverändert.'
+        : `Flugschritt abgeschlossen: ${report.thrusterForces.activeThrusterCount} Thruster aktiv.`;
+    updateMissionInspector();
+  } catch (error) {
+    missionStatusElement.textContent =
+      `Flugschritt fehlgeschlagen: ${showError(error)}`;
+  }
+});
+
+missionFireCannonButton.addEventListener('click', () => {
+  try {
+    const result = mission.fireCannon();
+
+    if (result.status === 'unpowered') {
+      missionStatusElement.textContent =
+        `Kanone ohne Leistung (${result.allocatedPower}/${result.requestedPower}).`;
+    } else if (result.status === 'miss') {
+      missionStatusElement.textContent = 'Kanone verfehlt das Gegnerschiff.';
+    } else {
+      missionStatusElement.textContent =
+        result.damage.status === 'destroyed'
+          ? `Treffer: Gegner-Tile bei (${result.tilePosition.x}, ${result.tilePosition.y}) zerstört.`
+          : `Treffer: Gegner-Tile bei (${result.tilePosition.x}, ${result.tilePosition.y}) beschädigt.`;
+    }
+
+    updateMissionInspector();
+  } catch (error) {
+    missionStatusElement.textContent =
+      `Kampfaktion fehlgeschlagen: ${showError(error)}`;
+  }
+});
+
+missionFireMiningLaserButton.addEventListener('click', () => {
+  try {
+    const result = mission.fireMiningLaser();
+
+    if (result.status === 'unpowered') {
+      missionStatusElement.textContent =
+        `Mining-Laser ohne Leistung (${result.allocatedPower}/${result.requiredPower}).`;
+    } else if (result.status === 'miss') {
+      missionStatusElement.textContent = 'Mining-Laser verfehlt den Asteroiden.';
+    } else {
+      const tileResult =
+        result.damage.status === 'destroyed'
+          ? 'Asteroid-Tile zerstört'
+          : 'Asteroid-Tile beschädigt';
+      const drop = result.resourceDrop;
+      missionStatusElement.textContent =
+        drop === undefined
+          ? `${tileResult}; kein neuer Drop.`
+          : `${tileResult}; ${drop.amount} ${drop.resourceType} zum Einsammeln bereit.`;
+    }
+
+    updateMissionInspector();
+  } catch (error) {
+    missionStatusElement.textContent =
+      `Mining fehlgeschlagen: ${showError(error)}`;
+  }
+});
+
+missionCollectResourcesButton.addEventListener('click', () => {
+  try {
+    const results = mission.collectResources();
+    const collected = results.filter((result) => result.status === 'collected');
+
+    missionStatusElement.textContent =
+      collected.length === 0
+        ? 'Keine Ressourcen zum Einsammeln vorhanden.'
+        : `${collected.length} Ressourcen-Drop(s) eingesammelt.`;
+    updateMissionInspector();
+  } catch (error) {
+    missionStatusElement.textContent =
+      `Einsammeln fehlgeschlagen: ${showError(error)}`;
+  }
+});
+
+missionResetButton.addEventListener('click', () => {
+  mission.resetMission();
+  missionStatusElement.textContent =
+    'Mission zurückgesetzt; die aktuelle Schiffskonstruktion bleibt erhalten.';
+  updateMissionInspector();
 });
 
 runBenchmarkButton.addEventListener('click', async () => {

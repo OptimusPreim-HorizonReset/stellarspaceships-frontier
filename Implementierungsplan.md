@@ -360,6 +360,16 @@ pro Ressourcentyp.
 - Ressourceninventar
 - Wirtschaftliche Grundlage
 
+### Gate-C-Missionsintegration
+
+Das World Lab verwendet die Editor-Konstruktion als Spielerschiff. Manuelle
+Flugschritte nutzen die Chunk-Powerbudgets und das Thrustersystem; Kanonenfeuer
+wird gegen ein Testschiff durch die Combat-Pipeline geführt. Der Mining-Laser
+trifft Asteroiden-Tiles, erzeugt Drops und übergibt sie an das Inventar. Der
+versionierte Missionsspeicher hält Schiff, Flugzustand, Gegner, Asteroid,
+Inventar und offene Drops fest. Ein lokaler Browser-Playthrough prüft Bauen,
+Fliegen, Kämpfen, Abbauen, Einsammeln und Speichern/Laden.
+
 ## Phase 6 – Open World
 
 ### Ziel

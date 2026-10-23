@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern und Editor-Grundlagen sowie SF-070 bis SF-073, SF-080 bis SF-082 und SF-090 bis SF-092 als Kampf-, Chunk- und Mining-Grundlage umgesetzt; mobiles Gate-A-Profil offen
+**Status:** P1-Energie-/Physikkern, Editor und SF-070 bis SF-093 für Kampf, Chunk-Aktivierung, Mining sowie Gate-C-Missionsintegration umgesetzt; lokaler Gate-C-Playthrough bestanden, mobiles Gate-A-Profil bleibt offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -397,9 +397,22 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
   - Inventare sammeln Drops dedupliziert und summieren Mengen pro Ressourcentyp
   - Ungültige IDs, Ressourcentypen, Mengen und Summenüberläufe explizit ablehnen
 
+### SF-093 – Gate-C-Missionsintegration
+
+- **Priorität:** P2
+- **Abhängigkeiten:** SF-070 bis SF-092
+- **Akzeptanzkriterien:**
+  - Editor-Konstruktion als Spielerschiff mit Energie- und Thruster-Zeitschritten verwenden
+  - Projektilkampf gegen eine Tile-Konstruktion über Broadphase, Narrowphase und lokalen Schaden ausführen
+  - Mining-Laser, Drop-Erzeugung und Inventaraufnahme als durchgängige Mission verbinden
+  - Versionierter Missionsspeicher umfasst Schiff, Flugzustand, Gegner, Asteroid, Inventar und offene Drops
+  - Automatisierter Integrationstest deckt Bauen, Fliegen, Kämpfen, Abbauen, Einsammeln und Speichern/Laden ab
+
 ## GATE-C – MVP
 
-**Voraussetzungen:** SF-070 bis SF-092.
+**Voraussetzungen:** SF-070 bis SF-093.
+
+**Status:** Lokaler Browser-Playthrough aller MVP-Schritte bestanden; die mobile Gate-A-Freigabe bleibt separat offen.
 
 **MVP-Anforderungen:**
 

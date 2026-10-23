@@ -17,10 +17,10 @@
           <span class="brand-mark" aria-hidden="true">SF</span>
           <span>
             <strong>Stellar Frontier</strong>
-            <small>P0 FOUNDATION · P1 CORE</small>
+            <small>P0/P1 FOUNDATION · P2 GATE C LOOP</small>
           </span>
         </a>
-        <span class="build-tag">TECH DEMO 0.2</span>
+        <span class="build-tag">TECH DEMO 0.3</span>
       </header>
 
       <main>
@@ -28,8 +28,8 @@
           <p class="eyebrow">CHUNK-BASED CONSTRUCTION</p>
           <h1 id="page-title">World Lab</h1>
           <p>
-            Die erste technische Spielwiese: Tiles platzieren, Chunk-Grenzen
-            prüfen und Konstruktionen speichern.
+            Baue ein Schiff, simuliere den Antrieb und teste Kampf, Bergbau sowie
+            den versionierten Missionsspeicher.
           </p>
         </section>
 
@@ -74,8 +74,8 @@
             </div>
 
             <div class="toolbar-actions">
-              <button id="save-world" class="action-button" type="button">Speichern</button>
-              <button id="load-world" class="action-button" type="button">Laden</button>
+              <button id="save-world" class="action-button" type="button">Mission speichern</button>
+              <button id="load-world" class="action-button" type="button">Mission laden</button>
               <button id="export-blueprint" class="action-button" type="button">Blueprint bereitstellen</button>
               <button id="import-blueprint" class="action-button action-button-muted" type="button">Blueprint importieren</button>
               <a
@@ -161,8 +161,61 @@
           </div>
         </section>
 
+        <section class="mission-panel" aria-labelledby="mission-title">
+          <div class="mission-header">
+            <div>
+              <p class="eyebrow">GATE C · INTEGRATIONSPROTOTYP</p>
+              <h2 id="mission-title">Mission Lab</h2>
+              <p class="mission-description">
+                Die Baukonstruktion wird als Spielerschiff verwendet. Jeder
+                Flugschritt simuliert eine Sekunde; Treffer und Ressourcen
+                laufen durch die Combat- und Mining-Systeme.
+              </p>
+            </div>
+            <span class="mission-badge">LOKALE SIMULATION</span>
+          </div>
+          <div class="mission-grid">
+            <div class="mission-controls">
+              <label class="mission-control-group" for="mission-flight-direction">
+                <span>Schubrichtung</span>
+                <select id="mission-flight-direction">
+                  <option value="north">Nord</option>
+                  <option value="east">Ost</option>
+                  <option value="south">Süd</option>
+                  <option value="west">West</option>
+                </select>
+              </label>
+              <button id="mission-flight-step" class="action-button" type="button">
+                1 s Flugschritt
+              </button>
+              <button id="mission-fire-cannon" class="action-button" type="button">
+                Kanone feuern
+              </button>
+              <button id="mission-fire-mining-laser" class="action-button" type="button">
+                Mining-Laser
+              </button>
+              <button id="mission-collect-resources" class="action-button action-button-muted" type="button" disabled>
+                Ressourcen aufnehmen (<span id="mission-drop-count">0</span>)
+              </button>
+              <button id="mission-reset" class="action-button action-button-muted" type="button">
+                Mission zurücksetzen
+              </button>
+            </div>
+            <dl class="mission-stats">
+              <div><dt>Schiffposition</dt><dd id="mission-ship-position">0,00 · 0,00</dd></div>
+              <div><dt>Schiffgeschwindigkeit</dt><dd id="mission-ship-velocity">0,00</dd></div>
+              <div><dt>Gegner-HP</dt><dd id="mission-enemy-hp">0</dd></div>
+              <div><dt>Asteroid-Tiles</dt><dd id="mission-asteroid-tiles">0</dd></div>
+              <div class="mission-inventory"><dt>Inventar</dt><dd id="mission-inventory">Leer</dd></div>
+            </dl>
+          </div>
+          <p id="mission-status" class="mission-status" role="status" aria-live="polite">
+            Bereit: Schiff bauen, fliegen, kämpfen und abbauen.
+          </p>
+        </section>
+
         <footer class="page-footer">
-          <span>Stellar Frontier · Browserbasierter P0/P1-Prototyp</span>
+          <span>Stellar Frontier · Browserbasierter P0–P2-Prototyp</span>
           <span>32 × 32 Tiles pro Chunk</span>
         </footer>
       </main>

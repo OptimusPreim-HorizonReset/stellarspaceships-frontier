@@ -125,6 +125,31 @@ export class Asteroid {
     return this.resourceDeposits.get(tileId);
   }
 
+  getDefinition(): AsteroidDefinition {
+    const tiles = this.construction.getTiles().map(({ position, tile }) => {
+      const deposit = this.resourceDeposits.get(tile.id);
+
+      if (deposit === undefined) {
+        throw new Error(
+          `Resource deposit is missing for asteroid tile ${tile.id}.`
+        );
+      }
+
+      return {
+        position,
+        resourceType: deposit.resourceType,
+        resourceAmount: deposit.amount,
+        hitPoints: tile.hp
+      };
+    });
+
+    return {
+      id: this.id,
+      state: this.currentState,
+      tiles
+    };
+  }
+
   claimResourceDeposit(tileId: number): AsteroidResourceDeposit | undefined {
     if (!Number.isSafeInteger(tileId) || tileId <= 0) {
       throw new RangeError('Asteroid tile ID must be a positive safe integer.');

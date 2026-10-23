@@ -483,6 +483,123 @@ h2 {
   line-height: 1.5;
 }
 
+.mission-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #26354a;
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at 95% 0%, rgb(43 74 116 / 20%), transparent 45%),
+    #0e131c;
+}
+
+.mission-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #202a39;
+}
+
+.mission-header h2 {
+  margin-bottom: 8px;
+}
+
+.mission-description {
+  max-width: 680px;
+  margin: 0;
+  color: #99a7ba;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.mission-badge {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid #365987;
+  border-radius: 999px;
+  color: #b7d0f3;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: minmax(200px, 0.8fr) minmax(0, 1.2fr);
+  gap: 20px;
+  padding-top: 18px;
+}
+
+.mission-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 8px;
+}
+
+.mission-control-group {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 6px;
+  color: #8998ad;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mission-controls .action-button {
+  width: 100%;
+}
+
+.mission-controls .action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.mission-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 8px;
+  margin: 0;
+}
+
+.mission-stats > div {
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid #202a39;
+  border-radius: 9px;
+  background: #0a0f17;
+}
+
+.mission-stats dt {
+  color: #8998ad;
+  font-size: 10px;
+}
+
+.mission-stats dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: #dce8f8;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.mission-inventory {
+  grid-column: 1 / -1;
+}
+
+.mission-status {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #202a39;
+  color: #7fa9ec;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
 .page-footer {
   display: flex;
   justify-content: space-between;
@@ -539,6 +656,18 @@ h2 {
 
   .world-layout {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mission-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mission-header {
+    flex-direction: column;
+  }
+
+  .mission-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .canvas-wrap {

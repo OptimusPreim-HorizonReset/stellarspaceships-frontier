@@ -11,6 +11,11 @@ export interface AsteroidResourceDrop {
   readonly amount: number;
 }
 
+export interface ResourceInventorySnapshot {
+  readonly contents: ResourceCost;
+  readonly collectedDropIds: readonly string[];
+}
+
 export type ResourceCollectionResult =
   | {
       readonly status: 'collected';
@@ -73,6 +78,42 @@ function assertValidDrop(drop: AsteroidResourceDrop): void {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function parseAsteroidResourceDrop(value: unknown): AsteroidResourceDrop {
+  if (!isRecord(value)) {
+    throw new TypeError('Resource drop must be a JSON object.');
+  }
+
+  const { id, asteroidId, sourceTileId, resourceType, amount } = value;
+
+  if (
+    typeof id !== 'string' ||
+    typeof asteroidId !== 'string' ||
+    typeof sourceTileId !== 'number' ||
+    typeof resourceType !== 'string' ||
+    typeof amount !== 'number'
+  ) {
+    throw new TypeError('Resource drop fields have invalid types.');
+  }
+
+  if (!isResourceType(resourceType)) {
+    throw new TypeError(`Unknown resource type: ${resourceType}.`);
+  }
+
+  const drop: AsteroidResourceDrop = {
+    id,
+    asteroidId,
+    sourceTileId,
+    resourceType,
+    amount
+  };
+  assertValidDrop(drop);
+  return Object.freeze(drop);
+}
+
 export class ResourceInventory {
   private readonly amounts = new Map<ResourceType, number>();
   private readonly collectedDropIds = new Set<string>();
@@ -121,5 +162,64 @@ export class ResourceInventory {
     }
 
     return Object.freeze(contents);
+  }
+
+  getSnapshot(): ResourceInventorySnapshot {
+    return Object.freeze({
+      contents: this.getContents(),
+      collectedDropIds: Object.freeze(
+        Array.from(this.collectedDropIds).sort()
+      )
+    });
+  }
+
+  static fromSnapshot(value: unknown): ResourceInventory {
+    if (!isRecord(value) || !isRecord(value.contents)) {
+      throw new TypeError('Resource inventory snapshot is invalid.');
+    }
+
+    if (!Array.isArray(value.collectedDropIds)) {
+      throw new TypeError('Collected resource drop IDs must be an array.');
+    }
+
+    const amounts = new Map<ResourceType, number>();
+
+    for (const [resourceType, amount] of Object.entries(value.contents)) {
+      if (!isResourceType(resourceType)) {
+        throw new TypeError(`Unknown resource type: ${resourceType}.`);
+      }
+
+      if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
+        throw new RangeError(`Invalid inventory amount for ${resourceType}.`);
+      }
+
+      amounts.set(resourceType, amount);
+    }
+
+    const collectedDropIds = new Set<string>();
+
+    for (const dropId of value.collectedDropIds) {
+      if (typeof dropId !== 'string' || dropId.trim().length === 0) {
+        throw new TypeError('Collected resource drop IDs must not be empty.');
+      }
+
+      if (collectedDropIds.has(dropId)) {
+        throw new TypeError(`Duplicate collected resource drop ID: ${dropId}.`);
+      }
+
+      collectedDropIds.add(dropId);
+    }
+
+    const inventory = new ResourceInventory();
+
+    for (const [resourceType, amount] of amounts) {
+      inventory.amounts.set(resourceType, amount);
+    }
+
+    for (const dropId of collectedDropIds) {
+      inventory.collectedDropIds.add(dropId);
+    }
+
+    return inventory;
   }
 }
