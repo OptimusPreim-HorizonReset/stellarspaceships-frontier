@@ -566,6 +566,8 @@ Billig
 Aggressiv
 ```
 
+SF-150 erzeugt keine festen Blaupausen, sondern eine deterministische Construction aus Seed, Tile-Budget, Technologiestufe und Doktrin. Die Prototypdoktrinen sind `aggressive`, `defensive`, `trader` und `scout`; Technologie schaltet Batterie- und Armor-Tiles stufenweise frei. SF-160 kann später Fraktionen auf diese Doktrinen abbilden.
+
 ### Milestone 10
 
 - Galaxie lebt

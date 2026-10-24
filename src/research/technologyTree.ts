@@ -54,9 +54,11 @@ function parseTechnologyNode(value: unknown): TechnologyNode {
     throw new TypeError(`Technology node name must not be empty: ${value.id}.`);
   }
 
-  if (!isResearchCategory(value.category)) {
+  const category = value.category;
+
+  if (!isResearchCategory(category)) {
     throw new TypeError(
-      `Unknown research category: ${String(value.category)}.`
+      `Unknown research category: ${String(category)}.`
     );
   }
 
@@ -109,7 +111,7 @@ function parseTechnologyNode(value: unknown): TechnologyNode {
     researchPointCost: value.researchPointCost,
     durationSeconds: value.durationSeconds,
     name: value.name,
-    category: value.category as ResearchCategory,
+    category,
     prerequisites: Object.freeze(prerequisites)
   });
 }
