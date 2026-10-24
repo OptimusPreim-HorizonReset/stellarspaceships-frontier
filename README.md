@@ -65,3 +65,5 @@ SF-194 ergänzt die Browserberichte um eine einheitliche, maschinenlesbare Kennz
 Gate D wurde auf dem bestätigten lokalen Zielprofil mit acht Produktionsläufen profiliert: `CanvasSectorRenderer` zeichnet die aktive 3×3-Sektorkarte einschließlich Asteroidenreferenzen; der Cache blieb bei neun Sektoren und der FPS-Median betrug 60,04. Gate-Freigabe bleibt manuell; Schiff- und Stationskonstruktionen sind nicht Teil dieses Sektorprofils. Das Zielgerät meldet Intel Core i5-8250U, 8 logische Prozessoren, 7,86 GiB physischen RAM und integrierte Intel UHD Graphics 620. Browsermessungen erfassen weder systemweite CPU-Auslastung noch Prozess-RAM.
 
 SF-130 ergänzt die provisorische Produktionskette Ore → Steel → Components → Ship Parts mit einem validierten Rezeptregister und atomarer Inventartransaktion. Mengen und Laufzeiten sind ausdrücklich Prototypwerte; Produktionsmodule und Warteschlangen folgen mit SF-131/SF-132.
+
+SF-131 ordnet Refinery- und Assembler-Module Factory-Stationen zu. Module können ausschließlich ihre registrierten Rezepte auf dem Stationsinventar ausführen; SF-132 bleibt für Warteschlangen zuständig.

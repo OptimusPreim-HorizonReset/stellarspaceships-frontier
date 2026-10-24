@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, SF-130-Rezeptsystem, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; das lokale Zielprofil ist bestätigt, mobile Gate-A-Freigabe und Gate D bleiben offen, SF-193 ist durch SF-152 blockiert
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, SF-130-Rezeptsystem, SF-131-Produktionsmodule, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; das lokale Zielprofil ist bestätigt, mobile Gate-A-Freigabe und Gate D bleiben offen, SF-193 ist durch SF-152 blockiert
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -550,6 +550,13 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P4
 - **Abhängigkeiten:** SF-130
+- **Status:** Refinery- und Assembler-Module an Factory-Stationen implementiert; Warteschlangen bleiben SF-132
+- **Akzeptanzkriterien:**
+  - Module mit eindeutigen IDs einer Factory-Station zuordnen
+  - Refinery- und Assembler-Module nur ihre registrierten Rezepte ausführen lassen
+  - Moduleingaben atomar aus dem Stationsinventar verbrauchen und Ausgaben hinzufügen
+  - Nicht unterstützte Rezepte ohne Inventaränderung melden
+  - Rezeptdauer für SF-132 bereitstellen, ohne hier bereits Warteschlangen auszuführen
 
 ### SF-132 – Produktionswarteschlangen
 
