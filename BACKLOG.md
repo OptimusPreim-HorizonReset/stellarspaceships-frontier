@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122 sowie SF-191-/SF-192-Lastprofile umgesetzt; Gate-C-Playthrough bestanden, Zielhardware und mobiles Gate A bleiben offen
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122 sowie SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; SF-193 ist durch SF-152 blockiert, Zielhardware und mobiles Gate A bleiben offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -648,7 +648,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P2
 - **Abhängigkeiten:** SF-073
-- **Status:** Sechs lokale Produktionsläufe dokumentiert; Zielhardware nicht bestätigt
+- **Status:** Sieben lokale Produktionsläufe dokumentiert; Zielhardware nicht bestätigt
 - **Akzeptanzkriterien:**
   - 3000 Tiles unter aktivierter Kampf- und Schadenssimulation testen
   - Framerate und Speicherverbrauch dokumentieren
@@ -657,7 +657,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P3
 - **Abhängigkeiten:** SF-120
-- **Status:** Sechs lokale Produktionsläufe dokumentiert; Zielhardware nicht bestätigt
+- **Status:** Sieben lokale Produktionsläufe dokumentiert; Zielhardware nicht bestätigt
 - **Akzeptanzkriterien:**
   - Zehn Stationen mit jeweils 10.000 Tiles testen
   - Framerate und Speicherverbrauch dokumentieren
@@ -666,6 +666,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P4
 - **Abhängigkeiten:** SF-152
+- **Status:** Blockiert; SF-152 sowie dessen Voraussetzungen SF-150 und SF-151 sind nicht implementiert
 - **Akzeptanzkriterien:**
   - 100 NPC-Schiffe gleichzeitig simulieren
   - Framerate und CPU-Verbrauch dokumentieren
@@ -674,6 +675,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P0
 - **Abhängigkeiten:** SF-002
+- **Status:** Gemeinsame Profiling-Abdeckung und Vergleichbarkeit für die vorhandenen Browserprofile dokumentiert; Zielhardware bleibt offen
 - **Akzeptanzkriterien:**
   - CPU, RAM, Chunk-Aktivität, Physik, Kollision und Speichersystem erfassen oder ausdrücklich als nicht verfügbar/nicht implementiert kennzeichnen
   - Nicht verfügbare Messwerte niemals als bestanden darstellen

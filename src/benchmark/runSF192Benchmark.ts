@@ -1,6 +1,10 @@
 import { CanvasWorldRenderer, TILE_PIXEL_SIZE } from '../rendering/canvasWorldRenderer';
 import { summarizeFrameIntervals } from './frameMetrics';
 import {
+  createBenchmarkProfilingReport,
+  type BenchmarkProfilingReport
+} from './profileReport';
+import {
   collectBrowserFrames,
   percentile,
   readBrowserHeapSnapshot
@@ -59,6 +63,7 @@ export interface SF192BenchmarkReport {
     readonly totalJSHeapBytesAfterRender: number | null;
     readonly jsHeapSizeLimitBytes: number | null;
   };
+  readonly profilingCoverage: BenchmarkProfilingReport;
   readonly gateApproved: false;
 }
 
@@ -115,6 +120,7 @@ export async function runSF192Benchmark(
   const averageFrameWorkMs =
     samples.workDurationsMs.reduce((sum, duration) => sum + duration, 0) /
     samples.workDurationsMs.length;
+  const p95FrameWorkMs = percentile(samples.workDurationsMs, 0.95);
   const totalTiles = stations.reduce(
     (total, station) => total + station.construction.tileCount,
     0
@@ -164,9 +170,7 @@ export async function runSF192Benchmark(
       p95FrameIntervalMs: rounded(frameMetrics.p95FrameIntervalMs),
       framesOverBudget: frameMetrics.framesOverBudget,
       averageFrameWorkMs: rounded(averageFrameWorkMs),
-      p95FrameWorkMs: rounded(
-        percentile(samples.workDurationsMs, 0.95)
-      ),
+      p95FrameWorkMs: rounded(p95FrameWorkMs),
       averageFpsTargetMet: frameMetrics.meetsAverageFpsTarget
     },
     memory: {
@@ -182,6 +186,17 @@ export async function runSF192Benchmark(
       totalJSHeapBytesAfterRender: heapAfterRender.totalBytes,
       jsHeapSizeLimitBytes: heapAfterRender.limitBytes
     },
+    profilingCoverage: createBenchmarkProfilingReport({
+      javascriptFrameWorkMs: {
+        averageMs: rounded(averageFrameWorkMs),
+        p95Ms: rounded(p95FrameWorkMs)
+      },
+      heapBefore,
+      heapAfter: heapAfterRender,
+      totalChunks,
+      renderedChunksPerFrame:
+        visibleChunksPerStation * SF_192_PROFILE.stationCount
+    }),
     gateApproved: false,
     setupMs: rounded(setupMs)
   };

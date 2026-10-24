@@ -9,6 +9,10 @@ import {
 } from './browserProfile';
 import type { BrowserFrameSamples } from './browserProfile';
 import { summarizeFrameIntervals } from './frameMetrics';
+import {
+  createBenchmarkProfilingReport,
+  type BenchmarkProfilingReport
+} from './profileReport';
 import { deserializeConstruction, serializeConstruction } from '../save/serialization';
 import {
   CanvasWorldRenderer,
@@ -43,6 +47,7 @@ export interface GateABenchmarkReport {
   };
   readonly rendering: {
     readonly targetFps: number;
+    readonly warmupFrames: number;
     readonly measuredFrames: number;
     readonly averageFps: number;
     readonly averageFrameIntervalMs: number;
@@ -74,12 +79,13 @@ export interface GateABenchmarkReport {
       readonly simulationStatesAvailable: false;
     };
     readonly physics: {
-      readonly status: 'not-implemented';
+      readonly status: 'not-measured';
     };
     readonly collision: {
-      readonly status: 'not-implemented';
+      readonly status: 'not-measured';
     };
   };
+  readonly profilingCoverage: BenchmarkProfilingReport;
   readonly gateAApproved: false;
 }
 
@@ -183,6 +189,7 @@ export async function runGateABenchmark(
     },
     rendering: {
       targetFps: GATE_A_PROFILE.targetFps,
+      warmupFrames: GATE_A_PROFILE.warmupFrames,
       measuredFrames: samples.intervalsMs.length,
       averageFps: rounded(frameMetrics.averageFps),
       averageFrameIntervalMs: rounded(
@@ -218,9 +225,24 @@ export async function runGateABenchmark(
         renderedChunksPerFrame: visibleChunksPerFrame,
         simulationStatesAvailable: false
       },
-      physics: { status: 'not-implemented' },
-      collision: { status: 'not-implemented' }
+      physics: { status: 'not-measured' },
+      collision: { status: 'not-measured' }
     },
+    profilingCoverage: createBenchmarkProfilingReport({
+      javascriptFrameWorkMs: {
+        averageMs: rounded(averageRenderMs),
+        p95Ms: rounded(p95RenderMs)
+      },
+      heapBefore,
+      heapAfter: heapAfterRendering,
+      totalChunks: construction.chunkCount,
+      renderedChunksPerFrame: visibleChunksPerFrame,
+      persistence: {
+        serializeMs: rounded(serializeMs),
+        deserializeMs: rounded(deserializeMs),
+        roundTripVerified
+      }
+    }),
     gateAApproved: false
   };
 }

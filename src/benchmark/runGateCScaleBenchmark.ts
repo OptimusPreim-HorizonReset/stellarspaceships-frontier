@@ -7,6 +7,10 @@ import type { TilePosition } from '../core/coordinates';
 import { CanvasWorldRenderer, TILE_PIXEL_SIZE } from '../rendering/canvasWorldRenderer';
 import { summarizeFrameIntervals } from './frameMetrics';
 import {
+  createBenchmarkProfilingReport,
+  type BenchmarkProfilingReport
+} from './profileReport';
+import {
   collectBrowserFrames,
   percentile,
   readBrowserHeapSnapshot
@@ -69,6 +73,7 @@ export interface GateCScaleBenchmarkReport {
     readonly totalJSHeapBytesAfter: number | null;
     readonly jsHeapSizeLimitBytes: number | null;
   };
+  readonly profilingCoverage: BenchmarkProfilingReport;
   readonly gateApproved: false;
 }
 
@@ -196,6 +201,7 @@ export async function runGateCScaleBenchmark(
   const averageFrameWorkMs =
     samples.workDurationsMs.reduce((sum, duration) => sum + duration, 0) /
     samples.workDurationsMs.length;
+  const p95FrameWorkMs = percentile(samples.workDurationsMs, 0.95);
   const heapDelta =
     heapBefore.usedBytes === null || heapAfter.usedBytes === null
       ? null
@@ -243,9 +249,7 @@ export async function runGateCScaleBenchmark(
       p95FrameIntervalMs: rounded(frameMetrics.p95FrameIntervalMs),
       framesOverBudget: frameMetrics.framesOverBudget,
       averageFrameWorkMs: rounded(averageFrameWorkMs),
-      p95FrameWorkMs: rounded(
-        percentile(samples.workDurationsMs, 0.95)
-      ),
+      p95FrameWorkMs: rounded(p95FrameWorkMs),
       averageFpsTargetMet: frameMetrics.meetsAverageFpsTarget
     },
     memory: {
@@ -257,6 +261,21 @@ export async function runGateCScaleBenchmark(
       totalJSHeapBytesAfter: heapAfter.totalBytes,
       jsHeapSizeLimitBytes: heapAfter.limitBytes
     },
+    profilingCoverage: createBenchmarkProfilingReport({
+      javascriptFrameWorkMs: {
+        averageMs: rounded(averageFrameWorkMs),
+        p95Ms: rounded(p95FrameWorkMs)
+      },
+      heapBefore,
+      heapAfter,
+      totalChunks: construction.chunkCount,
+      renderedChunksPerFrame: visibleChunksPerFrame,
+      collision: {
+        broadphaseCandidates,
+        impacts: impactCount,
+        damageEvents
+      }
+    }),
     gateApproved: false
   };
 }
