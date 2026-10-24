@@ -72,4 +72,4 @@ SF-132 ergänzt begrenzte FIFO-Produktionswarteschlangen: Eingaben werden beim A
 
 SF-140/141 ergänzen Forschungsfortschritt und einen validierten Militär-, Industrie- und Wissenschafts-Technologiebaum. Punktkosten und Dauern sind vorläufig; Forschungspunktequelle und UI-Anbindung stehen noch aus.
 
-SF-150 generiert NPC-Konstruktionen deterministisch aus Seed, Tile-Budget, Technologiestufe und Doktrin. Die erzeugten Schiffe halten ihr Tile-Budget ein und bleiben viererverbunden; Navigations- und Kampf-KI folgen mit SF-151/SF-152.
+SF-150 generiert NPC-Konstruktionen deterministisch aus Seed, Tile-Budget, Technologiestufe und Doktrin. SF-151 steuert NPCs deterministisch über Wegpunkte mit Brems- und Ankunftsregeln; Hindernisvermeidung und Kampf-KI folgen in SF-152.

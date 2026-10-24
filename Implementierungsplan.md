@@ -568,6 +568,8 @@ Aggressiv
 
 SF-150 erzeugt keine festen Blaupausen, sondern eine deterministische Construction aus Seed, Tile-Budget, Technologiestufe und Doktrin. Die Prototypdoktrinen sind `aggressive`, `defensive`, `trader` und `scout`; Technologie schaltet Batterie- und Armor-Tiles stufenweise frei. SF-160 kann später Fraktionen auf diese Doktrinen abbilden.
 
+SF-151 ergänzt einen deterministischen Wegpunkt-Controller mit begrenzter Sollgeschwindigkeit, Bremsprofil, Ankunftsradius und Drehgeschwindigkeitslimit. Hindernisvermeidung und sektorübergreifendes Pathfinding sind noch nicht Teil dieses Prototyps.
+
 ### Milestone 10
 
 - Galaxie lebt
