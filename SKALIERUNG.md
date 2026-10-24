@@ -71,6 +71,27 @@ Der Median der durchschnittlichen FPS beträgt 60,04; alle sechs Läufe lagen be
 
 SF-191 ist damit lokal gemessen, aber nicht für Release oder Zielhardware freigegeben. Die JSON-Berichte bleiben einzeln im World Lab exportierbar; `gateApproved` und `targetHardwareConfirmed` bleiben `false`.
 
+### SF-192 – lokale Stationsmessung
+
+Gemessen am 24.10.2026 im Produktionspreview des integrierten VS-Code-Browsers: Windows-User-Agent `Windows NT 10.0`, VS Code Insiders 1.144.0-insider, Chromium 150.0.7871.250, 8 logische Prozessoren, Viewport 476 × 339 CSS-Pixel, DPR 1,5 (714 × 509 Canvas-Pixel). Das Zielgerät ist nicht bestätigt.
+
+Das Profil erzeugte zehn Stationen mit je 10.000 Tiles in 16 Chunks (100.000 Tiles und 160 Chunks insgesamt). Jeder Lauf enthielt 30 Aufwärm- und 180 Messframes. Pro Frame wurden zehn `CanvasWorldRenderer.render`-Aufrufe sequenziell auf derselben Canvas ausgeführt; jeder Aufruf leert die Canvas. Das Profil misst deshalb zehn einzelne Stations-Renderpässe und keine räumlich zusammengesetzte Szene mit gleichzeitig sichtbaren Stationen. Pro Station waren 408 Tiles und ein Chunk sichtbar.
+
+| Lauf | FPS Ø | p95-Intervall | Intervalle > 16,67 ms | Frame-Arbeit Ø / p95 | JS-Heap-Delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 43,23 | 50,0 ms | 124 / 180 | 7,11 / 12,5 ms | +4,48 MiB |
+| 2 | 59,71 | 17,0 ms | 97 / 180 | 5,24 / 7,1 ms | +9,46 MiB |
+| 3 | 59,71 | 16,9 ms | 93 / 180 | 5,26 / 8,6 ms | +6,19 MiB |
+| 4 | 60,05 | 16,9 ms | 93 / 180 | 3,95 / 5,3 ms | −5,85 MiB |
+| 5 | 60,03 | 16,8 ms | 92 / 180 | 4,35 / 5,5 ms | +13,45 MiB |
+| 6 | 60,03 | 16,8 ms | 91 / 180 | 4,69 / 6,1 ms | −11,94 MiB |
+
+Der Median der durchschnittlichen FPS beträgt 59,87; drei von sechs Läufen erreichten mindestens 60 FPS. Damit ist die provisorische Desktop-Entwicklungsbaseline (Median ≥ 60 FPS und mindestens fünf von sechs Läufen ≥ 60 FPS) nicht erfüllt. Der erste Lauf mit 43,23 FPS und 50,0 ms p95 bleibt in der Auswertung enthalten. Der Median der Frame-Arbeit liegt bei 4,97 ms im Durchschnitt und 6,6 ms p95.
+
+Der Browser-JS-Heap-Delta hat einen Median von +5,33 MiB und eine Spannweite von −11,94 bis +13,45 MiB. Momentaufnahmen können durch Garbage Collection sinken; sie sind kein Peak und kein Prozess-/System-RAM. Prozess-RAM und systemweite CPU-Auslastung sind im Browser nicht verfügbar.
+
+SF-192 ist lokal gemessen und dokumentiert, aber weder für Zielhardware noch Release freigegeben. Die JSON-Berichte bleiben im World Lab exportierbar; `gateApproved` und `targetHardwareConfirmed` bleiben `false`. Für eine Aussage über eine simultane Mehrstationsszene ist ein separates, räumlich zusammengesetztes Profil erforderlich.
+
 Der Gate-B-Funktionstest in `tests/gateB.integration.test.ts` simuliert ein 1000-Tile-Schiff über 600 feste 1/60-Sekunden-Zeitschritte. Er prüft Energie, Masse, Thrusterkräfte und endliche Zustandswerte; er ersetzt keinen FPS-Benchmark auf Zielhardware.
 
 ## Profiling-Bericht

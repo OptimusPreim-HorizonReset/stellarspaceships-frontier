@@ -12,6 +12,10 @@ import {
   runGateCScaleBenchmark,
   type GateCScaleBenchmarkReport
 } from '../benchmark/runGateCScaleBenchmark';
+import {
+  runSF192Benchmark,
+  type SF192BenchmarkReport
+} from '../benchmark/runSF192Benchmark';
 import type { TilePosition } from '../core/coordinates';
 import {
   isTileOrientation,
@@ -146,6 +150,10 @@ const runBenchmarkButton = requireElement(
 const runGateCScaleButton = requireElement(
   document.querySelector<HTMLButtonElement>('#run-gate-c-scale'),
   '#run-gate-c-scale'
+);
+const runSF192Button = requireElement(
+  document.querySelector<HTMLButtonElement>('#run-sf192'),
+  '#run-sf192'
 );
 const downloadBenchmarkLink = requireElement(
   document.querySelector<HTMLAnchorElement>('#download-benchmark'),
@@ -446,7 +454,10 @@ function enableBlueprintDownload(): void {
 }
 
 function enableBenchmarkDownload(
-  report: GateABenchmarkReport | GateCScaleBenchmarkReport,
+  report:
+    | GateABenchmarkReport
+    | GateCScaleBenchmarkReport
+    | SF192BenchmarkReport,
   filePrefix: string
 ): void {
   disableBenchmarkDownload();
@@ -749,6 +760,7 @@ runBenchmarkButton.addEventListener('click', async () => {
   benchmarkRunning = true;
   runBenchmarkButton.disabled = true;
   runGateCScaleButton.disabled = true;
+  runSF192Button.disabled = true;
   disableBenchmarkDownload();
   setConstructionControlsEnabled(false);
   benchmarkSummaryElement.textContent =
@@ -793,6 +805,7 @@ runBenchmarkButton.addEventListener('click', async () => {
     benchmarkRunning = false;
     runBenchmarkButton.disabled = false;
     runGateCScaleButton.disabled = false;
+    runSF192Button.disabled = false;
     setConstructionControlsEnabled(true);
     refreshWorld();
   }
@@ -806,6 +819,7 @@ runGateCScaleButton.addEventListener('click', async () => {
   benchmarkRunning = true;
   runBenchmarkButton.disabled = true;
   runGateCScaleButton.disabled = true;
+  runSF192Button.disabled = true;
   disableBenchmarkDownload();
   setConstructionControlsEnabled(false);
   benchmarkSummaryElement.textContent =
@@ -848,6 +862,64 @@ runGateCScaleButton.addEventListener('click', async () => {
     benchmarkRunning = false;
     runBenchmarkButton.disabled = false;
     runGateCScaleButton.disabled = false;
+    runSF192Button.disabled = false;
+    setConstructionControlsEnabled(true);
+    refreshWorld();
+  }
+});
+
+runSF192Button.addEventListener('click', async () => {
+  if (benchmarkRunning) {
+    return;
+  }
+
+  benchmarkRunning = true;
+  runBenchmarkButton.disabled = true;
+  runGateCScaleButton.disabled = true;
+  runSF192Button.disabled = true;
+  disableBenchmarkDownload();
+  setConstructionControlsEnabled(false);
+  benchmarkSummaryElement.textContent =
+    'SF-192: zehn Stationen mit je 10.000 Tiles, 30 Aufwärm- und 180 Messframes …';
+  benchmarkReportElement.textContent = 'Stationsprofil wird aufgebaut …';
+  statusElement.textContent =
+    'SF-192 läuft im Produktionsrenderer; der sichtbare Tab muss geöffnet bleiben.';
+
+  try {
+    const report = await runSF192Benchmark(
+      canvas,
+      renderer,
+      import.meta.env.MODE
+    );
+    benchmarkReportElement.textContent = JSON.stringify(report, null, 2);
+    const heapDelta =
+      report.memory.jsHeapDeltaBytes === null
+        ? 'JS-Heap nicht verfügbar'
+        : `${(report.memory.jsHeapDeltaBytes / 1_048_576).toFixed(2)} MB JS-Heap Δ`;
+    benchmarkSummaryElement.textContent =
+      `${report.rendering.averageFps} FPS Ø · ` +
+      `${report.workload.totalTiles.toLocaleString('de-DE')} Tiles · ` +
+      `${report.workload.stationCount} Stationen · ` +
+      `p95 ${report.rendering.p95FrameIntervalMs} ms · ${heapDelta}.`;
+    statusElement.textContent =
+      'SF-192 lokal abgeschlossen; Zielhardware und Gate D bleiben offen.';
+
+    try {
+      enableBenchmarkDownload(report, 'sf-192');
+    } catch (error) {
+      statusElement.textContent =
+        `SF-192 abgeschlossen, JSON-Export fehlgeschlagen: ${showError(error)}`;
+    }
+  } catch (error) {
+    const message = showError(error);
+    benchmarkReportElement.textContent = `SF-192 fehlgeschlagen: ${message}`;
+    benchmarkSummaryElement.textContent = `SF-192 fehlgeschlagen: ${message}`;
+    statusElement.textContent = `SF-192 fehlgeschlagen: ${message}`;
+  } finally {
+    benchmarkRunning = false;
+    runBenchmarkButton.disabled = false;
+    runGateCScaleButton.disabled = false;
+    runSF192Button.disabled = false;
     setConstructionControlsEnabled(true);
     refreshWorld();
   }
