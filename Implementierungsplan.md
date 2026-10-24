@@ -491,6 +491,8 @@ Components
 Ship Parts
 ```
 
+SF-130 implementiert ein validiertes Rezeptregister mit atomarer Ausführung für die Kette Ore → Steel → Components → Ship Parts. Die aktuellen Beispielmengen (Ore 1 → Steel 1; Steel 2 + Crystal 1 → Components 1; Components 1 + Steel 1 → Ship Parts 1) und Laufzeiten (5/10/15 Sekunden) sind Prototypwerte, keine finale Balance. SF-131 ordnet die Rezepte später Produktionsmodulen zu; SF-132 übernimmt ihre Laufzeiten in Warteschlangen.
+
 ### Transport
 
 **Version 1:**

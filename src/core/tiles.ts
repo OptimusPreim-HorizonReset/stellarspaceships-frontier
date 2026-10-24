@@ -33,6 +33,7 @@ export const RESOURCE_TYPES = [
   'fuel',
   'weapons',
   'components',
+  'shipParts',
   'antimatter',
   'darkMatter',
   'ancientTechnology'

@@ -44,6 +44,18 @@ export type ResourceTransferResult =
       readonly availableAmount: number;
     };
 
+export type ResourceInventoryTransactionResult =
+  | {
+      readonly status: 'applied';
+      readonly contents: ResourceCost;
+    }
+  | {
+      readonly status: 'insufficient-resources';
+      readonly resourceType: ResourceType;
+      readonly requestedAmount: number;
+      readonly availableAmount: number;
+    };
+
 export function createAsteroidResourceDrop(
   asteroid: Asteroid,
   damageResult: LocalDamageResult
@@ -95,6 +107,41 @@ function assertValidDrop(drop: AsteroidResourceDrop): void {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizeTransactionCost(
+  value: ResourceCost,
+  name: string
+): Map<ResourceType, number> {
+  if (!isRecord(value)) {
+    throw new TypeError(`Transaction ${name} must be a resource cost object.`);
+  }
+
+  const amounts = new Map<ResourceType, number>();
+
+  for (const key of Object.keys(value)) {
+    if (!isResourceType(key)) {
+      throw new TypeError(`Unknown resource type: ${key}.`);
+    }
+
+    const amount = value[key];
+
+    if (
+      typeof amount !== 'number' ||
+      !Number.isFinite(amount) ||
+      amount < 0
+    ) {
+      throw new RangeError(
+        `Transaction ${name} amount for ${key} must be finite and non-negative.`
+      );
+    }
+
+    if (amount > 0) {
+      amounts.set(key, amount);
+    }
+  }
+
+  return amounts;
 }
 
 export function parseAsteroidResourceDrop(value: unknown): AsteroidResourceDrop {
@@ -167,6 +214,56 @@ export class ResourceInventory {
     }
 
     return this.amounts.get(resourceType) ?? 0;
+  }
+
+  applyTransaction(
+    spend: ResourceCost,
+    produce: ResourceCost
+  ): ResourceInventoryTransactionResult {
+    const spendAmounts = normalizeTransactionCost(spend, 'spend');
+    const producedAmounts = normalizeTransactionCost(produce, 'produce');
+    const resources = new Set([
+      ...spendAmounts.keys(),
+      ...producedAmounts.keys()
+    ]);
+    const nextAmounts = new Map<ResourceType, number>();
+
+    for (const resourceType of Array.from(resources).sort()) {
+      const requestedAmount = spendAmounts.get(resourceType) ?? 0;
+      const availableAmount = this.amounts.get(resourceType) ?? 0;
+
+      if (requestedAmount > availableAmount) {
+        return {
+          status: 'insufficient-resources',
+          resourceType,
+          requestedAmount,
+          availableAmount
+        };
+      }
+
+      const nextAmount =
+        availableAmount -
+        requestedAmount +
+        (producedAmounts.get(resourceType) ?? 0);
+
+      if (!Number.isFinite(nextAmount) || nextAmount < 0) {
+        throw new RangeError(
+          `Inventory transaction amount overflow for resource ${resourceType}.`
+        );
+      }
+
+      nextAmounts.set(resourceType, nextAmount);
+    }
+
+    for (const [resourceType, amount] of nextAmounts) {
+      if (amount === 0) {
+        this.amounts.delete(resourceType);
+      } else {
+        this.amounts.set(resourceType, amount);
+      }
+    }
+
+    return { status: 'applied', contents: this.getContents() };
   }
 
   transferTo(
