@@ -570,6 +570,8 @@ SF-150 erzeugt keine festen Blaupausen, sondern eine deterministische Constructi
 
 SF-151 ergänzt einen deterministischen Wegpunkt-Controller mit begrenzter Sollgeschwindigkeit, Bremsprofil, Ankunftsradius und Drehgeschwindigkeitslimit. Hindernisvermeidung und sektorübergreifendes Pathfinding sind noch nicht Teil dieses Prototyps.
 
+SF-152 wählt ein gültiges feindliches Ziel, berechnet eine lineare Abfangrichtung und erzeugt bei passender Reichweite, Ausrichtung und Abklingzeit ein Projektil über das bestehende Kampfsystem. Zielauswahl und Feuerentscheidung sind deterministisch; Treffer und Tile-Schaden verbleiben in Broadphase/Narrowphase/SF-073.
+
 ### Milestone 10
 
 - Galaxie lebt
