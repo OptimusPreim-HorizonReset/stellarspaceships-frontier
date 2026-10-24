@@ -69,3 +69,5 @@ SF-130 ergänzt die provisorische Produktionskette Ore → Steel → Components 
 SF-131 ordnet Refinery- und Assembler-Module Factory-Stationen zu. Module können ausschließlich ihre registrierten Rezepte auf dem Stationsinventar ausführen; SF-132 bleibt für Warteschlangen zuständig.
 
 SF-132 ergänzt begrenzte FIFO-Produktionswarteschlangen: Eingaben werden beim Auftragsstart atomar verbraucht, Ausgaben bei Fertigstellung gebucht. Aufträge mit fehlenden Eingaben blockieren die Warteschlange, bis Ressourcen eintreffen.
+
+SF-140/141 ergänzen Forschungsfortschritt und einen validierten Militär-, Industrie- und Wissenschafts-Technologiebaum. Punktkosten und Dauern sind vorläufig; Forschungspunktequelle und UI-Anbindung stehen noch aus.

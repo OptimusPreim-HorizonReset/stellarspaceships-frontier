@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, SF-130-Rezeptsystem, SF-131-Produktionsmodule, SF-132-Produktionswarteschlangen, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; das lokale Zielprofil ist bestätigt, mobile Gate-A-Freigabe und Gate D bleiben offen, SF-193 ist durch SF-152 blockiert
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, SF-130 bis SF-132, SF-140-Forschungssystem, SF-141-Technologiebaum, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; das lokale Zielprofil ist bestätigt, mobile Gate-A-Freigabe und Gate D bleiben offen, SF-193 ist durch SF-152 blockiert
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -576,11 +576,23 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P4
 - **Abhängigkeiten:** SF-132
+- **Status:** Forschungsprojekte, Punktebudget, Einzelprojektfortschritt und validierte Snapshots implementiert
+- **Akzeptanzkriterien:**
+  - Forschungsprojekte mit eindeutigen IDs, Punktkosten und endlicher Dauer registrieren
+  - Punkte vergeben und eine Forschung atomar starten; fehlende Punkte ohne Zustandsänderung melden
+  - Genau ein aktives Projekt mit expliziter Simulationszeit fortschreiben und bei Fertigstellung abschließen
+  - Forschungsstatus sicher serialisieren und validiert wiederherstellen
 
 ### SF-141 – Technologiebaum
 
 - **Priorität:** P4
 - **Abhängigkeiten:** SF-140
+- **Status:** Validierter, azyklischer Militär-, Industrie- und Wissenschaftsbaum mit Voraussetzungen implementiert
+- **Akzeptanzkriterien:**
+  - Knoten und Kategorien typisiert validieren und doppelte IDs, fehlende Voraussetzungen sowie Zyklen ablehnen
+  - Verfügbare Forschung nur nach Abschluss aller Voraussetzungen anbieten
+  - Freischaltungen über das SF-140-Forschungssystem ausführen
+  - Prototypkosten und -dauern als vorläufige Balancewerte dokumentieren
 
 ## EPIC-016 – KI
 

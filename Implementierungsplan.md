@@ -531,6 +531,8 @@ SF-130 implementiert ein validiertes Rezeptregister mit atomarer Ausführung fü
 - Sprungantrieb
 - Xeno-Tech
 
+SF-140 verwaltet abstrakte Forschungspunkte, jeweils ein aktives Projekt, Zeitfortschritt und versionierte Snapshots. SF-141 stellt die drei oben skizzierten Bäume als validierten DAG bereit; ein Knoten wird erst angeboten, wenn seine Voraussetzungen abgeschlossen sind. Die aktuellen Punktkosten und Dauern sind Prototypwerte. Die Quelle der Forschungspunkte und eine UI-Anbindung sind noch nicht integriert.
+
 ### Milestone 9
 
 - Langzeitprogression
