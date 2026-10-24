@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; Gate D bleibt offen, SF-193 ist durch SF-152 blockiert, Zielhardware und mobiles Gate A bleiben offen
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; das lokale Zielprofil ist bestätigt, mobile Gate-A-Freigabe und Gate D bleiben offen, SF-193 ist durch SF-152 blockiert
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -523,7 +523,7 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 ## GATE-D – Streaming-Nachweis
 
-**Status:** Sieben lokale Produktionsläufe mit stabiler 3×3-Cachegrenze dokumentiert; vollständige Sektorrenderung und Zielhardware fehlen, Gate nicht freigegeben.
+**Status:** Acht lokale Produktionsläufe auf dem bestätigten Zielprofil mit stabiler 3×3-Cachegrenze dokumentiert; vollständige Sektorrenderung fehlt, Gate nicht freigegeben.
 
 **Benchmarks:**
 
@@ -641,6 +641,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P0
 - **Abhängigkeiten:** SF-032
+- **Status:** Acht Produktionsläufe auf dem bestätigten lokalen Zielprofil; Median 60,04 FPS, Desktop-Baseline erfüllt; mobile Freigabe bleibt offen
 - **Akzeptanzkriterien:**
   - 10.000 Tiles in mindestens 100 Chunks erzeugen
   - Konstruktion speichern und verlustfrei laden
@@ -650,7 +651,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P2
 - **Abhängigkeiten:** SF-073
-- **Status:** Sieben lokale Produktionsläufe dokumentiert; Zielhardware nicht bestätigt
+- **Status:** Acht Produktionsläufe auf dem bestätigten lokalen Zielprofil; sieben von acht Läufen bei mindestens 60 FPS
 - **Akzeptanzkriterien:**
   - 3000 Tiles unter aktivierter Kampf- und Schadenssimulation testen
   - Framerate und Speicherverbrauch dokumentieren
@@ -659,7 +660,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P3
 - **Abhängigkeiten:** SF-120
-- **Status:** Sieben lokale Produktionsläufe dokumentiert; Zielhardware nicht bestätigt
+- **Status:** Acht Produktionsläufe auf dem bestätigten lokalen Zielprofil; Median 59,87 FPS, Desktop-Baseline nicht erfüllt
 - **Akzeptanzkriterien:**
   - Zehn Stationen mit jeweils 10.000 Tiles testen
   - Framerate und Speicherverbrauch dokumentieren
@@ -677,7 +678,7 @@ Die Benchmarks ergänzen die funktionalen Gates. Sie ersetzen keine Tests und d�
 
 - **Priorität:** P0
 - **Abhängigkeiten:** SF-002
-- **Status:** Gemeinsame Profiling-Abdeckung und Vergleichbarkeit für die vorhandenen Browserprofile dokumentiert; Zielhardware bleibt offen
+- **Status:** Gemeinsame Profiling-Abdeckung für das bestätigte lokale Zielprofil dokumentiert; System-CPU und Prozess-RAM bleiben im Browser nicht verfügbar
 - **Akzeptanzkriterien:**
   - CPU, RAM, Chunk-Aktivität, Physik, Kollision und Speichersystem erfassen oder ausdrücklich als nicht verfügbar/nicht implementiert kennzeichnen
   - Nicht verfügbare Messwerte niemals als bestanden darstellen

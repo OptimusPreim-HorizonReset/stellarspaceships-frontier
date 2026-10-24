@@ -16,6 +16,11 @@ import {
   readBrowserHeapSnapshot
 } from './browserProfile';
 import { createGateCCombatConstruction, GATE_C_SCALE_PROFILE } from './gateCProfile';
+import {
+  matchesTargetHardware,
+  TARGET_HARDWARE_PROFILE
+} from './targetHardware';
+import type { TargetHardwareProfile } from './targetHardware';
 
 function rounded(value: number): number {
   return Number(value.toFixed(2));
@@ -26,7 +31,8 @@ export interface GateCScaleBenchmarkReport {
   readonly profile: 'SF-191';
   readonly generatedAt: string;
   readonly buildMode: string;
-  readonly targetHardwareConfirmed: false;
+  readonly targetHardwareConfirmed: boolean;
+  readonly targetHardware: TargetHardwareProfile;
   readonly environment: {
     readonly userAgent: string;
     readonly logicalProcessorCount: number;
@@ -212,7 +218,11 @@ export async function runGateCScaleBenchmark(
     profile: 'SF-191',
     generatedAt: new Date().toISOString(),
     buildMode,
-    targetHardwareConfirmed: false,
+    targetHardwareConfirmed: matchesTargetHardware(
+      navigator.userAgent,
+      navigator.hardwareConcurrency
+    ),
+    targetHardware: TARGET_HARDWARE_PROFILE,
     environment: {
       userAgent: navigator.userAgent,
       logicalProcessorCount: navigator.hardwareConcurrency,

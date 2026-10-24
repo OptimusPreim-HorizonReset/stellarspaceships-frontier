@@ -12,6 +12,11 @@ import {
 } from './profileReport';
 import { GATE_D_PROFILE, GateDStreamingWorkload } from './gateDProfile';
 import {
+  matchesTargetHardware,
+  TARGET_HARDWARE_PROFILE
+} from './targetHardware';
+import type { TargetHardwareProfile } from './targetHardware';
+import {
   CanvasWorldRenderer,
   TILE_PIXEL_SIZE
 } from '../rendering/canvasWorldRenderer';
@@ -25,7 +30,8 @@ export interface GateDBenchmarkReport {
   readonly profile: 'GATE-D';
   readonly generatedAt: string;
   readonly buildMode: string;
-  readonly targetHardwareConfirmed: false;
+  readonly targetHardwareConfirmed: boolean;
+  readonly targetHardware: TargetHardwareProfile;
   readonly environment: {
     readonly userAgent: string;
     readonly logicalProcessorCount: number;
@@ -130,7 +136,11 @@ export async function runGateDBenchmark(
     profile: 'GATE-D',
     generatedAt: new Date().toISOString(),
     buildMode,
-    targetHardwareConfirmed: false,
+    targetHardwareConfirmed: matchesTargetHardware(
+      navigator.userAgent,
+      navigator.hardwareConcurrency
+    ),
+    targetHardware: TARGET_HARDWARE_PROFILE,
     environment: {
       userAgent: navigator.userAgent,
       logicalProcessorCount: navigator.hardwareConcurrency,

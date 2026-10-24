@@ -796,9 +796,11 @@ runBenchmarkButton.addEventListener('click', async () => {
       `${visibleChunkCount} ${visibleChunkLabel} pro Frame · ` +
       `p95 ${report.rendering.p95FrameIntervalMs} ms · ` +
       `${report.rendering.framesOverBudget} Frames über dem 60-FPS-Budget.`;
-    statusElement.textContent = report.rendering.averageFpsTargetMet
-      ? 'Die lokale Messung erreicht 60 FPS; Gate A bleibt bis zur Bestätigung der Zielhardware offen.'
-      : 'Die lokale Messung unterschreitet 60 FPS; Gate A bleibt offen.';
+    statusElement.textContent = !report.targetHardwareConfirmed
+      ? 'Die Laufzeit entspricht nicht dem bestätigten Zielprofil; Gate A bleibt offen.'
+      : report.rendering.averageFpsTargetMet
+        ? 'Die Messung erreicht 60 FPS auf dem bestätigten Zielprofil; Gate A bleibt bis zur manuellen Freigabe offen.'
+        : 'Die Messung unterschreitet 60 FPS auf dem bestätigten Zielprofil; Gate A bleibt offen.';
 
     try {
       enableBenchmarkDownload(report, 'gate-a');
@@ -856,8 +858,9 @@ runGateCScaleButton.addEventListener('click', async () => {
       `${report.combat.impacts} Treffer · ` +
       `${report.combat.destroyedTiles} Tiles zerstört · ` +
       `p95 ${report.rendering.p95FrameIntervalMs} ms · ${heapDelta}.`;
-    statusElement.textContent =
-      'SF-191 lokal abgeschlossen; Zielhardware und mobiles Gate A bleiben offen.';
+    statusElement.textContent = report.targetHardwareConfirmed
+      ? 'SF-191 auf dem bestätigten Zielprofil gemessen; mobile Freigabe bleibt separat offen.'
+      : 'SF-191 wurde nicht auf dem bestätigten Zielprofil gemessen.';
 
     try {
       enableBenchmarkDownload(report, 'sf-191');
@@ -915,8 +918,9 @@ runSF192Button.addEventListener('click', async () => {
       `${report.workload.totalTiles.toLocaleString('de-DE')} Tiles · ` +
       `${report.workload.stationCount} Stationen · ` +
       `p95 ${report.rendering.p95FrameIntervalMs} ms · ${heapDelta}.`;
-    statusElement.textContent =
-      'SF-192 lokal abgeschlossen; Zielhardware und Gate D bleiben offen.';
+    statusElement.textContent = report.targetHardwareConfirmed
+      ? 'SF-192 auf dem bestätigten Zielprofil gemessen; die 60-FPS-Baseline bleibt offen.'
+      : 'SF-192 wurde nicht auf dem bestätigten Zielprofil gemessen.';
 
     try {
       enableBenchmarkDownload(report, 'sf-192');
@@ -976,8 +980,9 @@ runGateDButton.addEventListener('click', async () => {
       `Cache max. ${report.streaming.maxLoadedSectors}/` +
       `${report.streaming.cacheLimit} · ` +
       `p95 ${report.rendering.p95FrameIntervalMs} ms · ${heapDelta}.`;
-    statusElement.textContent =
-      'Gate D lokal gemessen; Zielhardware und vollständige Sektorrenderung bleiben offen.';
+    statusElement.textContent = report.targetHardwareConfirmed
+      ? 'Gate D auf dem bestätigten Zielprofil gemessen; vollständige Sektorrenderung bleibt offen.'
+      : 'Gate D wurde nicht auf dem bestätigten Zielprofil gemessen.';
 
     try {
       enableBenchmarkDownload(report, 'gate-d');

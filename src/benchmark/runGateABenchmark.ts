@@ -13,6 +13,11 @@ import {
   createBenchmarkProfilingReport,
   type BenchmarkProfilingReport
 } from './profileReport';
+import {
+  matchesTargetHardware,
+  TARGET_HARDWARE_PROFILE,
+  type TargetHardwareProfile
+} from './targetHardware';
 import { deserializeConstruction, serializeConstruction } from '../save/serialization';
 import {
   CanvasWorldRenderer,
@@ -23,7 +28,8 @@ export interface GateABenchmarkReport {
   readonly schemaVersion: 1;
   readonly generatedAt: string;
   readonly buildMode: string;
-  readonly targetHardwareConfirmed: false;
+  readonly targetHardwareConfirmed: boolean;
+  readonly targetHardware: TargetHardwareProfile;
   readonly environment: {
     readonly userAgent: string;
     readonly logicalProcessorCount: number;
@@ -165,7 +171,11 @@ export async function runGateABenchmark(
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
     buildMode,
-    targetHardwareConfirmed: false,
+    targetHardwareConfirmed: matchesTargetHardware(
+      navigator.userAgent,
+      navigator.hardwareConcurrency
+    ),
+    targetHardware: TARGET_HARDWARE_PROFILE,
     environment: {
       userAgent: navigator.userAgent,
       logicalProcessorCount: navigator.hardwareConcurrency,

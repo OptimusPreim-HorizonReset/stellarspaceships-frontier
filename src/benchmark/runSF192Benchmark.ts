@@ -10,6 +10,11 @@ import {
   readBrowserHeapSnapshot
 } from './browserProfile';
 import { createSF192Stations, SF_192_PROFILE } from './stationLoadProfile';
+import {
+  matchesTargetHardware,
+  TARGET_HARDWARE_PROFILE
+} from './targetHardware';
+import type { TargetHardwareProfile } from './targetHardware';
 
 function rounded(value: number): number {
   return Number(value.toFixed(2));
@@ -20,7 +25,8 @@ export interface SF192BenchmarkReport {
   readonly profile: 'SF-192';
   readonly generatedAt: string;
   readonly buildMode: string;
-  readonly targetHardwareConfirmed: false;
+  readonly targetHardwareConfirmed: boolean;
+  readonly targetHardware: TargetHardwareProfile;
   readonly environment: {
     readonly userAgent: string;
     readonly logicalProcessorCount: number;
@@ -139,7 +145,11 @@ export async function runSF192Benchmark(
     profile: 'SF-192',
     generatedAt: new Date().toISOString(),
     buildMode,
-    targetHardwareConfirmed: false,
+    targetHardwareConfirmed: matchesTargetHardware(
+      navigator.userAgent,
+      navigator.hardwareConcurrency
+    ),
+    targetHardware: TARGET_HARDWARE_PROFILE,
     environment: {
       userAgent: navigator.userAgent,
       logicalProcessorCount: navigator.hardwareConcurrency,
