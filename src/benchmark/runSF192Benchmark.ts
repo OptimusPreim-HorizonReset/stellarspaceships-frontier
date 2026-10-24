@@ -193,9 +193,11 @@ export async function runSF192Benchmark(
       },
       heapBefore,
       heapAfter: heapAfterRender,
-      totalChunks,
-      renderedChunksPerFrame:
-        visibleChunksPerStation * SF_192_PROFILE.stationCount
+      chunks: {
+        totalChunks,
+        renderedChunksPerFrame:
+          visibleChunksPerStation * SF_192_PROFILE.stationCount
+      }
     }),
     gateApproved: false,
     setupMs: rounded(setupMs)

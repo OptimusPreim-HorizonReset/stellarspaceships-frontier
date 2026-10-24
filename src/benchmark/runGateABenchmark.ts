@@ -235,8 +235,10 @@ export async function runGateABenchmark(
       },
       heapBefore,
       heapAfter: heapAfterRendering,
-      totalChunks: construction.chunkCount,
-      renderedChunksPerFrame: visibleChunksPerFrame,
+      chunks: {
+        totalChunks: construction.chunkCount,
+        renderedChunksPerFrame: visibleChunksPerFrame
+      },
       persistence: {
         serializeMs: rounded(serializeMs),
         deserializeMs: rounded(deserializeMs),

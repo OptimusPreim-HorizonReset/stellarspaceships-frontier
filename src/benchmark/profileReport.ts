@@ -61,8 +61,10 @@ export interface BenchmarkProfilingInput {
   };
   readonly heapBefore: BrowserHeapSnapshot;
   readonly heapAfter: BrowserHeapSnapshot;
-  readonly totalChunks: number;
-  readonly renderedChunksPerFrame: number;
+  readonly chunks?: {
+    readonly totalChunks: number;
+    readonly renderedChunksPerFrame: number;
+  };
   readonly collision?: {
     readonly broadphaseCandidates: number;
     readonly impacts: number;
@@ -124,6 +126,7 @@ export function createBenchmarkProfilingReport(
 ): BenchmarkProfilingReport {
   const collision = input.collision;
   const persistence = input.persistence;
+  const chunks = input.chunks;
 
   return {
     cpu: {
@@ -142,8 +145,14 @@ export function createBenchmarkProfilingReport(
       )
     },
     chunks: {
-      totalChunks: measured(input.totalChunks),
-      renderedChunksPerFrame: measured(input.renderedChunksPerFrame),
+      totalChunks:
+        chunks === undefined
+          ? notMeasured('This profile does not measure Construction chunks.')
+          : measured(chunks.totalChunks),
+      renderedChunksPerFrame:
+        chunks === undefined
+          ? notMeasured('This profile does not measure Construction chunks.')
+          : measured(chunks.renderedChunksPerFrame),
       activeSimulationStates: notMeasured(
         'This profile does not sample active chunk simulation states.'
       )

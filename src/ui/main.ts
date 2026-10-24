@@ -16,6 +16,10 @@ import {
   runSF192Benchmark,
   type SF192BenchmarkReport
 } from '../benchmark/runSF192Benchmark';
+import {
+  runGateDBenchmark,
+  type GateDBenchmarkReport
+} from '../benchmark/runGateDBenchmark';
 import type { TilePosition } from '../core/coordinates';
 import {
   isTileOrientation,
@@ -154,6 +158,10 @@ const runGateCScaleButton = requireElement(
 const runSF192Button = requireElement(
   document.querySelector<HTMLButtonElement>('#run-sf192'),
   '#run-sf192'
+);
+const runGateDButton = requireElement(
+  document.querySelector<HTMLButtonElement>('#run-gate-d'),
+  '#run-gate-d'
 );
 const downloadBenchmarkLink = requireElement(
   document.querySelector<HTMLAnchorElement>('#download-benchmark'),
@@ -457,7 +465,8 @@ function enableBenchmarkDownload(
   report:
     | GateABenchmarkReport
     | GateCScaleBenchmarkReport
-    | SF192BenchmarkReport,
+    | SF192BenchmarkReport
+    | GateDBenchmarkReport,
   filePrefix: string
 ): void {
   disableBenchmarkDownload();
@@ -761,6 +770,7 @@ runBenchmarkButton.addEventListener('click', async () => {
   runBenchmarkButton.disabled = true;
   runGateCScaleButton.disabled = true;
   runSF192Button.disabled = true;
+  runGateDButton.disabled = true;
   disableBenchmarkDownload();
   setConstructionControlsEnabled(false);
   benchmarkSummaryElement.textContent =
@@ -806,6 +816,7 @@ runBenchmarkButton.addEventListener('click', async () => {
     runBenchmarkButton.disabled = false;
     runGateCScaleButton.disabled = false;
     runSF192Button.disabled = false;
+    runGateDButton.disabled = false;
     setConstructionControlsEnabled(true);
     refreshWorld();
   }
@@ -820,6 +831,7 @@ runGateCScaleButton.addEventListener('click', async () => {
   runBenchmarkButton.disabled = true;
   runGateCScaleButton.disabled = true;
   runSF192Button.disabled = true;
+  runGateDButton.disabled = true;
   disableBenchmarkDownload();
   setConstructionControlsEnabled(false);
   benchmarkSummaryElement.textContent =
@@ -863,6 +875,7 @@ runGateCScaleButton.addEventListener('click', async () => {
     runBenchmarkButton.disabled = false;
     runGateCScaleButton.disabled = false;
     runSF192Button.disabled = false;
+    runGateDButton.disabled = false;
     setConstructionControlsEnabled(true);
     refreshWorld();
   }
@@ -877,6 +890,7 @@ runSF192Button.addEventListener('click', async () => {
   runBenchmarkButton.disabled = true;
   runGateCScaleButton.disabled = true;
   runSF192Button.disabled = true;
+  runGateDButton.disabled = true;
   disableBenchmarkDownload();
   setConstructionControlsEnabled(false);
   benchmarkSummaryElement.textContent =
@@ -920,6 +934,68 @@ runSF192Button.addEventListener('click', async () => {
     runBenchmarkButton.disabled = false;
     runGateCScaleButton.disabled = false;
     runSF192Button.disabled = false;
+    runGateDButton.disabled = false;
+    setConstructionControlsEnabled(true);
+    refreshWorld();
+  }
+});
+
+runGateDButton.addEventListener('click', async () => {
+  if (benchmarkRunning) {
+    return;
+  }
+
+  benchmarkRunning = true;
+  runBenchmarkButton.disabled = true;
+  runGateCScaleButton.disabled = true;
+  runSF192Button.disabled = true;
+  runGateDButton.disabled = true;
+  disableBenchmarkDownload();
+  setConstructionControlsEnabled(false);
+  benchmarkSummaryElement.textContent =
+    'Gate D: 3x3-Sektorstreaming, 30 Aufwärm- und 180 Messframes …';
+  benchmarkReportElement.textContent = 'Streamingprofil wird aufgebaut …';
+  statusElement.textContent =
+    'Gate D läuft im Produktionspreview; der sichtbare Tab muss geöffnet bleiben.';
+
+  try {
+    const report = await runGateDBenchmark(
+      canvas,
+      renderer,
+      construction,
+      import.meta.env.MODE
+    );
+    benchmarkReportElement.textContent = JSON.stringify(report, null, 2);
+    const heapDelta =
+      report.memory.jsHeapDeltaBytes === null
+        ? 'JS-Heap nicht verfügbar'
+        : `${(report.memory.jsHeapDeltaBytes / 1_048_576).toFixed(2)} MB JS-Heap Δ`;
+    benchmarkSummaryElement.textContent =
+      `${report.rendering.averageFps} FPS Ø · ` +
+      `${report.streaming.sectorTransitions} Sektorwechsel · ` +
+      `Cache max. ${report.streaming.maxLoadedSectors}/` +
+      `${report.streaming.cacheLimit} · ` +
+      `p95 ${report.rendering.p95FrameIntervalMs} ms · ${heapDelta}.`;
+    statusElement.textContent =
+      'Gate D lokal gemessen; Zielhardware und vollständige Sektorrenderung bleiben offen.';
+
+    try {
+      enableBenchmarkDownload(report, 'gate-d');
+    } catch (error) {
+      statusElement.textContent =
+        `Gate D gemessen, JSON-Export fehlgeschlagen: ${showError(error)}`;
+    }
+  } catch (error) {
+    const message = showError(error);
+    benchmarkReportElement.textContent = `Gate D fehlgeschlagen: ${message}`;
+    benchmarkSummaryElement.textContent = `Gate D fehlgeschlagen: ${message}`;
+    statusElement.textContent = `Gate D fehlgeschlagen: ${message}`;
+  } finally {
+    benchmarkRunning = false;
+    runBenchmarkButton.disabled = false;
+    runGateCScaleButton.disabled = false;
+    runSF192Button.disabled = false;
+    runGateDButton.disabled = false;
     setConstructionControlsEnabled(true);
     refreshWorld();
   }

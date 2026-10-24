@@ -52,6 +52,7 @@ Dies ist nur eine lokale Referenz: Die offizielle Zielhardware wurde nicht festg
 | Gate B | 1.000-Tile-Schiff mit Energie, Masse und stabiler Flugphysik | Kernsimulation validieren |
 | SF-191 | 3.000-Tile-Schiff mit Kampf- und Schadenssimulation | Mobile Konstruktionen unter Kampf-Last prüfen |
 | SF-192 | Zehn Stationen mit je 10.000 Tiles | Stationen und Open-World-Last prüfen |
+| Gate D | 3×3-Sektorstreaming mit Wechsel pro Frame | Cachegrenze, Übergänge und lokale Frame-Stabilität prüfen |
 | SF-193 | 100 NPC-Schiffe gleichzeitig | Skalierung der NPC-Simulation prüfen |
 
 ### SF-191 – lokale Produktionsmessung
@@ -96,11 +97,31 @@ Der Browser-JS-Heap-Delta hat einen Median von +6,19 MiB und eine Spannweite von
 
 SF-192 ist lokal gemessen und dokumentiert, aber weder für Zielhardware noch Release freigegeben. Die JSON-Berichte bleiben im World Lab exportierbar; `gateApproved` und `targetHardwareConfirmed` bleiben `false`. Für eine Aussage über eine simultane Mehrstationsszene ist ein separates, räumlich zusammengesetztes Profil erforderlich.
 
+### Gate D – lokale Streamingmessung
+
+Gemessen am 24.10.2026 im Produktionspreview des integrierten VS-Code-Browsers mit Windows-User-Agent `Windows NT 10.0`, VS Code Insiders 1.144.0-insider, Chromium 150.0.7871.250, 8 logischen Prozessoren, Viewport 476 × 339 CSS-Pixel und DPR 1,5. Jeder Lauf enthielt 30 Aufwärm- und 180 Messframes bei 60-FPS-Ziel.
+
+Pro Frame wurde das Zentrum um einen Sektor verschoben, `SectorLoader.updateNeighborhood` führte den 3×3-Wechsel aus, und der bestehende Editor-Renderer zeichnete die aktuelle Konstruktion. Die Sektorobjekte selbst besitzen noch keinen integrierten räumlichen Renderer; das Profil misst daher Streaming plus Editor-Renderarbeit, keine vollständige Open-World-Szene. Pro Lauf gab es 211 Sektorübergänge einschließlich Aufwärmphase, 642 erzeugte und 633 entladene Sektoren. Die aktive Nachbarschaft und der Cache blieben bei neun Sektoren.
+
+| Lauf | FPS Ø | p95-Intervall | Intervalle > 16,67 ms | Frame-Arbeit Ø / p95 | JS-Heap-Delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 60,04 | 16,8 ms | 95 / 180 | 0,42 / 0,60 ms | −0,64 MiB |
+| 2 | 60,04 | 16,8 ms | 99 / 180 | 0,28 / 0,40 ms | +0,31 MiB |
+| 3 | 60,04 | 16,8 ms | 98 / 180 | 0,27 / 0,40 ms | +0,22 MiB |
+| 4 | 60,04 | 16,8 ms | 95 / 180 | 0,25 / 0,40 ms | −9,84 MiB |
+| 5 | 60,04 | 16,7 ms | 99 / 180 | 0,24 / 0,40 ms | −0,04 MiB |
+| 6 | 60,04 | 16,7 ms | 96 / 180 | 0,27 / 0,40 ms | −0,07 MiB |
+| 7* | 60,04 | 16,7 ms | 96 / 180 | 1,02 / 3,0 ms | +0,16 MiB |
+
+Der FPS-Median beträgt 60,04; alle sieben lokalen Läufe lagen bei mindestens 60 FPS. Die Frame-Arbeit lag im Median bei 0,27 ms durchschnittlich und 0,40 ms p95. Die 95–99 Intervalle über dem theoretischen 16,67-ms-Budget spiegeln Browser-VSync-/Scheduling-Messungen wider und beweisen für sich allein weder sichtbare Frame-Drops noch deren Abwesenheit.
+
+Der Browser-JS-Heap-Delta hatte einen Median von −0,04 MiB und eine Spannweite von −9,84 bis +0,31 MiB. Negative Snapshots sind mit Garbage Collection vereinbar; Prozess-/System-RAM bleibt nicht verfügbar. Die feste Cachegröße von neun aktiven Sektoren belegt eine begrenzte Loader-Nachbarschaft, aber keine langfristige Speicherstabilität des vollständigen Spiels. `gateDApproved` und `targetHardwareConfirmed` bleiben `false`, bis die Sektoransicht integriert und die Zielhardware bestätigt ist.
+
 Der Gate-B-Funktionstest in `tests/gateB.integration.test.ts` simuliert ein 1000-Tile-Schiff über 600 feste 1/60-Sekunden-Zeitschritte. Er prüft Energie, Masse, Thrusterkräfte und endliche Zustandswerte; er ersetzt keinen FPS-Benchmark auf Zielhardware.
 
 ## SF-194 – Profiling-Bericht
 
-Die aktuellen Browserrunner für Gate A/SF-190, SF-191 und SF-192 schreiben dieselbe `profilingCoverage`-Struktur in ihre JSON-Berichte. Jede Metrik hat einen Status und einen Wert: `measured` liefert einen Messwert, `unavailable` kennzeichnet eine Browser-/Systemgrenze, `not-measured` bedeutet, dass die Metrik im Profil nicht erfasst oder isoliert wird, und `not-implemented` ist ausschließlich für tatsächlich fehlende Systeme vorgesehen. Nicht gemessene Werte sind `null` mit Begründung und gelten niemals als bestanden.
+Die aktuellen Browserrunner für Gate A/SF-190, SF-191, SF-192 und Gate D schreiben dieselbe `profilingCoverage`-Struktur in ihre JSON-Berichte. Jede Metrik hat einen Status und einen Wert: `measured` liefert einen Messwert, `unavailable` kennzeichnet eine Browser-/Systemgrenze, `not-measured` bedeutet, dass die Metrik im Profil nicht erfasst oder isoliert wird, und `not-implemented` ist ausschließlich für tatsächlich fehlende Systeme vorgesehen. Nicht gemessene Werte sind `null` mit Begründung und gelten niemals als bestanden.
 
 | Profil | JavaScript-Arbeit / System-CPU | Speicher | Chunks | Physik | Kollision | Speichern/Laden |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -109,10 +130,11 @@ Die aktuellen Browserrunner für Gate A/SF-190, SF-191 und SF-192 schreiben dies
 | Gate C | Lokaler Funktions-Playthrough, kein vergleichbarer Produktionsbenchmark | Nicht gemessen | Nicht gemessen | Nicht isoliert gemessen | Funktionsablauf, keine isolierte Zeitmessung | Missions-Roundtrip funktional geprüft, keine Serialize-/Deserialize-Zeit |
 | SF-191 | Render-, Broadphase-, Narrowphase- und Schadensarbeit pro Frame; systemweite CPU-Auslastung nicht verfügbar | Browser-JS-Heap-Delta, wenn verfügbar; Prozess-/System-RAM nicht verfügbar | Gesamt- und sichtbare Chunks gemessen; aktive Simulationszustände nicht gemessen | Nicht Teil des Profils | Broadphase-Kandidaten, Treffer und Schadensereignisse gemessen; isolierte Kollisionsdauer nicht gemessen | Nicht Teil des Profils |
 | SF-192 | Zehn sequenzielle Renderpässe pro Frame; systemweite CPU-Auslastung nicht verfügbar | Browser-JS-Heap-Delta, wenn verfügbar; Prozess-/System-RAM nicht verfügbar | Gesamtchunks und gerenderte Chunks über die zehn Pässe gemessen; aktive Simulationszustände nicht gemessen | Nicht Teil des Profils | Nicht Teil des Profils | Nicht Teil des Profils |
+| Gate D | Sektorwechsel plus Editor-Renderarbeit; systemweite CPU-Auslastung nicht verfügbar | Browser-JS-Heap-Delta, wenn verfügbar; Prozess-/System-RAM nicht verfügbar | SectorLoader-Cache und Editor-Construction-Chunks gemessen; aktive Simulationszustände nicht gemessen | Nicht Teil des Profils | Nicht Teil des Profils | Nicht Teil des Profils |
 
-Systemweite CPU-Auslastung und Prozess-RAM sind in Browserberichten ausdrücklich `unavailable`; JavaScript-Arbeitszeit und JS-Heap sind keine Ersatzwerte dafür. Chunk-Anzahl und sichtbare/gezeichnete Chunks sind messbar, die Zahl aktiver Simulationszustände wird derzeit nicht erfasst. Das Gate-B-Testprofil misst 600 Physikschritte funktional, aber keine Physikdauer; SF-191 misst Kollisionsereignisse, jedoch keine isolierte Kollisionsdauer. Speicherzeiten werden nur im Gate-A-Profil gemessen.
+Systemweite CPU-Auslastung und Prozess-RAM sind in Browserberichten ausdrücklich `unavailable`; JavaScript-Arbeitszeit und JS-Heap sind keine Ersatzwerte dafür. Construction-Chunk-Anzahl, sichtbare/gezeichnete Chunks und Gate-D-Cachegröße sind messbar; aktive Simulationszustände werden derzeit nicht erfasst. Das Gate-B-Testprofil misst 600 Physikschritte funktional, aber keine Physikdauer; SF-191 misst Kollisionsereignisse, jedoch keine isolierte Kollisionsdauer. Speicherzeiten werden nur im Gate-A-Profil gemessen.
 
-Für die vergleichbaren Produktionsprofile wurden derselbe integrierte Browser, 476 × 339 CSS-Pixel, DPR 1,5, 8 logische Prozessoren, 60-FPS-Ziel, 30 Aufwärm- und 180 Messframes verwendet. Jedes Profil lief als Produktionspreview mit sichtbarem Tab und wurde siebenmal ausgeführt. Der siebte Lauf (`*`) je Profil wurde nach Einführung der gemeinsamen Coverage-Struktur ausgeführt und bestätigte deren JSON-Ausgabe. Browser-/Viewportbedingungen sind damit vergleichbar, die Codeversionen und Lastprofile unterscheiden sich jedoch. FPS-Werte sind deshalb ein Referenzvergleich unter dokumentierten Bedingungen, kein direkter Leistungsvergleich zwischen unterschiedlichen Workloads. Zielhardware und Prozess-/Systemmesswerte bleiben unbestätigt.
+Für die vergleichbaren Produktionsprofile wurden derselbe integrierte Browser, 476 × 339 CSS-Pixel, DPR 1,5, 8 logische Prozessoren, 60-FPS-Ziel, 30 Aufwärm- und 180 Messframes verwendet. Gate A/SF-190, SF-191, SF-192 und Gate D liefen jeweils siebenmal als Produktionspreview mit sichtbarem Tab. Der siebte Lauf (`*`) je Profil wurde nach Einführung der gemeinsamen Coverage-Struktur ausgeführt und bestätigte die JSON-Ausgabe. Browser-/Viewportbedingungen sind damit vergleichbar, die Codeversionen und Lastprofile unterscheiden sich jedoch. FPS-Werte sind deshalb ein Referenzvergleich unter dokumentierten Bedingungen, kein direkter Leistungsvergleich zwischen unterschiedlichen Workloads. Zielhardware und Prozess-/Systemmesswerte bleiben unbestätigt.
 
 SF-193 wurde nicht ausgeführt: Die Backlog-Abhängigkeit SF-152 setzt SF-150 (NPC-Schiffsgenerator) und SF-151 (Navigations-KI) voraus; diese Systeme sind noch nicht implementiert. Das NPC-Flottenprofil bleibt daher blockiert und wird nicht als bestanden gewertet.
 

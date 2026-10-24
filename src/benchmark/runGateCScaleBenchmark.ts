@@ -268,8 +268,10 @@ export async function runGateCScaleBenchmark(
       },
       heapBefore,
       heapAfter,
-      totalChunks: construction.chunkCount,
-      renderedChunksPerFrame: visibleChunksPerFrame,
+      chunks: {
+        totalChunks: construction.chunkCount,
+        renderedChunksPerFrame: visibleChunksPerFrame
+      },
       collision: {
         broadphaseCandidates,
         impacts: impactCount,

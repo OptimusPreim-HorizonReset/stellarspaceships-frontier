@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122 sowie SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; SF-193 ist durch SF-152 blockiert, Zielhardware und mobiles Gate A bleiben offen
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; Gate D bleibt offen, SF-193 ist durch SF-152 blockiert, Zielhardware und mobiles Gate A bleiben offen
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -522,6 +522,8 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
   - Undocked-, Wrong-station- und Insufficient-resource-Fälle ohne Zustandsänderung melden
 
 ## GATE-D – Streaming-Nachweis
+
+**Status:** Sieben lokale Produktionsläufe mit stabiler 3×3-Cachegrenze dokumentiert; vollständige Sektorrenderung und Zielhardware fehlen, Gate nicht freigegeben.
 
 **Benchmarks:**
 

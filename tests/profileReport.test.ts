@@ -17,8 +17,7 @@ describe('benchmark profiling report', () => {
         totalBytes: 2300,
         limitBytes: 10_000
       },
-      totalChunks: 12,
-      renderedChunksPerFrame: 2,
+      chunks: { totalChunks: 12, renderedChunksPerFrame: 2 },
       collision: {
         broadphaseCandidates: 50,
         impacts: 4,
@@ -75,8 +74,7 @@ describe('benchmark profiling report', () => {
         totalBytes: null,
         limitBytes: null
       },
-      totalChunks: 8,
-      renderedChunksPerFrame: 1
+      chunks: { totalChunks: 8, renderedChunksPerFrame: 1 }
     });
 
     expect(report.memory.browserJsHeap).toMatchObject({
@@ -88,6 +86,33 @@ describe('benchmark profiling report', () => {
       value: null
     });
     expect(report.persistence.serializeMs).toMatchObject({
+      status: 'not-measured',
+      value: null
+    });
+  });
+
+  it('marks construction chunk metrics not measured for sector-only profiles', () => {
+    const report = createBenchmarkProfilingReport({
+      javascriptFrameWorkMs: { averageMs: 2, p95Ms: 3 },
+      heapBefore: {
+        supported: false,
+        usedBytes: null,
+        totalBytes: null,
+        limitBytes: null
+      },
+      heapAfter: {
+        supported: false,
+        usedBytes: null,
+        totalBytes: null,
+        limitBytes: null
+      }
+    });
+
+    expect(report.chunks.totalChunks).toMatchObject({
+      status: 'not-measured',
+      value: null
+    });
+    expect(report.chunks.renderedChunksPerFrame).toMatchObject({
       status: 'not-measured',
       value: null
     });
