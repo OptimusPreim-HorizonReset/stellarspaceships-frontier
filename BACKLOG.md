@@ -523,7 +523,7 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 ## GATE-D – Streaming-Nachweis
 
-**Status:** Acht lokale Produktionsläufe auf dem bestätigten Zielprofil mit stabiler 3×3-Cachegrenze dokumentiert; vollständige Sektorrenderung fehlt, Gate nicht freigegeben.
+**Status:** Acht Produktionsläufe auf dem bestätigten Zielprofil mit räumlicher 3×3-Kartenrenderung und stabiler Cachegrenze dokumentiert; Gate-Freigabe bleibt manuell.
 
 **Benchmarks:**
 

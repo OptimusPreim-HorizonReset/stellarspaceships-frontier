@@ -1,5 +1,6 @@
 import { sectorKey, WORLD_SECTOR_COUNT } from '../world/sector';
 import type { SectorPosition } from '../world/sector';
+import type { Sector } from '../world/sector';
 import { SectorLoader } from '../world/sectorLoader';
 
 export const GATE_D_PROFILE = Object.freeze({
@@ -24,6 +25,7 @@ export const GATE_D_PROFILE = Object.freeze({
 });
 
 export interface GateDStreamingStep {
+  readonly activeSectors: readonly Sector[];
   readonly center: SectorPosition;
   readonly activeSectorCount: number;
   readonly newlyGeneratedSectorCount: number;
@@ -121,6 +123,7 @@ export class GateDStreamingWorkload {
     this.assertCacheBound();
 
     return {
+      activeSectors: update.activeSectors,
       center: { ...this.center },
       activeSectorCount: update.activeSectors.length,
       newlyGeneratedSectorCount,

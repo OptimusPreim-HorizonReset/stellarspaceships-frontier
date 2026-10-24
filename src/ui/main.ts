@@ -34,6 +34,7 @@ import {
   CanvasWorldRenderer,
   TILE_PIXEL_SIZE
 } from '../rendering/canvasWorldRenderer';
+import { CanvasSectorRenderer } from '../rendering/canvasSectorRenderer';
 import { calculateMomentOfInertia } from '../physics/momentOfInertia';
 import {
   deserializeConstruction,
@@ -228,6 +229,7 @@ const missionStatusElement = requireElement(
   '#mission-status'
 );
 const renderer = new CanvasWorldRenderer(canvas);
+const sectorRenderer = new CanvasSectorRenderer(canvas);
 const constructionControls: Array<
   HTMLButtonElement | HTMLInputElement | HTMLSelectElement
 > = [
@@ -949,6 +951,7 @@ runGateDButton.addEventListener('click', async () => {
     return;
   }
 
+  const previousCanvasLabel = canvas.getAttribute('aria-label');
   benchmarkRunning = true;
   runBenchmarkButton.disabled = true;
   runGateCScaleButton.disabled = true;
@@ -961,12 +964,15 @@ runGateDButton.addEventListener('click', async () => {
   benchmarkReportElement.textContent = 'Streamingprofil wird aufgebaut …';
   statusElement.textContent =
     'Gate D läuft im Produktionspreview; der sichtbare Tab muss geöffnet bleiben.';
+  canvas.setAttribute(
+    'aria-label',
+    '3x3-Sektornachbarschaft mit positionierten Asteroidenobjekten.'
+  );
 
   try {
     const report = await runGateDBenchmark(
       canvas,
-      renderer,
-      construction,
+      sectorRenderer,
       import.meta.env.MODE
     );
     benchmarkReportElement.textContent = JSON.stringify(report, null, 2);
@@ -977,11 +983,12 @@ runGateDButton.addEventListener('click', async () => {
     benchmarkSummaryElement.textContent =
       `${report.rendering.averageFps} FPS Ø · ` +
       `${report.streaming.sectorTransitions} Sektorwechsel · ` +
+      `${report.streaming.renderedSectorsPerFrame} Sektoren gerendert · ` +
       `Cache max. ${report.streaming.maxLoadedSectors}/` +
       `${report.streaming.cacheLimit} · ` +
       `p95 ${report.rendering.p95FrameIntervalMs} ms · ${heapDelta}.`;
     statusElement.textContent = report.targetHardwareConfirmed
-      ? 'Gate D auf dem bestätigten Zielprofil gemessen; vollständige Sektorrenderung bleibt offen.'
+      ? 'Gate D mit räumlicher Sektoransicht auf dem bestätigten Zielprofil gemessen; Schiff- und Stationsintegration sowie Gate-Freigabe bleiben offen.'
       : 'Gate D wurde nicht auf dem bestätigten Zielprofil gemessen.';
 
     try {
@@ -996,6 +1003,11 @@ runGateDButton.addEventListener('click', async () => {
     benchmarkSummaryElement.textContent = `Gate D fehlgeschlagen: ${message}`;
     statusElement.textContent = `Gate D fehlgeschlagen: ${message}`;
   } finally {
+    if (previousCanvasLabel === null) {
+      canvas.removeAttribute('aria-label');
+    } else {
+      canvas.setAttribute('aria-label', previousCanvasLabel);
+    }
     benchmarkRunning = false;
     runBenchmarkButton.disabled = false;
     runGateCScaleButton.disabled = false;

@@ -1,4 +1,3 @@
-import type { Construction } from '../construction/construction';
 import type { SectorPosition } from '../world/sector';
 import {
   collectBrowserFrames,
@@ -11,15 +10,12 @@ import {
   type BenchmarkProfilingReport
 } from './profileReport';
 import { GATE_D_PROFILE, GateDStreamingWorkload } from './gateDProfile';
+import { CanvasSectorRenderer } from '../rendering/canvasSectorRenderer';
 import {
   matchesTargetHardware,
   TARGET_HARDWARE_PROFILE
 } from './targetHardware';
 import type { TargetHardwareProfile } from './targetHardware';
-import {
-  CanvasWorldRenderer,
-  TILE_PIXEL_SIZE
-} from '../rendering/canvasWorldRenderer';
 
 function rounded(value: number): number {
   return Number(value.toFixed(2));
@@ -47,6 +43,8 @@ export interface GateDBenchmarkReport {
     readonly finalCenter: SectorPosition;
     readonly sectorsPerNeighborhood: number;
     readonly sectorTransitions: number;
+    readonly renderedSectorsPerFrame: number;
+    readonly averageSectorObjectsRenderedPerFrame: number;
     readonly totalSectorsGenerated: number;
     readonly totalSectorsUnloaded: number;
     readonly maxLoadedSectors: number;
@@ -84,8 +82,7 @@ export interface GateDBenchmarkReport {
 
 export async function runGateDBenchmark(
   canvas: HTMLCanvasElement,
-  renderer: CanvasWorldRenderer,
-  construction: Construction,
+  renderer: CanvasSectorRenderer,
   buildMode: string
 ): Promise<GateDBenchmarkReport> {
   const heapBefore = readBrowserHeapSnapshot();
@@ -98,19 +95,18 @@ export async function runGateDBenchmark(
     throw new Error('Gate D requires a visible, non-zero canvas.');
   }
 
-  const visibleBounds = {
-    minX: 0,
-    minY: 0,
-    maxXExclusive: Math.ceil(canvas.clientWidth / TILE_PIXEL_SIZE),
-    maxYExclusive: Math.ceil(canvas.clientHeight / TILE_PIXEL_SIZE)
-  };
-  const renderedChunksPerFrame =
-    construction.getChunkCountInBounds(visibleBounds);
+  let totalRenderedSectors = 0;
+  let totalRenderedObjects = 0;
 
   const samples = await collectBrowserFrames(
     () => {
-      streamingWorkload.advance();
-      renderer.render(construction);
+      const step = streamingWorkload.advance();
+      const rendered = renderer.renderNeighborhood(
+        step.activeSectors,
+        step.center
+      );
+      totalRenderedSectors += rendered.renderedSectors;
+      totalRenderedObjects += rendered.renderedObjects;
     },
     GATE_D_PROFILE.warmupFrames,
     GATE_D_PROFILE.measuredFrames,
@@ -130,6 +126,10 @@ export async function runGateDBenchmark(
       ? null
       : heapAfterRender.usedBytes - heapBefore.usedBytes;
   const streaming = streamingWorkload.metrics;
+  const renderedSectorsPerFrame =
+    totalRenderedSectors / streaming.sectorTransitions;
+  const averageSectorObjectsRenderedPerFrame =
+    totalRenderedObjects / streaming.sectorTransitions;
 
   return {
     schemaVersion: 1,
@@ -156,6 +156,10 @@ export async function runGateDBenchmark(
       finalCenter: streaming.finalCenter,
       sectorsPerNeighborhood: GATE_D_PROFILE.sectorsPerNeighborhood,
       sectorTransitions: streaming.sectorTransitions,
+      renderedSectorsPerFrame: rounded(renderedSectorsPerFrame),
+      averageSectorObjectsRenderedPerFrame: rounded(
+        averageSectorObjectsRenderedPerFrame
+      ),
       totalSectorsGenerated: streaming.totalSectorsGenerated,
       totalSectorsUnloaded: streaming.totalSectorsUnloaded,
       maxLoadedSectors: streaming.maxLoadedSectors,
@@ -196,11 +200,7 @@ export async function runGateDBenchmark(
         p95Ms: rounded(p95FrameWorkMs)
       },
       heapBefore,
-      heapAfter: heapAfterRender,
-      chunks: {
-        totalChunks: construction.chunkCount,
-        renderedChunksPerFrame
-      }
+      heapAfter: heapAfterRender
     }),
     gateDApproved: false
   };

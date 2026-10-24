@@ -108,24 +108,24 @@ SF-192 ist auf dem bestätigten Zielprofil gemessen, erfüllt aber die provisori
 
 ### Gate D – lokale Streamingmessung
 
-Gemessen am 24.10.2026 im Produktionspreview des integrierten VS-Code-Browsers mit Windows-User-Agent `Windows NT 10.0`, VS Code Insiders 1.144.0-insider, Chromium 150.0.7871.250, 8 logischen Prozessoren, Viewport 476 × 339 CSS-Pixel und DPR 1,5. Jeder Lauf enthielt 30 Aufwärm- und 180 Messframes bei 60-FPS-Ziel.
+Gemessen am 24.10.2026 im Produktionspreview des integrierten VS-Code-Browsers auf dem bestätigten Zielprofil: Windows-User-Agent `Windows NT 10.0`, VS Code Insiders 1.144.0-insider, Chromium 150.0.7871.250, 8 logische Prozessoren, Viewport 476 × 339 CSS-Pixel und DPR 1,5. Jeder Lauf enthielt 30 Aufwärm- und 180 Messframes bei 60-FPS-Ziel.
 
-Pro Frame wurde das Zentrum um einen Sektor verschoben, `SectorLoader.updateNeighborhood` führte den 3×3-Wechsel aus, und der bestehende Editor-Renderer zeichnete die aktuelle Konstruktion. Die Sektorobjekte selbst besitzen noch keinen integrierten räumlichen Renderer; das Profil misst daher Streaming plus Editor-Renderarbeit, keine vollständige Open-World-Szene. Pro Lauf gab es 211 Sektorübergänge einschließlich Aufwärmphase, 642 erzeugte und 633 entladene Sektoren. Die aktive Nachbarschaft und der Cache blieben bei neun Sektoren.
+Pro Frame wurde das Zentrum um einen Sektor verschoben und `SectorLoader.updateNeighborhood` führte den 3×3-Wechsel aus. `CanvasSectorRenderer` zeichnete die neun aktiven Sektoren räumlich als Karte und setzte deren Asteroidenreferenzen an die normalisierten lokalen Positionen. Pro Lauf gab es 211 Sektorübergänge einschließlich Aufwärmphase, 642 erzeugte und 633 entladene Sektoren sowie durchschnittlich 31,53 gerenderte Objektmarker pro Frame. Die aktive Nachbarschaft und der Cache blieben bei neun Sektoren. Schiff- und Stationskonstruktionen sind nicht Teil dieses Sektorprofils.
 
 | Lauf | FPS Ø | p95-Intervall | Intervalle > 16,67 ms | Frame-Arbeit Ø / p95 | JS-Heap-Delta |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 1 | 60,04 | 16,8 ms | 95 / 180 | 0,42 / 0,60 ms | −0,64 MiB |
-| 2 | 60,04 | 16,8 ms | 99 / 180 | 0,28 / 0,40 ms | +0,31 MiB |
-| 3 | 60,04 | 16,8 ms | 98 / 180 | 0,27 / 0,40 ms | +0,22 MiB |
-| 4 | 60,04 | 16,8 ms | 95 / 180 | 0,25 / 0,40 ms | −9,84 MiB |
-| 5 | 60,04 | 16,7 ms | 99 / 180 | 0,24 / 0,40 ms | −0,04 MiB |
-| 6 | 60,04 | 16,7 ms | 96 / 180 | 0,27 / 0,40 ms | −0,07 MiB |
-| 7* | 60,04 | 16,7 ms | 96 / 180 | 1,02 / 3,0 ms | +0,16 MiB |
-| 8† | 60,04 | 16,8 ms | 96 / 180 | 0,28 / 0,4 ms | −0,07 MiB |
+| 1 | 60,04 | 16,7 ms | 101 / 180 | 0,63 / 1,1 ms | +0,33 MiB |
+| 2 | 60,04 | 16,8 ms | 97 / 180 | 0,39 / 0,6 ms | +0,99 MiB |
+| 3 | 60,04 | 17,0 ms | 99 / 180 | 0,39 / 0,6 ms | −0,94 MiB |
+| 4 | 60,04 | 17,0 ms | 92 / 180 | 0,29 / 0,4 ms | −1,00 MiB |
+| 5 | 60,04 | 16,9 ms | 89 / 180 | 0,28 / 0,4 ms | +0,22 MiB |
+| 6 | 60,04 | 16,9 ms | 89 / 180 | 0,29 / 0,4 ms | +1,59 MiB |
+| 7* | 60,04 | 16,9 ms | 98 / 180 | 0,28 / 0,4 ms | −0,19 MiB |
+| 8† | 60,04 | 16,9 ms | 96 / 180 | 0,25 / 0,4 ms | −0,48 MiB |
 
-Der FPS-Median beträgt 60,04; alle acht Läufe auf dem bestätigten Zielprofil lagen bei mindestens 60 FPS. Die Frame-Arbeit lag im Median bei 0,28 ms durchschnittlich und 0,40 ms p95. Die 95–99 Intervalle über dem theoretischen 16,67-ms-Budget spiegeln Browser-VSync-/Scheduling-Messungen wider und beweisen für sich allein weder sichtbare Frame-Drops noch deren Abwesenheit.
+Der FPS-Median beträgt 60,04; alle acht Läufe auf dem bestätigten Zielprofil lagen bei mindestens 60 FPS. Die Frame-Arbeit lag im Median bei 0,29 ms durchschnittlich und 0,40 ms p95. Der p95-Frameintervall lag bei 16,7–17,0 ms; 89–101 Intervalle je Lauf lagen über dem theoretischen 16,67-ms-Budget. Das spiegelt Browser-VSync-/Scheduling-Messungen wider und beweist für sich allein weder sichtbare Frame-Drops noch deren Abwesenheit.
 
-Der Browser-JS-Heap-Delta hatte einen Median von −0,05 MiB und eine Spannweite von −9,84 bis +0,31 MiB. Negative Snapshots sind mit Garbage Collection vereinbar; Prozess-/System-RAM bleibt nicht verfügbar. Die feste Cachegröße von neun aktiven Sektoren belegt eine begrenzte Loader-Nachbarschaft, aber keine langfristige Speicherstabilität des vollständigen Spiels. `targetHardwareConfirmed` ist für das ausgewählte Zielprofil `true`; `gateDApproved` bleibt `false`, bis die Sektoransicht integriert ist.
+Der Browser-JS-Heap-Delta hatte einen Median von +0,02 MiB und eine Spannweite von −1,00 bis +1,59 MiB. Negative Snapshots sind mit Garbage Collection vereinbar; Prozess-/System-RAM bleibt nicht verfügbar. Die feste Cachegröße von neun aktiven Sektoren belegt eine begrenzte Loader-Nachbarschaft, aber keine langfristige Speicherstabilität des vollständigen Spiels. `targetHardwareConfirmed` ist für das ausgewählte Zielprofil `true`; `gateDApproved` bleibt `false`, bis die lokalen Ergebnisse manuell geprüft sind.
 
 Der Gate-B-Funktionstest in `tests/gateB.integration.test.ts` simuliert ein 1000-Tile-Schiff über 600 feste 1/60-Sekunden-Zeitschritte. Er prüft Energie, Masse, Thrusterkräfte und endliche Zustandswerte; er ersetzt keinen FPS-Benchmark auf Zielhardware.
 
@@ -140,7 +140,7 @@ Die aktuellen Browserrunner für Gate A/SF-190, SF-191, SF-192 und Gate D schrei
 | Gate C | Lokaler Funktions-Playthrough, kein vergleichbarer Produktionsbenchmark | Nicht gemessen | Nicht gemessen | Nicht isoliert gemessen | Funktionsablauf, keine isolierte Zeitmessung | Missions-Roundtrip funktional geprüft, keine Serialize-/Deserialize-Zeit |
 | SF-191 | Render-, Broadphase-, Narrowphase- und Schadensarbeit pro Frame; systemweite CPU-Auslastung nicht verfügbar | Browser-JS-Heap-Delta, wenn verfügbar; Prozess-/System-RAM nicht verfügbar | Gesamt- und sichtbare Chunks gemessen; aktive Simulationszustände nicht gemessen | Nicht Teil des Profils | Broadphase-Kandidaten, Treffer und Schadensereignisse gemessen; isolierte Kollisionsdauer nicht gemessen | Nicht Teil des Profils |
 | SF-192 | Zehn sequenzielle Renderpässe pro Frame; systemweite CPU-Auslastung nicht verfügbar | Browser-JS-Heap-Delta, wenn verfügbar; Prozess-/System-RAM nicht verfügbar | Gesamtchunks und gerenderte Chunks über die zehn Pässe gemessen; aktive Simulationszustände nicht gemessen | Nicht Teil des Profils | Nicht Teil des Profils | Nicht Teil des Profils |
-| Gate D | Sektorwechsel plus Editor-Renderarbeit; systemweite CPU-Auslastung nicht verfügbar | Browser-JS-Heap-Delta, wenn verfügbar; Prozess-/System-RAM nicht verfügbar | SectorLoader-Cache und Editor-Construction-Chunks gemessen; aktive Simulationszustände nicht gemessen | Nicht Teil des Profils | Nicht Teil des Profils | Nicht Teil des Profils |
+| Gate D | Sektorwechsel plus räumliche Kartenrenderarbeit; systemweite CPU-Auslastung nicht verfügbar | Browser-JS-Heap-Delta, wenn verfügbar; Prozess-/System-RAM nicht verfügbar | SectorLoader-Cache und gerenderte Sektorobjekte gemessen; Construction-Chunk-Metriken und aktive Simulationszustände nicht gemessen | Nicht Teil des Profils | Nicht Teil des Profils | Nicht Teil des Profils |
 
 Systemweite CPU-Auslastung und Prozess-RAM sind in Browserberichten ausdrücklich `unavailable`; JavaScript-Arbeitszeit und JS-Heap sind keine Ersatzwerte dafür. Construction-Chunk-Anzahl, sichtbare/gezeichnete Chunks und Gate-D-Cachegröße sind messbar; aktive Simulationszustände werden derzeit nicht erfasst. Das Gate-B-Testprofil misst 600 Physikschritte funktional, aber keine Physikdauer; SF-191 misst Kollisionsereignisse, jedoch keine isolierte Kollisionsdauer. Speicherzeiten werden nur im Gate-A-Profil gemessen.
 
