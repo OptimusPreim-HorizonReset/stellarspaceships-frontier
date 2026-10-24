@@ -491,7 +491,7 @@ Components
 Ship Parts
 ```
 
-SF-130 implementiert ein validiertes Rezeptregister mit atomarer Ausführung für die Kette Ore → Steel → Components → Ship Parts. Die aktuellen Beispielmengen (Ore 1 → Steel 1; Steel 2 + Crystal 1 → Components 1; Components 1 + Steel 1 → Ship Parts 1) und Laufzeiten (5/10/15 Sekunden) sind Prototypwerte, keine finale Balance. SF-131 stellt Refinery- und Assembler-Module für Factory-Stationen bereit und ordnet ihnen die Rezepte zu; ihre direkte Ausführung liefert die Rezeptdauer zurück. SF-132 übernimmt diese Dauer später in Produktionswarteschlangen.
+SF-130 implementiert ein validiertes Rezeptregister mit atomarer Ausführung für die Kette Ore → Steel → Components → Ship Parts. Die aktuellen Beispielmengen (Ore 1 → Steel 1; Steel 2 + Crystal 1 → Components 1; Components 1 + Steel 1 → Ship Parts 1) und Laufzeiten (5/10/15 Sekunden) sind Prototypwerte, keine finale Balance. SF-131 stellt Refinery- und Assembler-Module für Factory-Stationen bereit und ordnet ihnen die Rezepte zu; ihre direkte Ausführung liefert die Rezeptdauer zurück. SF-132 verwaltet je Modul höchstens 100 FIFO-Aufträge, verbraucht Eingaben beim Start und bucht Ausgaben bei Fertigstellung. Fehlende Eingaben blockieren den Kopfauftrag, bis der Bestand ergänzt wird.
 
 ### Transport
 

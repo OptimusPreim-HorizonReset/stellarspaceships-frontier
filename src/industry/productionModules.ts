@@ -1,6 +1,7 @@
 import { executeRecipe } from './recipes';
 import type {
   RecipeExecutionResult,
+  RecipeDefinition,
   RecipeRegistry
 } from './recipes';
 import { Station } from '../world/station';
@@ -108,6 +109,14 @@ export class ProductionModule {
     }
 
     return executeRecipe(this.recipes, this.station.inventory, recipeId);
+  }
+
+  getRecipe(recipeId: string): RecipeDefinition | undefined {
+    if (!this.supportedRecipeIds.includes(recipeId)) {
+      return undefined;
+    }
+
+    return this.recipes.get(recipeId);
   }
 }
 

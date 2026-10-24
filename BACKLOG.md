@@ -1,7 +1,7 @@
 # Stellar Frontier – Development Backlog
 
 **Version:** 0.2
-**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, SF-130-Rezeptsystem, SF-131-Produktionsmodule, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; das lokale Zielprofil ist bestätigt, mobile Gate-A-Freigabe und Gate D bleiben offen, SF-193 ist durch SF-152 blockiert
+**Status:** P1-Energie-/Physikkern, Editor, SF-070 bis SF-093, SF-100 bis SF-102, SF-110 bis SF-112, SF-120 bis SF-122, SF-130-Rezeptsystem, SF-131-Produktionsmodule, SF-132-Produktionswarteschlangen, lokale Gate-D-Messung, SF-191-/SF-192-Lastprofile und SF-194-Profiling-Bericht umgesetzt; das lokale Zielprofil ist bestätigt, mobile Gate-A-Freigabe und Gate D bleiben offen, SF-193 ist durch SF-152 blockiert
 
 Dies ist der verbindliche Backlog. Task-IDs, Prioritäten, Abhängigkeiten und Akzeptanzkriterien werden hier gepflegt. `Priorisierung.md` beschreibt den kritischen Pfad, `Implementierungsplan.md` die technische Umsetzung und `SKALIERUNG.md` die Benchmarkprofile.
 
@@ -562,6 +562,13 @@ Für die P1-Entwicklung gilt vorläufig die lokale Produktionsmessung als Deskto
 
 - **Priorität:** P4
 - **Abhängigkeiten:** SF-131
+- **Status:** Begrenzte FIFO-Warteschlangen pro Produktionsmodul mit Zeitfortschritt implementiert
+- **Akzeptanzkriterien:**
+  - Pro Modul höchstens 100 Aufträge in FIFO-Reihenfolge halten
+  - Eingaben beim Start atomar verbrauchen und Ausgaben erst nach Ablauf der Rezeptdauer gutschreiben
+  - Bei fehlenden Eingaben am Kopf der Warteschlange blockieren und nach Bestandszufuhr fortsetzen
+  - Zeitfortschritt validieren und mehrere abgeschlossene Aufträge deterministisch nachholen
+  - Nicht unterstützte Rezepte und volle Warteschlangen ohne Zustandsmutation melden
 
 ## EPIC-015 – Forschung
 
